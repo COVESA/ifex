@@ -286,7 +286,7 @@ def ast_Commands(parent, yamltree) -> list[Command]:
     for st in subtrees:
         node = Command(get_yaml_value(st, 'name'), parent)
         node.description = get_yaml_value(st, 'description')
-        node.in_arguments = ast_Arguments(node, st)
+        node.in_arguments = ast_Arguments(node, st, 'in_arguments')
         nodes.append(node)
 
     return nodes
@@ -303,8 +303,8 @@ def ast_Methods(parent, yamltree) -> list[Method]:
     for st in subtrees:
         node = Command(get_yaml_value(st, 'name'), parent)
         node.description = get_yaml_value(st, 'description')
-        node.in_arguments = ast_Arguments(node, st)
-        node.out_arguments = ast_Arguments(node, st)
+        node.in_arguments = ast_Arguments(node, st, 'in_arguments')
+        node.out_arguments = ast_Arguments(node, st, 'out_arguments')
         nodes.append(node)
 
     return nodes
@@ -321,7 +321,7 @@ def ast_Events(parent, yamltree) -> list[Event]:
     for st in subtrees:
         node = Command(get_yaml_value(st, 'name'), parent)
         node.description = get_yaml_value(st, 'description')
-        node.in_arguments = ast_Arguments(node, st)
+        node.in_arguments = ast_Arguments(node, st, 'in_arguments')
         nodes.append(node)
 
     return nodes
