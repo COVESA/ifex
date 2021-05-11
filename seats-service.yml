@@ -180,9 +180,9 @@ service:
               The desired seat position
             type: movement.seat_t
 
-      - name: move_component
-        description: |
-          Set a seat component position
+          - name: move_component
+            description: |
+              Set a seat component position
 
         # Arguments
         #
@@ -226,7 +226,7 @@ service:
           - name: seat
             description: |
               The seat state that was requested
-              type: movement.seat_t
+            type: movement.seat_t
 
     # Events
     #
