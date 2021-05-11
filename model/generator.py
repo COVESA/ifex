@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------------
 # Generator module
 # These are general functions or convenience functions that can be used
-# by specific generators and other tools
+# by specific generators and other tools, or it may serve as an example.
 # ----------------------------------------------------------------------------
 
 """
@@ -15,10 +15,12 @@ VSC code-generation functions
 # 2. It uses jinja2 templating library to generate code or configuration
 #    according to given templates.
 
-import parser
 import anytree
+import getopt
 import jinja2
 import os
+import parser
+import sys
 
 # Set up Jinja
 jinja_env = jinja2.Environment(
@@ -51,9 +53,24 @@ def render_ast_with_template_file(ast : parser.AST, templatefile):
     r = anytree.Resolver()
     return get_template(templatefile).render({ 'root' : ast})
 
+# ---------- TEST / SIMPLE USAGE ------------
+
+def usage():
+    print("usage: generator.py <input-yaml-file (path)> <output-template-file (name only, not path)>")
+    sys.exit(1)
+
+def test(argv):
+    if not len(argv) == 3:
+        usage()
+    ast = parser.get_ast_from_file(argv[1])
+    print(render_ast_with_template_file(ast, argv[2]))
+
+# If run as a script, generate a single YAML file and single template 
+# (for testing)
+if __name__ == "__main__":
+    # execute only if run as a script
+    test(sys.argv)
+
 # TEST: Get AST representation of service, and render it with a simple
 # template
-ast = parser.get_ast_from_file('../seats-service.yml')
-print(render_ast_with_template_file(ast,'simple_overview.tpl'))
-
 
