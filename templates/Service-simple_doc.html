@@ -1,0 +1,44 @@
+<html>
+   <head>
+      <title>{{item.name}}</title>
+   </head>
+   <body>
+      <h1>Service overview for {{item.name}}</h1>
+      {% for i in item.interfaces %}
+         <h2>Methods</h2>
+         {% for x in i.methods %}
+            <p>
+            {{ i.name }} :: {{ x.name }}(
+            {% for a in x.in_arguments %}
+               {{ gen(a, Argument) }}
+            {% endfor %}
+            ) returns (
+            {% for a in x.out_arguments %}
+               {{ gen(a, Argument) }}
+            {% endfor %}
+            )
+            </p><p>
+            {% endfor %}
+            <h2>Commands</h2>
+            {% for x in i.commands %}
+               {{ i.name }} :: {{ x.name }}(
+               {% for a in x.in_arguments %}
+                  {{ gen(a, Argument) }}
+               {% endfor %}
+               )
+            </p><p>
+            {% endfor %}
+            <h2>Events</h2>
+            {% for x in i.events %}
+               EVENT {{ i.name }} :: {{ x.name }} (
+               {% for a in x.in_arguments %}
+                  {{ gen(a, Argument) }}
+               {% endfor %}
+               )
+            </p><p>
+            {% endfor %}
+         <b></b>
+      {% endfor %}
+   </body>
+</html>
+

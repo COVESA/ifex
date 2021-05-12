@@ -11,15 +11,17 @@ VSC code-generation functions
 # This performs the following related functions:
 
 # 1. As input we expect an AST as provided by the parser module
-# 
+#
 # 2. It uses jinja2 templating library to generate code or configuration
 #    according to given templates.
 
+# It's useful to have these classes in our namespace directly
+from parser import AST, Argument, Command, Method, Event, Interface, Member, Option, Type, Namespace, Datatypes, Service
+import parser # For other features from parser module
 import anytree
 import getopt
 import jinja2
 import os
-import parser
 import sys
 
 # Set up Jinja
@@ -28,10 +30,9 @@ jinja_env = jinja2.Environment(
         loader =
         jinja2.FileSystemLoader(os.path.dirname(os.path.realpath(__file__)) + '/../templates'),
 
-        # *IF* this might be used to generate HTML or XML
-        # then templates with this extension gets automatic autoescape,
-        # others should not.
-        autoescape = jinja2.select_autoescape(['html', 'xml'])
+        # Templates with these extension gets automatic autoescape for HTML
+        # It's more annoying for code generation, so passing empty list for now.
+        autoescape = jinja2.select_autoescape([])
         )
 
 # This is important. We want the control blocks in the template to NOT
@@ -42,16 +43,82 @@ jinja_env = jinja2.Environment(
 jinja_env.trim_blocks = True
 jinja_env.lstrip_blocks = True
 
+default_templates = {}
+
+# Exception:
+class GeneratorError(BaseException):
+   def __init__(self, m):
+       self.msg = m
+
+
+# ---------- GENERATION FUNCTIONS ------------
+
 # Get template with given name (search path should be handled by the loader)
 def get_template(filename):
     return jinja_env.get_template(filename)
 
-def render_dict_with_template_file(variables : dict, templatefile):
+# Frontend to overloaded gen() function:
+
+def gen(node : AST, second):
+
+   # This is a common error, let's make a better error message:
+   #print(f'type node is {type(node)}')
+   if type(node) == list or type(node) == tuple:
+      # Maybe we should allow this but for now it doesn't fit the model
+
+      # A list/tuple can have different object types in theory, but as a
+      # hint, capture the type of the first item:
+      if len(node) > 0 :
+          t = type(node[0])
+      else:
+          t = ""
+      raise GeneratorError(f'Wrong use of gen() function! You passed a list or tuple of objects ({type(node)}, with a {t} object(s) inside), but only single Nodes are allowed.  Try a loop construct inside the template.')
+
+   # OK, now dispatch gen() depending on the input type
+   if type(second) is type and issubclass(second, AST):
+       return _gen_type(node, second)
+   elif type(second) == str:
+       return _gen_tmpl(node, second)
+   else:
+      print(f'node is of type {type(node)}, second is of type {type(second)}  ({type(second).__class__}, {type(second).__class__.__name__})')
+      raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and a Type (must be AST subclass)  or template name as second argument. (You passed a {second.__name__})')
+
+# Implementation of typed variants of gen():
+
+# If type specified, use the default template for that type.  It must be
+# defined for this node type to use the function this way.
+def _gen_type(node : AST, nodetype : type):
+    tpl = default_templates.get(nodetype.__name__)
+    if tpl is None:
+       raise GeneratorError(f'gen() function called with node of type {nodetype.__name__} but no default template is defined for the type {nodetype.__name__}')
+    else:
+       return get_template(tpl).render({ 'item' : node})
+
+# If template name directly specified, just use it.
+def _gen_tmpl(node : AST, templatefile: str):
+    return get_template(templatefile).render({ 'item' : node})
+
+# Entry point for passing a dictionary of variables instead:
+def gen_dict_with_template_file(variables : dict, templatefile):
     return get_template(templatefile).render(variables)
 
-def render_ast_with_template_file(ast : parser.AST, templatefile):
-    r = anytree.Resolver()
-    return get_template(templatefile).render({ 'root' : ast})
+# Export the gen() function and classes into jinja template land
+# so that they can be referred to inside templates.
+
+jinja_env.globals.update(
+ gen=gen,
+ AST=AST,
+ Argument=Argument,
+ Command=Command,
+ Method=Method,
+ Event=Event,
+ Interface=Interface,
+ Member=Member,
+ Option=Option,
+ Type=Type,
+ Namespace=Namespace,
+ Datatypes=Datatypes,
+ Service=Service)
 
 # ---------- TEST / SIMPLE USAGE ------------
 
@@ -63,14 +130,17 @@ def test(argv):
     if not len(argv) == 3:
         usage()
     ast = parser.get_ast_from_file(argv[1])
-    print(render_ast_with_template_file(ast, argv[2]))
+    print(gen(ast, argv[2]))
 
-# If run as a script, generate a single YAML file and single template 
+# TEMP TEST TO BE MOVED
+default_templates = {
+        'Service' : 'Service-simple_doc.html',
+        'Argument' : 'Argument-simple_doc.html'
+        }
+
+# If run as a script, generate a single YAML file and single template
 # (for testing)
 if __name__ == "__main__":
     # execute only if run as a script
     test(sys.argv)
-
-# TEST: Get AST representation of service, and render it with a simple
-# template
 

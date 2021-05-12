@@ -1,7 +1,7 @@
 -----------------------------------------
 Header
 -----------------------------------------
-{% for s in root.children %}
+{% for s in item.children %}
    Servicename: {{ s.name }}
    -> {{ s.description }}
    {% for i in s.interfaces %}
