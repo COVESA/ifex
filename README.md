@@ -10,12 +10,6 @@ Try this:
 python model/generator.py seats-service.yml simple_overview.tpl
 ```
 
-WARNING::  Due to how jinja loads templates (without adding a custom
-loader, which has not been done):  The first argument is the *path* to the 
-YAML file, but the second argument is only the name of the template (which
-must be in [templates/ dir](templates).  Do not point to the full path of a template
-file in a different location.
-
 This example exercizes the parser to create the AST out of the YAML file
 and then prints out an overview using the template.
 
@@ -28,8 +22,6 @@ referencing each object's public member variables (see template
 
 # Writing a generator
 
-** !! NOTE: All of this is not yet implemented.  This is the planned interface !! **
-
 ## Simple Generator
 
 A simple generator (with only one template) can be done like this:
@@ -38,6 +30,22 @@ A simple generator (with only one template) can be done like this:
 * Get the Service description file (YAML), for example from command line argument
 * Get the Abstract Syntax Tree representation by calling `parser.get_ast_from_file(service_desc_file)`
 * Call `gen()` function in generator module, and pass the AST, and the name of a single template.
+* If needed, add any of your own custom logic (see also advanced usage for more information)
+
+Unless you need to add more logic, generating one input file with a single
+template is basically already available if generator.py is called as a main
+program:
+
+```
+python model/generator.py <service-description.yml> <jinja-template-name>
+```
+
+NOTE:  Due to how jinja loads templates (without adding a custom
+loader, which has not been done), the first argument is the *path* to the
+YAML file, but the second argument is only the name of the template (which
+must be in [templates/ dir](templates).  Pointing to the full path of a
+template file in a different location is not implemented in generator.py
+
 
 ## Advanced Generator
 
@@ -224,9 +232,9 @@ the existence of expected parts, but also pointing out anything that should
 **not** be there.
 - Clean up parser and generator to be reusable modules.  The intention is
 that those are helper libraries to be called from concrete generation tools.
-- Most likely, rework the generator, or provide a more advanced example
-generator that makes use of multiple templates (per node type) instead of
-only one.  For example, code that makes use of the namespaces, is likely to be
+- Implement multiple node types, as described above.
+- Make a more advanced generator example.
+For example, code that makes use of the namespaces, is likely to be
 more advanced (maybe).
 - Consider if there's a way to build the AST from a configuration data
 structure (reflecting the schema).  As of now it is done very 'directly' in
@@ -239,6 +247,10 @@ code.
 
 # Known bugs
 
+- There are some assumptions that each file contains only one service,
+and some functions might not yet support processing multiple files and
+services in one invocation.  This might need to be improved over time.
+
 - The names of items were used in defining the anytree location (path).  We
 usually set them to the "name:" value of the node from the YAML (but if name
 is not available it is set to the node type instead).  Is it required we
@@ -246,11 +258,11 @@ should allow the same name for objects, if they have different type?
 and the same level?
 
 ^^^ This is only relevant if using the anytree methods for navigating the
-tree.  The simple_overview template shows an example of how for simple
-cases it is often possible to just navigate the public members of the nodes
-without the anytree convenience methods.
+tree.  The simple_overview template shows that for simple cases it is just
+as convenient to got through the public members of the nodes without the
+anytree convenience methods.
 
-- Anytree path starts with two slashes, like //foo/bar.  Why?
-- I'm having problems when using anytree Resolver and get('/path/').
-Might be something wrong with the node naming still.
+- Anytree path now starts with two slashes, like //foo/bar.  Why?
+- I'm having problems when using anytree Resolver and get('//path/').
+There might be something wrong with the node naming.
 
