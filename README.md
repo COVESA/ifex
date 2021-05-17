@@ -171,9 +171,9 @@ just referencing it:  `item.interfaces`
 Dot notation can be chained as needed:
 `item.interfaces[1].methods[0].descripion` - the first method name in the
 second interface.
+...but of course it is more likely to use loop constructs to iterate over
+lists than to address specific indexes like that:
 
-But of course it is more likely to use loop constructs to iterate over it
-since the interfaces member is a list (of unknown length).
 ```
 {% for i in item.interfaces %}
    this is each interface name: {{ i.name }}
@@ -182,24 +182,11 @@ since the interfaces member is a list (of unknown length).
 
 # Advanced features
 
-jinja2 is a very capable and advanced templating language.  Advanced
-generators can of course make use of any features in python or jinja2 to
-create an advanced generator.  Any features that might be applicalbe in
-more than one place would however be best generalized and introduced into the
-generator.py helper modules, for better reuse.
-
-
-# Plans / next
-
-(Brainstorm)
-- Add a formal schema definition.  Probably via JSON-Schema.
-
-get to an iterable list of
-
-It is also possible to use jinja2 standard method which is to pass variables
-as a single dictionary of values mapping a variable name to its value.
-
-There may also be functions
+jinja2 is a very capable templating language.  Advanced generators can of
+course make use of any features in python or jinja2 to create an advanced
+generator.  Any features that might be applicable in more than one place would
+however be best generalized and introduced into the generator.py helper
+modules, for better reuse.
 
 ### Template example
 
@@ -223,46 +210,13 @@ to a separate template for Methods.
 {% endfor %}
 ```
 
-# Plans / next
+# Future plans, new proposals and enhancements
 
-(Brainstorm)
-- Add a formal schema definition.  Probably via JSON-Schema.
-- Validate input files in a step before the parsing step.  Including not only
-the existence of expected parts, but also pointing out anything that should
-**not** be there.
-- Clean up parser and generator to be reusable modules.  The intention is
-that those are helper libraries to be called from concrete generation tools.
-- Implement multiple node types, as described above.
-- Make a more advanced generator example.
-For example, code that makes use of the namespaces, is likely to be
-more advanced (maybe).
-- Consider if there's a way to build the AST from a configuration data
-structure (reflecting the schema).  As of now it is done very 'directly' in
-code.
-- Add templates (of course), for more advanced output format
-- (VSC model def) - decide more formally what is mandatory and optional
-  (for example some 'description:' should perhaps be mandatory, but not all)
-- (VSC model def) discuss Command/Method/Event if they are appropriately defined
-
+Please refer to [GitHub tickets](https://github.com/GENIVI/vsc-tools/issues)
+(Feel free to make a proposal or ask a question)
 
 # Known bugs
 
-- There are some assumptions that each file contains only one service,
-and some functions might not yet support processing multiple files and
-services in one invocation.  This might need to be improved over time.
-
-- The names of items were used in defining the anytree location (path).  We
-usually set them to the "name:" value of the node from the YAML (but if name
-is not available it is set to the node type instead).  Is it required we
-should allow the same name for objects, if they have different type?
-and the same level?
-
-^^^ This is only relevant if using the anytree methods for navigating the
-tree.  The simple_overview template shows that for simple cases it is just
-as convenient to got through the public members of the nodes without the
-anytree convenience methods.
-
-- Anytree path now starts with two slashes, like //foo/bar.  Why?
-- I'm having problems when using anytree Resolver and get('//path/').
-There might be something wrong with the node naming.
+Please refer to [GitHub tickets](https://github.com/GENIVI/vsc-tools/issues)
+with the label "bug"
 
