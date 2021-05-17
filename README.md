@@ -1,4 +1,13 @@
-# Work in progress
+# VSC-tools
+
+This repository includes tools related to the "VSC" interface/service
+description language.
+
+Primarily, it allows reading a service description and generating various
+types of output.  It uses the [Jinja2 templating language](https://jinja.palletsprojects.com) ([(alt. link)](https://jinja2docs.readthedocs.io/en/stable/))
+for most output definitions.
+
+# Work in progress...
 
 Work in progress!  For the moment, try:
 
@@ -10,7 +19,7 @@ Try this:
 python model/generator.py seats-service.yml simple_overview.tpl
 ```
 
-This example exercizes the parser to create the AST out of the YAML file
+This example exercises the parser to create the AST out of the YAML file
 and then prints out an overview using the template.
 
 ^^^ Edit the code if you want to try out other things.  This will soon be more
@@ -46,7 +55,6 @@ YAML file, but the second argument is only the name of the template (which
 must be in [templates/ dir](templates).  Pointing to the full path of a
 template file in a different location is not implemented in generator.py
 
-
 ## Advanced Generator
 
 An advanced generator (with several templates) can be done like this:
@@ -54,13 +62,15 @@ An advanced generator (with several templates) can be done like this:
 * Import the generator.py and parser.py modules
 * Get the needed Service description file(s) (YAML), for example from command line argument
 * For each file, get the Abstract Syntax Tree representation by calling `parser.get_ast_from_file(service_desc_file)`
-* Write templates according to (some, not all) node types.  You can call gen(node, <Nodetype>) from within a template - see details below.
+* Write templates according to (some, not all) node types.  You can call `gen(node, <Nodetype>)` from within a template - see details below.
 * Set the default_templates member variable in generator to configure which templates to use (see section below).
-* Implement the gen() function, normally by delegating directly into generator.gen(), but you can put your own logic here if needed.
-* Call the gen() function with the topmost node.  Store result in appropriate file.
-* Continue calling the gen() function with another node, and another template. Possibly store result in another file (for example, generating .c and .h header files from the same input)
+* Implement the `gen()` function, normally by delegating directly into `generator.gen()`, but you can put your own logic here if needed.
+* Call the `gen()`  function with the topmost node.  Store result in appropriate file.
+* Continue calling the `gen()` function with another node, and another template. Possibly store result in another file (for example, generating .c and .h header files from the same input)
 * ... implement any other required logic in the generator code, and/or with the advanced control options available in jinja2 templates.
-* (!) Remember to inject any globals (e.g. functions) into the jinja environment if these are referred by the templates.  See generator.py for example.
+
+* **NOTE!  Remember to inject any globals (e.g. functions) into the jinja environment if these are referred by the templates.**  See generator.py for example.
+You can also pass data into templates through other variables (see jinja2 documentation).
 
 ### Setting up default templates
 
@@ -73,14 +83,15 @@ up.
 generator.default_templates = {
    'AST' : 'AST-mystuff-toplevel.txt',
    'Service' : 'Service-mystuff.c',
-   'Type' :    'Type-mystuff-smart_type_mapper.c'
+   'Type' :    'Type-mystuff-smart_type_mapper.c',
    'Method' :  'Method-mystuff.c'
+}
 ```
 
 **NOTE:** It is not required to specify a separate template for every type.
 Very often, nodes can be generated directly from the parent template type.
-In fact, for simple cases, a single top-level template can be used for the
-whole code generation.
+For simple cases, a single top-level template might suffice for the whole 
+generation.
 
 ## The gen() function
 
