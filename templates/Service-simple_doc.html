@@ -9,31 +9,22 @@
          {% for x in i.methods %}
             <p>
             {{ i.name }} :: {{ x.name }}(
-            {% for a in x.in_arguments %}
-               {{ gen(a, Argument) }}
-            {% endfor %}
+            {{ gen(x.out_arguments, Argument)|join(', ') }}
             ) returns (
-            {% for a in x.out_arguments %}
-               {{ gen(a, Argument) }}
-            {% endfor %}
             )
             </p><p>
             {% endfor %}
             <h2>Commands</h2>
             {% for x in i.commands %}
                {{ i.name }} :: {{ x.name }}(
-               {% for a in x.in_arguments %}
-                  {{ gen(a, Argument) }}
-               {% endfor %}
+               {{ gen(x.in_arguments, Argument)|join(', ') }}
                )
             </p><p>
             {% endfor %}
             <h2>Events</h2>
             {% for x in i.events %}
                EVENT {{ i.name }} :: {{ x.name }} (
-               {% for a in x.in_arguments %}
-                  {{ gen(a, Argument) }}
-               {% endfor %}
+               {{ gen(x.in_arguments, Argument)|join(', ') }}
                )
             </p><p>
             {% endfor %}

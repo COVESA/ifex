@@ -61,18 +61,12 @@ def get_template(filename):
 
 def gen(node : AST, second):
 
-   # This is a common error, let's make a better error message:
-   #print(f'type node is {type(node)}')
+   # Processing of lists of objects
    if type(node) == list or type(node) == tuple:
-      # Maybe we should allow this but for now it doesn't fit the model
-
-      # A list/tuple can have different object types in theory, but as a
-      # hint, capture the type of the first item:
-      if len(node) > 0 :
-          t = type(node[0])
-      else:
-          t = ""
-      raise GeneratorError(f'Wrong use of gen() function! You passed a list or tuple of objects ({type(node)}, with a {t} object(s) inside), but only single Nodes are allowed.  Try a loop construct inside the template.')
+      # Generate each node and return a list of results.
+      # A list is not intended to be printed directly as output, but to be
+      # processed by a jinja filter, such as |join(', ')
+      return [gen(x, second) for x in node]
 
    # OK, now dispatch gen() depending on the input type
    if type(second) is type and issubclass(second, AST):
