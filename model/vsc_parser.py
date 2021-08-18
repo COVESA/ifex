@@ -249,8 +249,10 @@ def ast_Namespace(parent, yamltree) -> Namespace:
         return node
 
 def ast_Datatypes(parent, yamltree) -> Datatypes:
-        subtrees = get_yaml_value(yamltree, 'datatypes')
-        require_list(subtrees, 'datatypes')
+        subtrees = get_optional_yaml_value(yamltree, 'datatypes')
+
+        if subtrees is None:
+            return []
 
         nodes = []
         for st in subtrees:
