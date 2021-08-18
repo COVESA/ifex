@@ -16,8 +16,8 @@ VSC code-generation functions
 #    according to given templates.
 
 # It's useful to have these classes in our namespace directly
-from parser import AST, Argument, Command, Method, Event, Interface, Member, Option, Type, Namespace, Datatypes, Service
-import parser # For other features from parser module
+from vsc_parser import AST, Argument, Command, Method, Event, Interface, Member, Option, Type, Namespace, Datatypes, Service
+import vsc_parser # For other features from parser module
 import anytree
 import getopt
 import jinja2
@@ -123,7 +123,7 @@ def usage():
 def test(argv):
     if not len(argv) == 3:
         usage()
-    ast = parser.get_ast_from_file(argv[1])
+    ast = vsc_parser.get_ast_from_file(argv[1])
     print(gen(ast, argv[2]))
 
 # TEMP TEST TO BE MOVED

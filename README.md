@@ -12,11 +12,11 @@ for most output definitions.
 Work in progress!  For the moment, try:
 
 ```
-usage: generator.py <input-yaml-file (path)> <output-template-file (name only, not path)>
+usage: vsc_generator.py <input-yaml-file (path)> <output-template-file (name only, not path)>
 ```
 Try this:
 ```
-python model/generator.py seats-service.yml simple_overview.tpl
+python model/vsc_generator.py seats-service.yml simple_overview.tpl
 ```
 
 This example exercises the parser to create the AST out of the YAML file
@@ -35,33 +35,33 @@ referencing each object's public member variables (see template
 
 A simple generator (with only one template) can be done like this:
 
-* Import the generator.py and parser.py modules
+* Import the vsc_generator.py and vsc_parser.py modules
 * Get the Service description file (YAML), for example from command line argument
-* Get the Abstract Syntax Tree representation by calling `parser.get_ast_from_file(service_desc_file)`
+* Get the Abstract Syntax Tree representation by calling `vsc_parser.get_ast_from_file(service_desc_file)`
 * Call `gen()` function in generator module, and pass the AST, and the name of a single template.
 * If needed, add any of your own custom logic (see also advanced usage for more information)
 
 Unless you need to add more logic, generating one input file with a single
-template is basically already available if generator.py is called as a main
+template is basically already available if vsc_generator.py is called as a main
 program:
 
 ```
-python model/generator.py <service-description.yml> <jinja-template-name>
+python model/vsc_generator.py <service-description.yml> <jinja-template-name>
 ```
 
 NOTE:  Due to how jinja loads templates (without adding a custom
 loader, which has not been done), the first argument is the *path* to the
 YAML file, but the second argument is only the name of the template (which
 must be in [templates/ dir](templates).  Pointing to the full path of a
-template file in a different location is not implemented in generator.py
+template file in a different location is not implemented in vsc_generator.py
 
 ## Advanced Generator
 
 An advanced generator (with several templates) can be done like this:
 
-* Import the generator.py and parser.py modules
+* Import the vsc_generator.py and vsc_parser.py modules
 * Get the needed Service description file(s) (YAML), for example from command line argument
-* For each file, get the Abstract Syntax Tree representation by calling `parser.get_ast_from_file(service_desc_file)`
+* For each file, get the Abstract Syntax Tree representation by calling `vsc_parser.get_ast_from_file(service_desc_file)`
 * Write templates according to (some, not all) node types.  You can call `gen(node, <Nodetype>)` from within a template - see details below.
 * Set the default_templates member variable in generator to configure which templates to use (see section below).
 * Implement the `gen()` function, normally by delegating directly into `generator.gen()`, but you can put your own logic here if needed.
@@ -69,7 +69,7 @@ An advanced generator (with several templates) can be done like this:
 * Continue calling the `gen()` function with another node, and another template. Possibly store result in another file (for example, generating .c and .h header files from the same input)
 * ... implement any other required logic in the generator code, and/or with the advanced control options available in jinja2 templates.
 
-* **NOTE!  Remember to inject any globals (e.g. functions) into the jinja environment if these are referred by the templates.**  See generator.py for example.
+* **NOTE!  Remember to inject any globals (e.g. functions) into the jinja environment if these are referred by the templates.**  See vsc_generator.py for example.
 You can also pass data into templates through other variables (see jinja2 documentation).
 
 ### Setting up default templates
@@ -120,7 +120,7 @@ example use:
 
 ```
 nodetype shall be the exact *class name*, i.e. any subclass of the AST class
-(see parser.py)
+(see vsc_parser.py)
 
 
 2. Alternative usage which overrides the default template.  In this case, the node type is not required.
@@ -164,7 +164,7 @@ Service-rust.rs
 
 ### Variable use in templates
 
-* The standard functions in generator.py will pass in only a single node
+* The standard functions in vsc_generator.py will pass in only a single node
 of AST type to the template generation framework.  The node will be of a
 particular type, depending on what type of template is being rendered
 (or more correctly, what was specified when the generation function was called
@@ -196,7 +196,7 @@ lists than to address specific indexes like that:
 jinja2 is a very capable templating language.  Advanced generators can of
 course make use of any features in python or jinja2 to create an advanced
 generator.  Any features that might be applicable in more than one place would
-however be best generalized and introduced into the generator.py helper
+however be best generalized and introduced into the vsc_generator.py helper
 modules, for better reuse.
 
 ### Template example
