@@ -1,3 +1,3 @@
 {% for x in item.children: %}
-{{ gen(x, Service) }}
+{{ gen(x) }}
 {% endfor %}

@@ -59,32 +59,34 @@ def get_template(filename):
 
 # Frontend to overloaded gen() function:
 
-def gen(node : AST, second):
+def gen(node : AST, second = None):
 
    # Processing of lists of objects
    if type(node) == list or type(node) == tuple:
-      # Generate each node and return a list of results.
-      # A list is not intended to be printed directly as output, but to be
-      # processed by a jinja filter, such as |join(', ')
-      return [gen(x, second) for x in node]
+       # Generate each node and return a list of results.
+       # A list is not intended to be printed directly as output, but to be
+       # processed by a jinja filter, such as |join(', ')
+       return [gen(x, second) for x in node]
 
    # OK, now dispatch gen() depending on the input type
-   if type(second) is type and issubclass(second, AST):
-       return _gen_type(node, second)
-   elif type(second) == str:
+   if second is None:          # No explicit template -> use default for the node type
+       return _gen_type(node)
+   elif type(second) == str:   # Explicit template -> use it
        return _gen_tmpl(node, second)
    else:
-      print(f'node is of type {type(node)}, second is of type {type(second)}  ({type(second).__class__}, {type(second).__class__.__name__})')
-      raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and a Type (must be AST subclass)  or template name as second argument. (You passed a {second.__name__})')
+      print(f'node is of type {type(node)}, second arg is of type {type(second)}  ({type(second).__class__}, {type(second).__class__.__name__})')
+      raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {second.__name__})')
 
 # Implementation of typed variants of gen():
 
-# If type specified, use the default template for that type.  It must be
-# defined for this node type to use the function this way.
-def _gen_type(node : AST, nodetype : type):
-    tpl = default_templates.get(nodetype.__name__)
+# If no template is specified, use the default template for the node type.
+# A default template must be defined for this node type to use the function
+# this way.
+def _gen_type(node : AST):
+    nodetype=type(node).__name__
+    tpl = default_templates.get(nodetype)
     if tpl is None:
-       raise GeneratorError(f'gen() function called with node of type {nodetype.__name__} but no default template is defined for the type {nodetype.__name__}')
+       raise GeneratorError(f'gen() function called with node of type {nodetype} but no default template is defined for the type {nodetype}')
     else:
        return get_template(tpl).render({ 'item' : node})
 

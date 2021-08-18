@@ -9,7 +9,7 @@
          {% for x in i.methods %}
             <p>
             {{ i.name }} :: {{ x.name }}(
-            {{ gen(x.out_arguments, Argument)|join(', ') }}
+            {{ gen(x.out_arguments)|join(', ') }}
             ) returns (
             )
             </p><p>
@@ -17,14 +17,14 @@
             <h2>Commands</h2>
             {% for x in i.commands %}
                {{ i.name }} :: {{ x.name }}(
-               {{ gen(x.in_arguments, Argument)|join(', ') }}
+               {{ gen(x.in_arguments)|join(', ') }}
                )
             </p><p>
             {% endfor %}
             <h2>Events</h2>
             {% for x in i.events %}
                EVENT {{ i.name }} :: {{ x.name }} (
-               {{ gen(x.in_arguments, Argument)|join(', ') }}
+               {{ gen(x.in_arguments)|join(', ') }}
                )
             </p><p>
             {% endfor %}
