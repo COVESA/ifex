@@ -94,6 +94,23 @@ def _gen_type(node : AST):
 def _gen_tmpl(node : AST, templatefile: str):
     return get_template(templatefile).render({ 'item' : node})
 
+#  Alternative functions, for unit testing
+
+# Instead of providing a template file, provide the template text itself
+# (for unit tests mostly).  See gen() for more comments/explanation.
+def _gen_with_text_template(node: AST, second: str):
+   # Processing of lists of objects, see gen() for explanation
+   if type(node) == list or type(node) == tuple:
+      return [_gen_with_text_template(x, second) for x in node]
+   if second is None:
+       return _gen_type(node)
+   elif type(second) == str:  # "second" is here the template text, not a filename
+       return jinja2.Template(second).render({'item' : node})
+   else:
+      print(f'node is of type {type(node)}, second arg is of type {type(second)}  ({type(second).__class__}, {type(second).__class__.__name__})')
+      raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {second.__name__})')
+
+
 # Entry point for passing a dictionary of variables instead:
 def gen_dict_with_template_file(variables : dict, templatefile):
     return get_template(templatefile).render(variables)

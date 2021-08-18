@@ -7,14 +7,15 @@ Primarily, it allows reading a service description and generating various
 types of output.  It uses the [Jinja2 templating language](https://jinja.palletsprojects.com) ([(alt. link)](https://jinja2docs.readthedocs.io/en/stable/))
 for most output definitions.
 
-# Work in progress...
+# Testing it out
 
-Work in progress!  For the moment, try:
+Work in progress!  This is the usage pattern:
 
 ```
 usage: vsc_generator.py <input-yaml-file (path)> <output-template-file (name only, not path)>
 ```
-Try this:
+
+For the moment, try this:
 ```
 python model/vsc_generator.py seats-service.yml simple_overview.tpl
 ```
@@ -28,6 +29,18 @@ flexible of course.
 Looking at the jinja2 template shows how to traverse it directly by
 referencing each object's public member variables (see template
 [simple_overview.tpl](templates/simple_overview.tpl)).
+
+# Unit Tests
+
+The project uses pytest to define unit tests.  In the tests directory is a
+simple starting point.  More can be added.
+
+To run tests, just run pytest but make sure it is from within the tests
+directory:
+```
+cd tests
+pytest -v
+```
 
 # Writing a generator
 

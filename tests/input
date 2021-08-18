@@ -1,0 +1,6 @@
+service:
+  name: named_service
+  description: This is it.
+  interfaces:
+    - name: if
+      description: none
