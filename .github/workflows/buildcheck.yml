@@ -1,0 +1,28 @@
+name: Run Unit Tests
+
+on: [push, pull_request]
+
+jobs:
+  buildtest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          python -V
+          pip install pyyaml
+          pip install pytest
+          pip install anytree
+          pip install jinja2
+
+      - name: Run unit test
+        run: |
+          cd tests
+          pytest
+
