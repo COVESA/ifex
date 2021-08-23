@@ -116,27 +116,22 @@ required work for generating a certain node type within a larger generation.
 without the need for template-include or template-inheritance features, but
 those features in jinja2 are still available if they are needed.
 
-gen() is an overloaded function that can be called in two ways. (Of course,
-python does not directly support overloading, except through tricks like the
-module named multipledispatch and decorators).  But with dynamic types and
-evaluating the passed parameters in run-time it is possible to get this
-effect. So just consider gen() to have two alternative function signatures as
-follows:
+gen() can be called with just the node (evaluating the passed parameter type at run-time)
+or by explicitly stating a template:
 
-1. Specifying the data type (node type) which can be any named subclass to the AST node type.  I.e. nodetype is the _class name_, not the node itself
-This usage will use whatever default template was set up for that node type:
+1. Providing the node reference only.
 ```
-def gen(node : AST, nodetype)
+def gen(node : AST)
 example use:
  gen(node, Method)
  gen(anothernode, Type)
 
 ```
-nodetype shall be the exact *class name*, i.e. any subclass of the AST class
-(see vsc_parser.py)
+This variant will dynamically determine the node type (a subclass of AST)
+and generate using the predetermined template for that node type.
 
-
-2. Alternative usage which overrides the default template.  In this case, the node type is not required.
+2. Providing the node and a specific template.  The default template for the
+   node type is not used. The specified template is used instead.
 ```
 def gen(node : AST, templatename : str)
 example use:
