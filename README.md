@@ -75,11 +75,11 @@ An advanced generator (with several templates) can be done like this:
 * Import the vsc_generator.py and vsc_parser.py modules
 * Get the needed Service description file(s) (YAML), for example from command line argument
 * For each file, get the Abstract Syntax Tree representation by calling `vsc_parser.get_ast_from_file(service_desc_file)`
-* Write templates according to (some, not all) node types.  You can call `gen(node, <Nodetype>)` from within a template - see details below.
+* Write templates according to (some, not all) node types.  You can call `gen(node)` or `gen(node, <Template>)` from within a template - see details below.
 * Set the default_templates member variable in generator to configure which templates to use (see section below).
-* Implement the `gen()` function, normally by delegating directly into `generator.gen()`, but you can put your own logic here if needed.
+* Implement the `gen()` function, normally by delegating directly into `vsc_generator.gen()`, but you can put your own logic here if needed.
 * Call the `gen()`  function with the topmost node.  Store result in appropriate file.
-* Continue calling the `gen()` function with another node, and another template. Possibly store result in another file (for example, generating .c and .h header files from the same input)
+* Continue calling the `gen()` function with another node, and another template for another file (for example, generating .c and .h header files from the same input)
 * ... implement any other required logic in the generator code, and/or with the advanced control options available in jinja2 templates.
 
 * **NOTE!  Remember to inject any globals (e.g. functions) into the jinja environment if these are referred by the templates.**  See vsc_generator.py for example.
@@ -113,8 +113,8 @@ The gen() function has a short name to be convenient in templates.
 You can call the gen() function from within a template to delegate the
 required work for generating a certain node type within a larger generation.
 (See Template example).  Thus the templates can effectively "call" each other,
-without the need for template-include or template-inheritance features from
-jinja library (possible use for these in the future?)
+without the need for template-include or template-inheritance features, but
+those features in jinja2 are still available if they are needed.
 
 gen() is an overloaded function that can be called in two ways. (Of course,
 python does not directly support overloading, except through tricks like the
