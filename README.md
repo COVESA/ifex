@@ -126,8 +126,7 @@ or by explicitly stating a template:
 ```
 def gen(node : AST)
 example use:
- gen(node, Method)
- gen(anothernode, Type)
+ gen(node)
 
 ```
 This variant will dynamically determine the node type (a subclass of AST)
@@ -228,7 +227,7 @@ to a separate template for Methods.
 // namespace: {{ i.name }}
 // {{ i.description }}
 {% for x in i.methods %}
-  {{ gen(Method, x) }}     <- delegate work to a separate template for Methods
+  {{ gen(x) }}     <- delegate work to a separate template for Methods
 {% endfor %}
 {% endfor %}
 ```
