@@ -29,7 +29,7 @@ VSC parser/reader to be used by generators and other tools
 #    and report if certain conditions are not met.  It does not check all
 #    possible rules however, and would be well complimented by a schema
 #    checker.
-
+from __future__ import annotations
 import yaml
 import anytree
 
