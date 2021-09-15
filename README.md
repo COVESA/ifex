@@ -7,8 +7,58 @@ Primarily, it allows reading a service description and generating various
 types of output.  It uses the [Jinja2 templating language](https://jinja.palletsprojects.com) ([(alt. link)](https://jinja2docs.readthedocs.io/en/stable/))
 for most output definitions.
 
-# Testing it out
+## Getting started
 
+### Prerequisites
+* Python 3.8 installed
+* If the installation (pip install) is executed behind a (corporate) proxy, the following environments variables must be set: `http_proxy` and `https_proxy` (including authentication e.g., `http://${proxy_username):$(proxy_password)@yourproxy.yourdomain`)
+* If you do not run with administration rights, you may need to configure pip target path to write to your user home directory or consider [using the `pipenv` method](#setup-with-pipenv).
+
+```
+On Unix and Mac OS X the configuration file is: $HOME/.pip/pip.conf
+If the file does not exist, create an empty file with that name.
+
+Add or replace the following lines:
+[global]
+target=/somedir/where/your/account/can/write/to
+
+On Windows, the configuration file is: %HOME%\pip\pip.ini
+If the file does not exist, create an empty file with that name.
+
+Add or replace the following lines:
+[global]
+target=C:\SomeDir\Where\Your\Account\Can\Write\To
+```
+### Project Setup
+
+* If you use a custom pip installation directory, set the `PYTHONPATH` environment variable to the directory that you set in the `pip.ini` file.
+
+### Setup with `pipenv`
+[pipenv](https://pypi.org/project/pipenv/) is a tool that manages a virtual environment and install the package and its dependencies, making the process much simpler and predictable, since the `Pipfile` states the dependencies, while `Pipfile.lock` freezes the exact version in use.
+
+If [`pyenv` shell command](https://github.com/pyenv/pyenv) is not installed, use its [installer](https://github.com/pyenv/pyenv-installer) to get it:
+
+```sh
+curl https://pyenv.run | bash  # download and install
+exec $SHELL                    # restart your shell using the new $PATH
+```
+
+Make sure Python version 3.8.5 is installed:
+```sh
+pyenv install 3.8.5  # install the versions required by Pipfile
+```
+
+Install this project and its dependencies in the local `.venv` folder in this project, then use it (`pipenv shell`):
+```sh
+export PIPENV_VENV_IN_PROJECT=1 # will create a local `.venv` in the project, otherwise uses global location
+pipenv install --dev # install the development dependencies as well
+pipenv shell         # starts a shell configured to use the virtual environment
+```
+
+### Setup using plain `pip install`
+* Run  ```pip install -r requirements.txt```  from the vss-tools project root directory
+
+## Testing it out
 Work in progress!  This is the usage pattern:
 
 ```
