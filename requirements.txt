@@ -1,0 +1,4 @@
+anytree>=2.8.0
+Jinja2>=3.0.0
+pytest>=2.7.2
+PyYAML>=5.4.1

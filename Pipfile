@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pyyaml = ">=5.1"
+anytree = ">=2.8.0"
+jinja2 = ">=3.0.0"
+pytest = ">=2.7.2"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
