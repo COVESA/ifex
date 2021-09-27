@@ -1,0 +1,291 @@
+#
+# Copyright 2020, Jaguar Land Rover,
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+
+# Namespace
+#
+#  A namespace is a collection of datatypes, methods, properties,
+#  events, and other namespaces.
+#
+#
+# TODO:
+# + Define error semantics for methods to align with FrancaIDL
+#
+# + Add array arguments.
+#
+# + How do we import namespaces, datatypes, etc from other service files?
+#   Importing datatypes used by multiple services make sense, but it
+#   will put a strain on the build pipeline since we now will have to
+#   search for and assemble a library of interdependent services.
+#
+#
+
+---
+name: comfort
+major-version: 2
+minor-version: 1
+description: A collection of interfaces pertaining to cabin comfort.
+
+# Include another VSC file into the current "comfort" namespace
+#
+includes:
+  -  description: Include all error codes used by this namespace
+     file: global-errors.yml
+
+# Create a separate namespace for movement-related datatypes and methods.
+# We can create additional namespaces for HVAC, ambient lighting, etc.
+#
+namespaces:
+  - name: seats
+    description: Seat interface and datatypes.
+    
+    # Defines all structs hosted by the `seats` namespace.
+    # Standard structs can be defind, using either native types, typedefs,
+    # or other (nested) structs.
+    #
+    structs:
+      #
+      # Position of seat
+      #
+      - name: position_t
+        description: |
+          The position of the entire seat
+        members:
+          - name: base
+            datatype: movement_t
+            description: |
+              The position of the base 0 front, 1000 back
+          - name: cushion
+            datatype: movement_t
+            description: |
+              The position of the cushion 0 short, 1000 long
+          - name: lumbar
+            datatype: movement_t
+            description: |
+              The position of the lumbar support
+          - name: side_bolster
+            datatype: movement_t
+            description: |
+              The position of the side bolster
+          - name: head_restraint
+            datatype: movement_t
+            description: |
+              The position of the head restraint 0 down, 1000 up
+
+      #
+      # Seat location
+      #
+      - name: seat_location_t
+        description: |
+          The location of the seat in the vehicle
+        members:
+          - name: row
+            datatype: uint8
+            description: |
+              The row, front 0 and +1 toward rear
+          - name: index
+            datatype: uint8
+            description: |
+              The index within the row, 0 left most, +1 toward right
+
+
+      - name: seat_t
+        type: struct
+        description: |
+          The structure used to describe the seat's position in the vehicle
+
+        members:
+          - name: location
+            datatype: seat_location_t
+            description: |
+              The location of the seat in the vehicle
+
+          - name: position
+            datatype: position_t
+            description: |
+              The various positions of the seat
+
+
+    # Typedefs
+    #
+    # Standard redefinition of native types are supported.
+    # Min/max intervals can be optionally specified
+    #
+    typedefs:
+      - name: movement_t
+        datatype: int16
+        min: -1000
+        max: 1000
+        description: |
+          The movement of a seat component
+
+
+      # We can also redefine an existing type,
+      # effectively giving it a new name.
+      - name: relative_movement_t
+        datatype: movement_t
+
+
+    enumerations:
+      # Enums
+      #
+      #  TODO:
+      #  + Decide if we need to move enum_type (uint8) to a separate deployment
+      #    file, one per target (python, C++, etc).
+      #    The upside is a cleaner, more service-oriented catalog.
+      #    The downside is it inter-target operability is harder to
+      #    define an over-the-wire payload format since one target
+      #    can define uint16_t while another has uint8_t.
+      #
+      - name: seat_component_t
+        datatype: uint8  # Should probably be moved to deployment file
+        options:
+          - name: base
+            value: 0
+          - name: cushion
+            value: 1
+          - name: lumbar
+            value: 2
+          - name: side_bolster
+            value: 3
+          - name: head_restraint
+            value: 4
+
+    # METHODS
+    #
+    # This section defines all methods for the given namespace.
+    #
+    # A method invokes a command for a given service that may optionally
+    # return a value.
+    #
+    # Only one service instance will execute a call. The service discovery
+    # and invocation mechanism is up to the implementation to resolve (possibly
+    # with the help of deployment files).
+    #
+    methods:
+      - name: move
+        description: |
+          Set the desired seat position
+
+        in: # TODO FYI: Gunnar
+          - name: seat
+            description: |
+              The desired seat position
+            datatype: movement.seat_t
+
+      - name: move_component
+        description: |
+          Set a seat component position
+
+        # Arguments
+        #
+        #  Argument can be of any native type, enum, struct, or typedef.
+        #
+        in:
+          - name: seat
+            description: |
+              The seat location to change
+            datatype: movement.seat_location_t
+          - name: component
+            description: |
+              The component position to change
+            datatype: movement.seat_component_t
+          - name: position
+            description: |
+              The desired position to move the component to
+            datatype: movement.movement_t
+
+      - name: current_position
+        description: |
+          Get the current position of the seat
+
+        in:
+          - name: row
+            description: |
+              The desired seat to row query
+            datatype: uint8
+          - name: index
+            description: |
+              The desired seat index to query
+            datatype: uint8
+
+        out:
+          - name: seat
+            description: |
+              The seat state that was requested
+            datatype: movement.seat_t
+
+    # EVENTS
+    #
+    # This section defines all events for the given namespace.
+    #
+    # Events are non-returning commands with multiple subscribers,
+    # much like SOME/IP events.
+    # Unlike signals an event retains no state (value) after it has
+    # been called; once it has been sent it is forgotten.
+    #
+    # TODO:
+    # + FrancaIDL may lack semantics to cover this. We need to
+    #   create appropriate transformation rules.
+    #
+    events:
+      - name: seat_moving
+        description: |
+          The event of a seat beginning movement
+        in:
+          - name: status
+            description: |
+              The movement status, moving (1), not moving (0)
+            datatype: uint8
+          - name: row
+            description: |
+              The row of the seat
+            datatype: uint8
+          - name: index
+            description: |
+              The index of the seat position in the row
+            datatype: uint8
+          - name: component
+            description: |
+              The seat component that is moving
+            datatype: movement.seat_component_t
+
+      - name: passenger_present
+        description: |
+          When the seat passenger status changes
+        in:
+          - name: status
+            description: |
+              The status of seat passenger, passenger (1), no passenger (0)
+            datatype: boolean
+          - name: row
+            description: |
+              The row of the seat
+            datatype: uint8
+          - name: index
+            description: |
+              The index of the seat position in the row
+            datatype: uint8
+
+
+    # PROPERTIES
+    #
+    # This section defines properties for the given namespace.
+    #
+    # Properties are service data elements that are distributed
+    # across one or more subscribers. They are equivalent to
+    # MQTT topics or SOME/IP fields.
+    #
+    # TODO: Define relationship, rules, and semantics
+    #       between properties and VSS signals.
+    #       See vss_integration_proposal.yml for one solution.
+    #
+    properties:
+      - name: a_property # Will this be acceptable?
+        description: A signal
+        type: attribute # or sensor.
+        datatype: uint8 # Native datatypes only?

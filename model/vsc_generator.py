@@ -16,7 +16,7 @@ VSC code-generation functions
 #    according to given templates.
 
 # It's useful to have these classes in our namespace directly
-from vsc_parser import AST, Argument, Command, Method, Event, Interface, Member, Option, Type, Namespace, Datatypes, Service
+from vsc_parser import AST, Argument, Method, Event, Member, Option, Namespace, Service
 import vsc_parser # For other features from parser module
 import anytree
 import getopt
@@ -122,15 +122,11 @@ jinja_env.globals.update(
  gen=gen,
  AST=AST,
  Argument=Argument,
- Command=Command,
  Method=Method,
  Event=Event,
- Interface=Interface,
  Member=Member,
  Option=Option,
- Type=Type,
  Namespace=Namespace,
- Datatypes=Datatypes,
  Service=Service)
 
 # ---------- TEST / SIMPLE USAGE ------------

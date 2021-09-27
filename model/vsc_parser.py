@@ -17,7 +17,7 @@ VSC parser/reader to be used by generators and other tools
 #
 # 2. Go through the tree and create a linked tree of Nodes (instances of
 #    typed classes).  Each node gets a more specific type than
-#    dict/list/string which can be used to evalute the tree contents later.
+#    dict/list/string which can be used to evaluate the tree contents later.
 #    In most parsers, this is referred to an Abstract Syntax Tree (AST)
 #    representation of the program.
 #    The nodes are also inheriting functionality from the base Node type of
@@ -59,11 +59,6 @@ class Argument(AST):  # for in_arguments and out_arguments
    description: str
    type: str
 
-class Command(AST):
-   name: str
-   description: str
-   in_arguments: list[Argument]
-
 class Method(AST):
    name: str
    description: str
@@ -75,50 +70,55 @@ class Event(AST):  # Note: Event details are TBC
    description: str
    in_arguments: list[Argument]
 
-class Interface(AST):
+class Property(AST):
    name: str
    description: str
-   commands: list[Command]
-   methods: list[Method]
-   events: list [Event]  # TBC
+   type: str
+   datatype:str
 
 class Member(AST):
    name: str
-   type: str
+   datatype: str
    description: str
 
 class Option(AST):
    name: str
    value: str
 
-class Type(AST):
+class Struct(AST):
    name: str
-   type: str
-   min: str                 # only makes sense for number types
-   max: str                 # ---------- " -----------
    description: str
-   enum_type: str           # used only if a enum_type
-   options: list[Option]    # ---------- " -----------
+   members: list[Member]
 
-   members: list[Member]    # used only if a struct type
+
+class Typedef(AST):
+   name: str
+   datatype: str
+   description: str
+   min: str
+   max: str
+
+class Enum(AST):
+   name: str
+   datatype: str
+   description: str
+   options: list[Option]
+   members: list[Member]
 
 class Namespace(AST):
+   name: str
    description: str
-   types: list[Type]
-
-# FIXME  This node type might be superfluous since it has only one member?
-# All other nodes have more than one member, or the list of [X] is simply
-# directly listed in the parent node type.  In this case datatypes always
-# are made up of a list of namespaces, so it seems that's an unnecessary
-# step?
-class Datatypes(AST):
-   namespaces: list[Namespace]
+   structs: list[Struct]
+   typedefs: list[Typedef]
+   enums: list[Enum]
+   methods: list[Method]
+   events: list[Event]
+   properties: list[Property]
 
 class Service(AST):
    name: str
    description: str
-   datatypes: Datatypes        # or list[Namespace] see above
-   interfaces: list[Interface]
+   namespaces: list[Namespace]
 
 # ----------------------------------------------------------------------------
 # YAML reading
@@ -223,75 +223,104 @@ def require_list(yaml, parent_name : str):
     if not isinstance(yaml, list):
         ASTNodeError(f"Expected a list of command objects under {parent_name}, not just a single. If there is only one, specify a list, but with one object only")
 
-def ast_Types(parent, yamltree) -> Type:
-    subtrees = get_yaml_value(yamltree, 'types')
-    require_list(subtrees, 'types')
+def ast_Structs(parent, yamltree) -> Structs:
+    
+    subtrees = get_optional_yaml_value(yamltree, 'structs')
+
+    if subtrees is None:
+        return []
 
     nodes = []
     for st in subtrees:
-        node = Type(get_yaml_value(st, 'name'), parent)
-        node.type = get_yaml_value(st, 'type')
+        node = Struct(get_yaml_value(st, 'name'), parent)
         node.description = get_recommended_yaml_value(st, 'description')
+        # For structs
+        node.members = ast_Members(node, st, 'members')
+        nodes.append(node)
 
-        # Some conditionals might be here.  E.g. only if type integer
-        # does it make sense to fetch min/max?
+    return nodes
+
+
+def ast_Typedefs(parent, yamltree) -> Typedefs:
+    
+    subtrees = get_optional_yaml_value(yamltree, 'typedefs')
+
+    if subtrees is None:
+        return []
+
+    nodes = []
+    for st in subtrees:
+        node = Typedef(get_yaml_value(st, 'name'), parent)
+        node.description = get_recommended_yaml_value(st, 'description')
+        node.datatype = get_yaml_value(st, 'datatype')
         node.min = get_optional_yaml_value(st, 'min')
         node.max = get_optional_yaml_value(st, 'max')
         nodes.append(node)
 
     return nodes
 
-def ast_Namespace(parent, yamltree) -> Namespace:
-        name = get_yaml_value(yamltree, 'namespace')
-        node = Namespace(name, parent)
-        node.description = get_yaml_value(yamltree, 'description')
-        node.types = ast_Types(node, yamltree)
-        return node
 
-def ast_Datatypes(parent, yamltree) -> Datatypes:
-        subtrees = get_optional_yaml_value(yamltree, 'datatypes')
+def ast_Enums(parent, yamltree) -> Enums:
+    
+    subtrees = get_optional_yaml_value(yamltree, 'enumerations')
 
-        if subtrees is None:
-            return []
+    if subtrees is None:
+        return []
 
-        nodes = []
-        for st in subtrees:
-            # There is no name for this type of node, so just use 'datatypes'
-            node = Datatypes('datatypes', parent)
-            node.namespaces = ast_Namespace(node, st)
-            nodes.append(node)
+    nodes = []
+    for st in subtrees:
+        node = Struct(get_yaml_value(st, 'name'), parent)
+        node.description = get_recommended_yaml_value(st, 'description')
+        node.datatype = get_yaml_value(st, 'datatype')
+        node.options = ast_Options(node, st, 'options')
+        nodes.append(node)
 
-        return nodes
+    return nodes
 
 def ast_Arguments(parent, yamltree, argtype = 'in_arguments') -> list[Argument]:
-    subtrees = get_yaml_value(yamltree, argtype)
+    subtrees = get_optional_yaml_value(yamltree, argtype)
+    if subtrees is None:
+        return []
     require_list(subtrees, f'{argtype}')
 
     nodes = []
     for st in subtrees:
         node = Argument(get_yaml_value(st, 'name'), parent)
         node.description = get_yaml_value(st, 'description')
-        node.type = get_yaml_value(st, 'type')
+        node.type = get_yaml_value(st, 'datatype')
         nodes.append(node)
 
     return nodes
 
-def ast_Commands(parent, yamltree) -> list[Command]:
-    subtrees = get_optional_yaml_value(yamltree, 'commands')
-
-    # (Optional)
+def ast_Members(parent, yamltree, argtype = 'members') -> list[Member]:
+    subtrees = get_optional_yaml_value(yamltree, argtype)
     if subtrees is None:
-       return None
-    require_list(subtrees, 'commands')
+        return []
+    require_list(subtrees, f'{argtype}')
 
     nodes = []
     for st in subtrees:
-        node = Command(get_yaml_value(st, 'name'), parent)
+        node = Member(get_yaml_value(st, 'name'), parent)
         node.description = get_yaml_value(st, 'description')
-        node.in_arguments = ast_Arguments(node, st, 'in_arguments')
+        node.type = get_yaml_value(st, 'datatype')
         nodes.append(node)
 
     return nodes
+
+def ast_Options(parent, yamltree, argtype = 'options') -> list[Member]:
+    subtrees = get_optional_yaml_value(yamltree, argtype)
+    if subtrees is None:
+        return []
+    require_list(subtrees, f'{argtype}')
+
+    nodes = []
+    for st in subtrees:
+        node = Option(get_yaml_value(st, 'name'), parent)
+        node.value = get_yaml_value(st, 'value')
+        nodes.append(node)
+
+    return nodes
+
 
 def ast_Methods(parent, yamltree) -> list[Method]:
     subtrees = get_optional_yaml_value(yamltree, 'methods')
@@ -303,10 +332,10 @@ def ast_Methods(parent, yamltree) -> list[Method]:
 
     nodes = []
     for st in subtrees:
-        node = Command(get_yaml_value(st, 'name'), parent)
+        node = Method(get_yaml_value(st, 'name'), parent)
         node.description = get_yaml_value(st, 'description')
-        node.in_arguments = ast_Arguments(node, st, 'in_arguments')
-        node.out_arguments = ast_Arguments(node, st, 'out_arguments')
+        node.in_arguments = ast_Arguments(node, st, 'in')
+        node.out_arguments = ast_Arguments(node, st, 'out')
         nodes.append(node)
 
     return nodes
@@ -321,27 +350,48 @@ def ast_Events(parent, yamltree) -> list[Event]:
 
     nodes = []
     for st in subtrees:
-        node = Command(get_yaml_value(st, 'name'), parent)
+        node = Event(get_yaml_value(st, 'name'), parent)
         node.description = get_yaml_value(st, 'description')
         node.in_arguments = ast_Arguments(node, st, 'in_arguments')
         nodes.append(node)
 
     return nodes
 
-def ast_Interfaces(parent, yamltree) -> list[Interface]:
-    subtrees = get_yaml_value(yamltree, 'interfaces')
-    require_list(subtrees, 'interfaces')
+def ast_Properties(parent, yamltree) -> list[Property]:
+    subtrees = get_optional_yaml_value(yamltree, 'properties')
+
+    # (Optional)
+    if subtrees is None:
+       return []
+    require_list(subtrees, 'properties')
 
     nodes = []
     for st in subtrees:
-        # Workaround for WIP definition of includes.  Skip the includes
-        if get_optional_yaml_value(st, 'include-interface') is None:
-            node = Interface(get_yaml_value(st, 'name'), parent)
-            node.description = get_yaml_value(st, 'description')
-            node.commands = ast_Commands(node, st)
-            node.methods = ast_Methods(node, st)
-            node.events = ast_Events(node, st)
-            nodes.append(node)
+        node = Property(get_yaml_value(st, 'name'), parent)
+        node.description = get_yaml_value(st, 'description')
+        node.type = get_yaml_value(st, 'type')
+        node.datatype = get_yaml_value(st, 'datatype')
+        nodes.append(node)
+
+    return nodes
+
+def ast_Namespaces(parent, yamltree) -> list[Namespace]:
+    subtrees = get_yaml_value(yamltree, 'namespaces')
+    require_list(subtrees, 'namespaces')
+
+    nodes = []
+    for st in subtrees:
+        node = Namespace(get_yaml_value(st, 'name'), parent)
+        node.description = get_recommended_yaml_value(st, 'description')
+
+        node.structs = ast_Structs(node, st)
+        node.typedefs = ast_Typedefs(node, st)
+        node.enums= ast_Enums(node, st)
+        node.methods = ast_Methods(node, st)
+        node.events = ast_Events(node, st)
+        node.properties = ast_Properties(node, st)
+        
+        nodes.append(node)
 
     return nodes
 
@@ -349,23 +399,22 @@ def ast_Service(parent, yamltree) -> Service:
 
     # Look into subtree.  We expect only one 'service:' node per given
     # tree when we reach this function.   (NOTE: is that correct for the future?)
-    subtree = get_yaml_value(yamltree, 'service')
+    #subtree = get_yaml_value(yamltree, 'service')
 
     # We need the name to construct an anytree object, so AST
     # constructor requires it too.
     # For here, we use the service name as anytree node name.
     # (For other item types that are anonymous in the tree because they have no
     # name spcified, then the item type is used as node name instead)
-    node = Service(get_yaml_value(subtree, 'name'), parent)
+    node = Service(get_yaml_value(yamltree, 'name'), parent)
 
     # After creating the node we simply assign other member attributes directly
 
     # Keep recursing into the child objects (but only the specific types
     # that are expected in a valid file
     # So for a  service we expect datatypes and interfaces as children:
-    node.description = get_yaml_value(subtree, 'description')
-    node.datatypes = ast_Datatypes(node, subtree)
-    node.interfaces = ast_Interfaces(node, subtree)
+    node.description = get_yaml_value(yamltree, 'description')
+    node.namespaces = ast_Namespaces(node, yamltree)
 
     return node
 
