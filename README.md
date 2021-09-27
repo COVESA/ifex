@@ -16,8 +16,9 @@ usage: vsc_generator.py <input-yaml-file (path)> <output-template-file (name onl
 ```
 
 For the moment, try this:
+
 ```
-python model/vsc_generator.py seats-service.yml simple_overview.tpl
+python model/vsc_generator.py comfort-service.yml simple_overview.tpl
 ```
 
 This example exercises the parser to create the AST out of the YAML file
@@ -184,18 +185,18 @@ particular type, depending on what type of template is being rendered
 
 * Since the class members are public, they can be walked directly through
 dot-notation in code that is embedded in the template.  For example, if the
-passed item is a Service the template can get to the interfaces list by
-just referencing it:  `item.interfaces`
+passed item is a Service the template can get to the namespaces list by
+just referencing it:  `item.namespaces`
 
 Dot notation can be chained as needed:
-`item.interfaces[1].methods[0].descripion` - the first method name in the
-second interface.
+`item.namespaces[1].methods[0].description` - the first method name in the
+second namespace.
 ...but of course it is more likely to use loop constructs to iterate over
 lists than to address specific indexes like that:
 
 ```
-{% for i in item.interfaces %}
-   this is each interface name: {{ i.name }}
+{% for i in item.namespaces %}
+   this is each namespace name: {{ i.name }}
 {% endfor %}
 ```
 
@@ -214,14 +215,15 @@ It calls the gen() function from within the template to delegate work
 to a separate template for Methods.
 
 **Service-mygen.c**
+
 ```
 // General file header information
 // ...
 
 // Service name: {{ item.name }}
 
-{% for i in s.interfaces %}
-// Interface: {{ i.name }}
+{% for i in s.namespaces %}
+// namespace: {{ i.name }}
 // {{ i.description }}
 {% for x in i.methods %}
   {{ gen(Method, x) }}     <- delegate work to a separate template for Methods

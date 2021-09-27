@@ -1,6 +1,5 @@
-service:
-  name: named_service
-  description: This is it.
-  interfaces:
+name: named_service
+description: This is it.
+namespaces:
     - name: if
       description: none
