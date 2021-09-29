@@ -24,7 +24,7 @@ jobs:
       - name: Run unit test
         run: |
           cd tests
-          pytest
+          pytest -v
           
       - name: Run example tool on latest VSC
         run: |
