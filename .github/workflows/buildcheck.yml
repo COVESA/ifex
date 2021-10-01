@@ -25,4 +25,9 @@ jobs:
         run: |
           cd tests
           pytest
+          
+      - name: Run example tool on latest VSC
+        run: |
+          git clone https://github.com/GENIVI/vehicle_service_catalog/
+          python model/vsc_generator.py vehicle_service_catalog/comfort-service.yml simple_overview.tpl
 
