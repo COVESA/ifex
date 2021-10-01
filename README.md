@@ -18,10 +18,12 @@ usage: vsc_generator.py <input-yaml-file (path)> <output-template-file (name onl
 For the moment, try this:
 
 ```
-python model/vsc_generator.py comfort-service.yml simple_overview.tpl
+git clone https://github.com/GENIVI/vehicle_service_catalog
+python model/vsc_generator.py vehicle_service_catalog/comfort-service.yml simple_overview.tpl
 ```
 
-This example exercises the parser to create the AST out of the YAML file
+This example exercises the parser to create the AST out of a YAML file
+from the Vehicle Service Specification
 and then prints out an overview using the template.
 
 ^^^ Edit the code if you want to try out other things.  This will soon be more
