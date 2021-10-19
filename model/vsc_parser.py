@@ -352,7 +352,7 @@ def ast_Events(parent, yamltree) -> list[Event]:
     for st in subtrees:
         node = Event(get_yaml_value(st, 'name'), parent)
         node.description = get_yaml_value(st, 'description')
-        node.in_arguments = ast_Arguments(node, st, 'in_arguments')
+        node.in_arguments = ast_Arguments(node, st, 'in')
         nodes.append(node)
 
     return nodes

@@ -46,7 +46,7 @@ Header
          {% endfor %}
       {% endfor %}
       {% for x in n.properties %}
-         Event: {{ x.name }}
+         Property: {{ x.name }}
          -> {{ x.description }}
          -> Type: {{ x.type }}
          -> Datatype: {{ x.datatype }}
