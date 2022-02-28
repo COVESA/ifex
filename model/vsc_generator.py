@@ -1,4 +1,6 @@
+# SPDX-License-Identifier: MPL-2.0
 # ----------------------------------------------------------------------------
+# (C) 2021 COVESA
 # Generator module
 # These are general functions or convenience functions that can be used
 # by specific generators and other tools, or it may serve as an example.

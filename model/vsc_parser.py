@@ -1,4 +1,6 @@
+# SPDX-License-Identifier: MPL-2.0
 # ----------------------------------------------------------------------------
+# (C) 2021 COVESA
 # Reader/parser module
 # To be used by all generators and other tools
 # ----------------------------------------------------------------------------

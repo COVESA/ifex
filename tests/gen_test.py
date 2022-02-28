@@ -1,3 +1,9 @@
+# SPDX-License-Identifier: MPL-2.0
+# ----------------------------------------------------------------------------
+# (C) 2021 COVESA
+# Test code for code generator part of VSC tools
+# ----------------------------------------------------------------------------
+
 import pytest
 
 # This is maybe not ideal way but seems efficient enough
