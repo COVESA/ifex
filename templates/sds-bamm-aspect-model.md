@@ -5,7 +5,7 @@
 ## Introduction
 
 The BAMM Aspect Model Generator converts VSC services to a valid BAMM Aspect Model according to the [BAMM Aspect Meta Model](https://github.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model), 
-keeping as much as possible of the information from the VSC definition.  It consists of a template ([sds-bamm-aspect-model](sds-bamm-aspect-model.j2) and [sds-bamm-macros](sds-bamm-macros.j2)) 
+keeping as much as possible of the information from the VSC definition.  It consists of a template ([sds-bamm-aspect-model](sds-bamm-aspect-model.tpl) and [sds-bamm-macros](sds-bamm-macros.tpl)) 
 using the template framework of the vsc-tools project to parse and transform VSC services.
 
 ## BAMM Aspect Meta Model

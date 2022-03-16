@@ -68,7 +68,7 @@ usage: vsc_generator.py <input-yaml-file (path)> <output-template-file (name onl
 For the moment, try this:
 
 ```
-git clone https://github.com/GENIVI/vehicle_service_catalog
+git clone https://github.com/COVESA/vehicle_service_catalog
 python model/vsc_generator.py vehicle_service_catalog/comfort-service.yml simple_overview.tpl
 ```
 
@@ -304,13 +304,24 @@ implementation would modify this variable, or simply overwrite the value after
 including the vsc_generator as a module (or later on, this might be passed in
 at run-time in a different way).
 
+# Existing Tools/Templates
+
+Template | Description | Status | Documentation |
+| ------------------ | ----------- | -------------------- |-------------------- |
+[dtdl.tpl](templates/dtdl.tpl) | Generates a DTDL description of the service | Functional | [documentation](templates/dtdl.md) |
+[protobuf.tpl](templates/protobuf.tpl) | Generates a Protobuf description of the service | Functional | [documentation](templates/protobuf.md) |
+[sds-bamm-aspect-model.tpl](templates/sds-bamm-aspect-model.tpl) (using [sds-bamm-macros.tpl](templates/sds-bamm-macros.tpl))| Generates a BAMM Aspect Meta Model of the service | Functional | [documentation](templates/sds-bamm-aspect-model.md) |
+[test.tpl](templates/test.tpl) | Dummy Example | Not Functional | - |
+[AST-simple_doc.tpl](templates/AST-simple_doc.tpl) | Very simple HTML generator | Functional | - |
+[simple_overview.tpl](templates/simple_overview.tpl) | Generates a textual overview of a service | Functional | - |
+
 # Future plans, new proposals and enhancements
 
-Please refer to [GitHub tickets](https://github.com/GENIVI/vsc-tools/issues)
+Please refer to [GitHub tickets](https://github.com/COVESA/vsc-tools/issues)
 (Feel free to make a proposal or ask a question)
 
 # Known bugs
 
-Please refer to [GitHub tickets](https://github.com/GENIVI/vsc-tools/issues)
+Please refer to [GitHub tickets](https://github.com/COVESA/vsc-tools/issues)
 with the label "bug"
 
