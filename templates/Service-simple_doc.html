@@ -4,7 +4,7 @@
    </head>
    <body>
       <h1>Service overview for {{item.name}}</h1>
-      {% for i in item.interfaces %}
+      {% for i in item.namespaces %}
          <h2>Methods</h2>
          {% for x in i.methods %}
             <p>
