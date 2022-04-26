@@ -382,7 +382,6 @@ def ast_Properties(parent, yamltree) -> list[Property]:
 def ast_Namespaces(parent, yamltree) -> list[Namespace]:
     subtrees = get_yaml_value(yamltree, 'namespaces')
     require_list(subtrees, 'namespaces')
-
     nodes = []
     for st in subtrees:
         node = Namespace(get_yaml_value(st, 'name'), parent)
@@ -409,14 +408,16 @@ def ast_Service(parent, yamltree) -> Service:
     # constructor requires it too.
     # For here, we use the service name as anytree node name.
     # (For other item types that are anonymous in the tree because they have no
-    # name spcified, then the item type is used as node name instead)
+    # name specified, then the item type is used as node name instead)
+    # Keep recursing into the child objects (but only the specific types
+    # that are expected in a valid file
+    # So for a service we expect namespaces as children
+
+    #FIXME this needs to be looked at?
     node = Service(get_yaml_value(yamltree, 'name'), parent)
 
     # After creating the node we simply assign other member attributes directly
 
-    # Keep recursing into the child objects (but only the specific types
-    # that are expected in a valid file
-    # So for a  service we expect datatypes and interfaces as children:
     node.description = get_yaml_value(yamltree, 'description')
 
     node.major_version = get_yaml_value(yamltree, 'major-version')
