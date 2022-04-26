@@ -59,13 +59,21 @@ class AST(anytree.Node):
 class Argument(AST):  # for in_arguments and out_arguments
    name: str
    description: str
-   type: str
+   datatype: str
+   arraysize: str
+   range: str
+
+class Error(AST):
+   datatype: str
+   arraysize: str
+   range: str
 
 class Method(AST):
    name: str
    description: str
    in_arguments: list[Argument]
    out_arguments: list[Argument]
+   errors: list[Error]
 
 class Event(AST):  # Note: Event details are TBC
    name: str
@@ -75,28 +83,31 @@ class Event(AST):  # Note: Event details are TBC
 class Property(AST):
    name: str
    description: str
-   type: str
-   datatype:str
+   datatype: str
+   arraysize: str
 
 class Member(AST):
    name: str
-   datatype: str
    description: str
+   datatype: str
+   arraysize: str
 
 class Option(AST):
    name: str
    value: str
+   description: str
 
 class Struct(AST):
    name: str
    description: str
    members: list[Member]
 
-
 class Typedef(AST):
    name: str
-   datatype: str
    description: str
+   type: str
+   datatype: str
+   arraysize: str
    min: str
    max: str
 
@@ -105,17 +116,24 @@ class Enum(AST):
    datatype: str
    description: str
    options: list[Option]
-   members: list[Member]
 
 class Namespace(AST):
    name: str
    description: str
-   structs: list[Struct]
+   major_version: str
+   minor_version: str
    typedefs: list[Typedef]
+   structs: list[Struct]
+   # enumerations
    enums: list[Enum]
    methods: list[Method]
    events: list[Event]
    properties: list[Property]
+   includes: list[Include]
+
+class Include(AST):
+   file: str
+   description: str
 
 class Service(AST):
    name: str
@@ -257,6 +275,7 @@ def ast_Typedefs(parent, yamltree) -> Typedefs:
         node = Typedef(get_yaml_value(st, 'name'), parent)
         node.description = get_recommended_yaml_value(st, 'description')
         node.datatype = get_yaml_value(st, 'datatype')
+        node.arraysize = get_optional_yaml_value(st, 'arraysize')
         node.min = get_optional_yaml_value(st, 'min')
         node.max = get_optional_yaml_value(st, 'max')
         nodes.append(node)
@@ -274,8 +293,8 @@ def ast_Enums(parent, yamltree) -> Enums:
     nodes = []
     for st in subtrees:
         node = Struct(get_yaml_value(st, 'name'), parent)
-        node.description = get_recommended_yaml_value(st, 'description')
         node.datatype = get_yaml_value(st, 'datatype')
+        node.description = get_recommended_yaml_value(st, 'description')
         node.options = ast_Options(node, st, 'options')
         nodes.append(node)
 
@@ -291,7 +310,9 @@ def ast_Arguments(parent, yamltree, argtype = 'in_arguments') -> list[Argument]:
     for st in subtrees:
         node = Argument(get_yaml_value(st, 'name'), parent)
         node.description = get_yaml_value(st, 'description')
-        node.type = get_yaml_value(st, 'datatype')
+        node.datatype = get_yaml_value(st, 'datatype')
+        node.arraysize = get_optional_yaml_value(st, 'arraysize')
+        node.range = get_optional_yaml_value(st, 'range')
         nodes.append(node)
 
     return nodes
@@ -306,7 +327,8 @@ def ast_Members(parent, yamltree, argtype = 'members') -> list[Member]:
     for st in subtrees:
         node = Member(get_yaml_value(st, 'name'), parent)
         node.description = get_yaml_value(st, 'description')
-        node.type = get_yaml_value(st, 'datatype')
+        node.datatype = get_yaml_value(st, 'datatype')
+        node.arraysize = get_optional_yaml_value(st, 'arraysize')
         nodes.append(node)
 
     return nodes
@@ -321,10 +343,28 @@ def ast_Options(parent, yamltree, argtype = 'options') -> list[Member]:
     for st in subtrees:
         node = Option(get_yaml_value(st, 'name'), parent)
         node.value = get_yaml_value(st, 'value')
+        node.description = get_optional_yaml_value(st, 'description')
         nodes.append(node)
 
     return nodes
 
+
+def ast_Errors(parent, yamltree) -> list[Error]:
+    subtrees = get_optional_yaml_value(yamltree, 'errors')
+
+    # (Optional)
+    if subtrees is None:
+       return []
+    require_list(subtrees, 'errors')
+
+    nodes = []
+    for st in subtrees:
+        node = Error(get_yaml_value(st, 'errors', parent))
+        node.datatype = get_yaml_value(st, 'datatype')
+        node.arraysize = get_optional_yaml_value(st, 'arraysize')
+        node.range = get_yaml_value(st, 'range')
+
+    return nodes
 
 def ast_Methods(parent, yamltree) -> list[Method]:
     subtrees = get_optional_yaml_value(yamltree, 'methods')
@@ -340,6 +380,7 @@ def ast_Methods(parent, yamltree) -> list[Method]:
         node.description = get_yaml_value(st, 'description')
         node.in_arguments = ast_Arguments(node, st, 'in')
         node.out_arguments = ast_Arguments(node, st, 'out')
+        node.errors = ast_Errors(node, st)
         nodes.append(node)
 
     return nodes
@@ -373,8 +414,24 @@ def ast_Properties(parent, yamltree) -> list[Property]:
     for st in subtrees:
         node = Property(get_yaml_value(st, 'name'), parent)
         node.description = get_yaml_value(st, 'description')
-        node.type = get_yaml_value(st, 'type')
         node.datatype = get_yaml_value(st, 'datatype')
+        node.arraysize = get_optional_yaml_value(st, 'arraysize')
+        nodes.append(node)
+
+    return nodes
+
+def ast_Includes(parent, yamltree) -> list[Include]:
+    subtrees = get_optional_yaml_value(yamltree, 'includes')
+    # (Optional)
+    if subtrees is None:
+       return []
+    require_list(subtrees, 'includes')
+
+    nodes = []
+    for st in subtrees:
+        # Use file as node name?
+        node = Include(get_yaml_value(st, 'file'), parent)
+        node.description = get_optional_yaml_value(st, 'description')
         nodes.append(node)
 
     return nodes
@@ -386,14 +443,15 @@ def ast_Namespaces(parent, yamltree) -> list[Namespace]:
     for st in subtrees:
         node = Namespace(get_yaml_value(st, 'name'), parent)
         node.description = get_recommended_yaml_value(st, 'description')
-
-        node.structs = ast_Structs(node, st)
+        node.major_version: get_recommended_yaml_value(st, 'major-version')
+        node.minor_version: get_recommended_yaml_value(st, 'minor-version')
         node.typedefs = ast_Typedefs(node, st)
+        node.structs = ast_Structs(node, st)
         node.enums= ast_Enums(node, st)
         node.methods = ast_Methods(node, st)
         node.events = ast_Events(node, st)
         node.properties = ast_Properties(node, st)
-
+        node.includes = ast_Includes(node, st)
         nodes.append(node)
 
     return nodes
