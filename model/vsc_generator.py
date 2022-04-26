@@ -18,7 +18,8 @@ VSC code-generation functions
 #    according to given templates.
 
 # It's useful to have these classes in our namespace directly
-from vsc_parser import AST, Argument, Method, Event, Member, Option, Namespace, Service
+from vsc_parser import AST, Argument, Enum, Error, Event, Include, Member, Method, Namespace, Option, Property, Service, Struct, Typedef
+
 import vsc_parser # For other features from parser module
 import anytree
 import getopt
@@ -62,22 +63,30 @@ def get_template(filename):
 # Frontend to overloaded gen() function:
 
 def gen(node : AST, second = None):
+    # Processing of lists of objects?
+    if type(node) == list or type(node) == tuple:
+        # Generate each node and return a list of results. A list is not
+        # intended to be printed directly as output, but to be processed by
+        # a jinja filter, such as |join(', ')
 
-    # Processing of lists of objects
-   if type(node) == list or type(node) == tuple:
-       # Generate each node and return a list of results.
-       # A list is not intended to be printed directly as output, but to be
-       # processed by a jinja filter, such as |join(', ')
-       return [gen(x, second) for x in node]
+        if len(node) == 0:
+            return []
+        else:
+            # Recurse over each item in list, and return a list of strings
+            # that is generated for each one.
+            return [gen(x, second) for x in node]
 
-   # OK, now dispatch gen() depending on the input type
-   if second is None:          # No explicit template -> use default for the node type
-       return _gen_type(node)
-   elif type(second) == str:   # Explicit template -> use it
-       return _gen_tmpl(node, second)
-   else:
-       print(f'node is of type {type(node)}, second arg is of type {type(second)}  ({type(second).__class__}, {type(second).__class__.__name__})')
-      raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {second.__name__})')
+    else:
+        # Processing single item!
+        # second argument is either an explicit template, or None. If it is
+        # None, then the node type will be used to determine the template.
+        if second is None:          # No explicit template -> use default for the node type
+            return _gen_type(node)
+        elif type(second) == str:   # Explicit template -> use it
+            return _gen_tmpl(node, second)
+        else:
+            print(f'node is of type {type(node)}, second arg is of type {type(second)}  ({type(second).__class__}, {type(second).__class__.__name__})')
+            raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {second.__name__})')
 
 # Implementation of typed variants of gen():
 
@@ -85,7 +94,23 @@ def gen(node : AST, second = None):
 # A default template must be defined for this node type to use the function
 # this way.
 def _gen_type(node : AST):
+    # It is currently unexpected to receive None.  But minor changes might
+    # change this later.  An alternative is to generate an empty string,
+    # but for now let's make sure this case is noticed with an exception,
+    # so it can be investigated.
+    if node is None:
+        raise GeneratorError(f"Unexpected 'None' node received")
+        return ""
+
     nodetype=type(node).__name__
+
+    # If the output-template refers to a member variable that was _not
+    # defined_ in the node, then it shows up as Undefined type. This
+    # happens when optional things do not appear within the service
+    # definition. We just generate empty strings for those items.
+    if nodetype == "Undefined":
+        return ""
+
     tpl = default_templates.get(nodetype)
     if tpl is None:
         raise GeneratorError(f'gen() function called with node of type {nodetype} but no default template is defined for the type {nodetype}')
@@ -124,12 +149,18 @@ jinja_env.globals.update(
         gen=gen,
         AST=AST,
         Argument=Argument,
-        Method=Method,
+        Enum=Enum,
+        Error=Error,
         Event=Event,
+        Include=Include,
         Member=Member,
-        Option=Option,
+        Method=Method,
         Namespace=Namespace,
-        Service=Service)
+        Option=Option,
+        Property=Property,
+        Service=Service,
+        Struct=Struct,
+        Typedef=Typedef)
 
 # ---------- TEST / SIMPLE USAGE ------------
 
