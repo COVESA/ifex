@@ -5,31 +5,63 @@
    <body>
       <h1>Service overview for {{item.name}}</h1>
       {% for i in item.namespaces %}
+         seems to work for item.services[0].namespaces
          <h2>Methods</h2>
          {% for x in i.methods %}
             <p>
             {{ i.name }} :: {{ x.name }}(
-            {{ gen(x.out_arguments)|join(', ') }}
+            {{ gen(x.in)|join(', ') }}
+            ) out (
+            {{ gen(x.out)|join(', ') }}
             ) returns (
             )
-            </p><p>
-            {% endfor %}
-            <h2>Commands</h2>
-            {% for x in i.commands %}
-               {{ i.name }} :: {{ x.name }}(
-               {{ gen(x.in_arguments)|join(', ') }}
+            ) error (
+               {{ gen(x.error) }}
+               </p><p>
+         {% endfor %}
+         <h2>Version</h2>
+         <p>
+         </p>
+         <h2>Structs</h2>
+         {% if i.structs == None %}
+         NO STRUCTS DEFINED
+         {% else %}
+            {% for x in i.structs %}
+               STRUCT {{ i.name }} :: {{ x.name }}(
+               {{ gen(x.in)|join(', ') }}
                )
-            </p><p>
+               </p><p>
             {% endfor %}
-            <h2>Events</h2>
-            {% for x in i.events %}
-               EVENT {{ i.name }} :: {{ x.name }} (
-               {{ gen(x.in_arguments)|join(', ') }}
+         {% endif %}
+         <h2>Typedefs</h2>
+         {% for x in i.typedefs %}
+            TYPEDEF {{ i.name }} :: {{ x.name }}(
+            {{ gen(x.in)|join(', ') }}
+            )
+         </p><p>
+         {% endfor %}
+         <h2>Events</h2>
+         {% for x in i.events %}
+            EVENT {{ i.name }} :: {{ x.name }} (
+            {{ gen(x.in)|join(', ') }}
+            )
+         </p><p>
+         {% endfor %}
+         {# If you need to check if a certain item type is not defined
+         (optional), test like this: #}
+         {% if i.properties == [] %}
+         NO PROPERTIES DEFINED
+         {# If you do not test, that's OK too - the item will hold an empty list so iterating over it should create no output #}
+         {% else %}
+            {% for x in i.properties %}
+               PROPERTY {{ i.name }} :: {{ x.name }}(
+               {{ gen(x.in)|join(', ') }}
                )
-            </p><p>
+               </p><p>
             {% endfor %}
-         <b></b>
-      {% endfor %}
+         {% endif %}
+      <b></b>
+   {% endfor %}
    </body>
 </html>
 
