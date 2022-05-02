@@ -53,11 +53,11 @@ import anytree
 
 # Base class for all nodes in the tree
 class AST(anytree.Node):
-   def __init__(self, name, parent):
-       super().__init__(name, parent)
+    def __init__(self, name, parent):
+        super().__init__(name, parent)
 
 class Argument(AST):  # for in_arguments and out_arguments
-   name: str
+    name: str
    description: str
    datatype: str
    arraysize: str
@@ -69,41 +69,43 @@ class Error(AST):
    range: str
 
 class Method(AST):
-   name: str
+    name: str
    description: str
    in_arguments: list[Argument]
    out_arguments: list[Argument]
    errors: list[Error]
 
 class Event(AST):  # Note: Event details are TBC
-   name: str
+    name: str
    description: str
    in_arguments: list[Argument]
 
 class Property(AST):
-   name: str
+    name: str
    description: str
    datatype: str
    arraysize: str
 
 class Member(AST):
    name: str
+   datatype: str
    description: str
    datatype: str
    arraysize: str
 
 class Option(AST):
-   name: str
+    name: str
    value: str
    description: str
 
 class Struct(AST):
-   name: str
+    name: str
    description: str
    members: list[Member]
 
 class Typedef(AST):
    name: str
+   datatype: str
    description: str
    type: str
    datatype: str
@@ -112,13 +114,13 @@ class Typedef(AST):
    max: str
 
 class Enum(AST):
-   name: str
+    name: str
    datatype: str
    description: str
    options: list[Option]
 
 class Namespace(AST):
-   name: str
+    name: str
    description: str
    major_version: str
    minor_version: str
@@ -136,7 +138,7 @@ class Include(AST):
    description: str
 
 class Service(AST):
-   name: str
+    name: str
    description: str
    major_version: int
    minor_version: int
@@ -235,7 +237,7 @@ def get_recommended_yaml_value(tree, nodename):
 
 class ASTNodeError(BaseException):
     def __init__(msg):
-       self.msg = "msg"
+        self.msg = "msg"
 
 # Helper to check if a returned YAML snippet is a list, or throw assertion
 def require_list(yaml, parent_name : str):
@@ -371,7 +373,7 @@ def ast_Methods(parent, yamltree) -> list[Method]:
 
     # (Optional)
     if subtrees is None:
-       return []
+        return []
     require_list(subtrees, 'methods')
 
     nodes = []
@@ -390,7 +392,7 @@ def ast_Events(parent, yamltree) -> list[Event]:
 
     # (Optional)
     if subtrees is None:
-       return []
+        return []
     require_list(subtrees, 'events')
 
     nodes = []

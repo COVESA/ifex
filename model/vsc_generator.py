@@ -49,8 +49,8 @@ default_templates = {}
 
 # Exception:
 class GeneratorError(BaseException):
-   def __init__(self, m):
-       self.msg = m
+    def __init__(self, m):
+        self.msg = m
 
 
 # ---------- GENERATION FUNCTIONS ------------
@@ -63,7 +63,7 @@ def get_template(filename):
 
 def gen(node : AST, second = None):
 
-   # Processing of lists of objects
+    # Processing of lists of objects
    if type(node) == list or type(node) == tuple:
        # Generate each node and return a list of results.
        # A list is not intended to be printed directly as output, but to be
@@ -76,7 +76,7 @@ def gen(node : AST, second = None):
    elif type(second) == str:   # Explicit template -> use it
        return _gen_tmpl(node, second)
    else:
-      print(f'node is of type {type(node)}, second arg is of type {type(second)}  ({type(second).__class__}, {type(second).__class__.__name__})')
+       print(f'node is of type {type(node)}, second arg is of type {type(second)}  ({type(second).__class__}, {type(second).__class__.__name__})')
       raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {second.__name__})')
 
 # Implementation of typed variants of gen():
@@ -88,9 +88,9 @@ def _gen_type(node : AST):
     nodetype=type(node).__name__
     tpl = default_templates.get(nodetype)
     if tpl is None:
-       raise GeneratorError(f'gen() function called with node of type {nodetype} but no default template is defined for the type {nodetype}')
+        raise GeneratorError(f'gen() function called with node of type {nodetype} but no default template is defined for the type {nodetype}')
     else:
-       return get_template(tpl).render({ 'item' : node})
+        return get_template(tpl).render({ 'item' : node})
 
 # If template name directly specified, just use it.
 def _gen_tmpl(node : AST, templatefile: str):
@@ -101,16 +101,16 @@ def _gen_tmpl(node : AST, templatefile: str):
 # Instead of providing a template file, provide the template text itself
 # (for unit tests mostly).  See gen() for more comments/explanation.
 def _gen_with_text_template(node: AST, second: str):
-   # Processing of lists of objects, see gen() for explanation
+    # Processing of lists of objects, see gen() for explanation
    if type(node) == list or type(node) == tuple:
-      return [_gen_with_text_template(x, second) for x in node]
+       return [_gen_with_text_template(x, second) for x in node]
    if second is None:
        return _gen_type(node)
    elif type(second) == str:  # "second" is here the template text, not a filename
        return jinja2.Template(second).render({'item' : node})
    else:
-      print(f'node is of type {type(node)}, second arg is of type {type(second)}  ({type(second).__class__}, {type(second).__class__.__name__})')
-      raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {second.__name__})')
+       print(f'node is of type {type(node)}, second arg is of type {type(second)}  ({type(second).__class__}, {type(second).__class__.__name__})')
+       raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {second.__name__})')
 
 
 # Entry point for passing a dictionary of variables instead:
@@ -121,15 +121,15 @@ def gen_dict_with_template_file(variables : dict, templatefile):
 # so that they can be referred to inside templates.
 
 jinja_env.globals.update(
- gen=gen,
- AST=AST,
- Argument=Argument,
- Method=Method,
- Event=Event,
- Member=Member,
- Option=Option,
- Namespace=Namespace,
- Service=Service)
+        gen=gen,
+        AST=AST,
+        Argument=Argument,
+        Method=Method,
+        Event=Event,
+        Member=Member,
+        Option=Option,
+        Namespace=Namespace,
+        Service=Service)
 
 # ---------- TEST / SIMPLE USAGE ------------
 
