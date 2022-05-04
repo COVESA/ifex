@@ -319,31 +319,27 @@ def get_node_member(parent, t, optionality, membername, yamltree):
 #    print(f"get_node_member for type {t} = {t.__name__}")
 #    print(f"t.__name__ is {t.__name__}")
     match t.__name__:
-        case "str":
-            return get_subtree(yamltree, membername, optionality)
-        # FIXME: This should be generalized to any non-list member.  Right now it
-        # is only error, but there could be more:
-        case "Error":
-            return get_subtree(yamltree, membername, optionality)
         case "list":
-#            print(f"get_node_member for LIST type {t} = {t.__name__}, membername {membername}")
-            # Determine the name of the AST Node type class, such as
-            # "Namespace" or "Member" or "Error":
+            # Determine name of the AST Node type class contained in list
+            # (such as "Namespace", "Member", "Argument", "Error" etc.)
             contained_type = t.__args__[0]
             contained_type_name = t.__args__[0].__name__
 
+            # Search for subtree in YAML and complain if anything
+            # non-optional is missing.
             subtree = get_subtree(yamltree, membername, optionality)
             if subtree is None: # (For example optional item)
                 return []
 
-#            print(f"subtree must be list: {subtree}, for membername {membername}")
-            require_list(subtree, membername)
             nodes = []
-
             for items in subtree:
                 # recurse
                 nodes.append(ast_Node(parent, contained_type_name, items))
             return nodes
+        case "str":
+            return get_subtree(yamltree, membername, optionality)
+        case _: # All other cases assumed to be a single AST node class (not list of nodes)
+            return get_subtree(yamltree, membername, optionality)
 
 def get_ast_from_file(filepath : str):
     return ast_Root(read_yaml_to_dict(filepath))
