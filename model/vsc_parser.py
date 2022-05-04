@@ -292,8 +292,8 @@ def ast_Node(parent, nodetype, yamltree):
 # Build the AST from the parsed YAML starting at the root.
 def ast_Root(yamltree):
 
-    # Let's have an "empty" root node at the top, called "/".
-    root = AST("/", None)
+    # Empty root node at the top.
+    root = AST("ast", None)
 
     try:
         # Extend here if more than one service is going to be processed at
