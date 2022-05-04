@@ -263,7 +263,7 @@ class ASTNodeError(BaseException):
         self.msg = "msg"
 
 # Helper to check if a returned YAML snippet is a list, or throw assertion
-def require_list(yaml, parent_name : str):
+def ensure_it_is_yaml_list(yaml, parent_name : str):
     # Empty check should have been done before, but for good measure:
     assert (yaml != None), f'BUG: Found empty/None node near/below {parent_name} in YAML definition'
 
@@ -330,6 +330,8 @@ def get_node_member(parent, t, optionality, membername, yamltree):
             subtree = get_subtree(yamltree, membername, optionality)
             if subtree is None: # (For example optional item)
                 return []
+
+            ensure_it_is_yaml_list(subtree, membername)
 
             nodes = []
             for items in subtree:
