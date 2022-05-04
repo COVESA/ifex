@@ -286,7 +286,7 @@ def ast_Node(parent, nodetype, yamltree):
     # In the schema we have a dict that maps member names to their # type/content
     # We destructure this into its parts
     for (membername, (type, optionality)) in node_members.items():
-        node.__setattr__(membername, get_node_member(parent, type, optionality, membername, yamltree))
+        node.__setattr__(membername, get_node_member(node, type, optionality, membername, yamltree))
     return node
 
 # Build the AST from the parsed YAML starting at the root.
