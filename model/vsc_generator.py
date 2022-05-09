@@ -38,11 +38,10 @@ jinja_env = jinja2.Environment(
         autoescape = jinja2.select_autoescape([])
         )
 
-# This is important. We want the control blocks in the template to NOT
-# result in any extra white space when rendering templates.
-# However, this might be a choice made by each generator, so then we need
-# to export the ability to keep these public for the using code to modify
-# them.
+# We want the control blocks in the template to NOT result in any extra
+# white space when rendering templates. However, this might be a choice
+# made by each generator, so we need to export the ability to keep these
+# settings public for other code to modify them.
 jinja_env.trim_blocks = True
 jinja_env.lstrip_blocks = True
 
@@ -52,7 +51,6 @@ default_templates = {}
 class GeneratorError(BaseException):
     def __init__(self, m):
         self.msg = m
-
 
 # ---------- GENERATION FUNCTIONS ------------
 
@@ -145,9 +143,15 @@ def gen_dict_with_template_file(variables : dict, templatefile):
 # Export the gen() function and classes into jinja template land
 # so that they can be referred to inside templates.
 
+# The AST class definitions are not required to reference the member
+# variables on objects, so they will be rarely used.  But possibly some
+# template will have logic to create an AST node on-the-fly and then call
+# the generator on it, and this will require knowledge of the AST
+# (sub)class.
+
 jinja_env.globals.update(
-        gen=gen,
-        AST=AST,
+        gen=gen,  # Most common function to reference from template
+        AST=AST,  # AST classes and subclasses....
         Argument=Argument,
         Enum=Enum,
         Error=Error,
@@ -162,27 +166,30 @@ jinja_env.globals.update(
         Struct=Struct,
         Typedef=Typedef)
 
-# ---------- TEST / SIMPLE USAGE ------------
+# This code file can be used in two ways.  Either calling this file as a
+# program using the main entry points here, and specifying input parameter.
+# Alternatively, for more advanced usage, the file might be included as a
+# module in a custom generator implementation.  That implementation is
+# likely to call some of the funcctions that were defined above.
+
+# For the first case, here follows the main entry points and configuration:
 
 def usage():
     print("usage: generator.py <input-yaml-file (path)> <output-template-file (name only, not path)>")
     sys.exit(1)
 
-def test(argv):
-    if not len(argv) == 3:
-        usage()
-    ast = vsc_parser.get_ast_from_file(argv[1])
-    print(gen(ast, argv[2]))
-
-# TEMP TEST TO BE MOVED
+# This is a default definition for our current generation tests.
+# It may need to be changed, or defined differently in a custom generator
 default_templates = {
         'Service' : 'Service-simple_doc.html',
         'Argument' : 'Argument-simple_doc.html'
         }
 
-# If run as a script, generate a single YAML file and single template
-# (for testing)
+# If run as a script, generate a single YAML file using a single root template
 if __name__ == "__main__":
-    # execute only if run as a script
-    test(sys.argv)
+    if not len(sys.argv) == 3:
+        usage()
+    ast = vsc_parser.get_ast_from_file(sys.argv[1])
+    templatename = sys.argv[2]
+    print(gen(ast, templatename))
 
