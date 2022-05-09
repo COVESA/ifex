@@ -34,6 +34,7 @@ VSC parser/reader to be used by generators and other tools
 from __future__ import annotations
 import yaml
 import anytree
+import sys
 
 # ----------------------------------------------------------------------------
 # VSC Abstract Syntax Tree
@@ -232,7 +233,7 @@ def get_recommended_yaml_value(tree, nodename):
     node = tree.get(nodename)
     if node is None:
         # FIXME: Give more context information to the user (e.g. line # number)
-        print(f'WARNING: Recommended value of type "{nodename}: was not found"')
+        print(f'WARNING: Recommended value of type "{nodename}: was not found"', file=sys.stderr)
     if type(node) is str:
         node = node.strip()
     return node
@@ -276,7 +277,7 @@ def ast_Node(parent, nodetype, yamltree):
     # (Node names make up the "path" in the AnyTree node concept)
     name = get_yaml_value(yamltree, 'name', allow_none=True)
     if name is None:
-        print("WARNING: Node name for {node} was not defined -> using None!")
+        print("WARNING: Node name for {node} was not defined -> using None!", file=sys.stderr)
     # The following line gets a reference to the AST subclass that is named "name".
     class_ = eval(nodetype)
     # And this creates an instance of that class, i.e. an AST node.
@@ -302,7 +303,7 @@ def ast_Root(yamltree):
         root.services = [ast_Node(root, 'Service', yamltree)]
 
     except ASTNodeError:
-        print("AST Node Exception, FIXME")
+        print("AST Node Exception, FIXME", file=sys.stderr)
 
     return root
 
