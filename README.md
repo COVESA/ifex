@@ -161,32 +161,37 @@ generation.
 
 ## The gen() function
 
-The gen() function has a short name to be convenient in templates.
+The `gen()` function has a short name to be convenient in templates.
 
-You can call the gen() function from within a template to delegate the
-required work for generating a certain node type within a larger generation.
-(See Template example).  Thus the templates can effectively "call" each other,
-without the need for template-include or template-inheritance features, but
-those features in jinja2 are still available if they are needed.
+You can call the `gen()` function from within a template to delegate the
+required work for generating a certain node type to a separate template file.
+(See Template example later).  Thus the templates can effectively "call" each
+other, without the need for template-include or template-inheritance features
+that jinja2 provides (but those features are of course still possible to use).
 
-gen() can be called with just the node (evaluating the passed parameter type at run-time)
-or by explicitly stating a template:
+`gen()` can be called with (1) just the node (evaluating the passed parameter type at run-time)
+or (2) by explicitly stating a template:
 
-1. Providing the node reference only.
+1. Providing the node reference only:
 ```
 def gen(node : AST)
-example use:
- gen(node)
-
 ```
-This variant will dynamically determine the node type (a subclass of AST)
-and generate using the predetermined template for that node type.
+example use:
+```
+ gen(node)
+```
 
-2. Providing the node and a specific template.  The default template for the
-   node type is not used. The specified template is used instead.
+This variant will dynamically determine the node type (a subclass of AST)
+and generate using the predetermined template for that node type.  (See 
+`default_templates` variable).
+
+2. Providing the node and a specific template.  The specified template is
+   used regardless of the node type:
 ```
 def gen(node : AST, templatename : str)
+```
 example use:
+```
 gen(node, 'My-alternative-method-template.tpl')
 ```
 
@@ -209,7 +214,8 @@ template with useful information here.
 * **suffix** should try to mimic the normal suffix for the file format that is
 being generated.  For example, if the templates aims to generate a HTML
 document, name the template with .html.  If it is generating a programming
-language, use an appropriate suffix for the file, etc.
+language, use an appropriate suffix for the file, etc.  If there is no obvious
+type, we use ".tpl".
 
 Examples:
 
@@ -225,25 +231,30 @@ Service-rust.rs
 ### Variable use in templates
 
 * The standard functions in vsc_generator.py will pass in only a single node
-of AST type to the template generation framework.  The node will be of a
-particular type, depending on what type of template is being rendered
-(or more correctly, what was specified when the generation function was called
- -- either a top level function like render_ast_with_template_file()
- or a call to gen() with the node in question as parameter.)
+of AST type to the template generation framework.  (If you define your own
+custom generator, it could choose to do something different).
+
+The passed node and will have a particular node type (subclass to AST).  The
+type depends on what type of template is being rendered (or more correctly,
+what was specified when the generation function was called -- either a top
+level function like render_ast_with_template_file() or a call to gen() with
+the node in question as parameter.)
 
 * When using the provided generator convenience functions, the node that is
 "passed to the template" (roughly speaking) will always be named **item**
 
-* Since the class members are public, they can be walked directly through
-dot-notation in code that is embedded in the template.  For example, if the
-passed item is a Service the template can get to the namespaces list by
-just referencing it:  `item.namespaces`
+* The class member variables (referring to the children of a node) in
+all AST nodes are public.  This means they can be referenced directly through
+dot-notation inside code that is embedded in the jinja template.  For example,
+if the passed `item` is a Service the template can get to the _list_ of
+namespaces in the service by just referencing it: `item.namespaces`
 
-Dot notation can be chained as needed:
-`item.namespaces[1].methods[0].description` - the first method name in the
-second namespace.
-...but of course it is more likely to use loop constructs to iterate over
-lists than to address specific indexes like that:
+This of course means that dot-notation could also be chained:
+`item.namespaces[1].methods[0].description` - the description of th efirst
+method name in the second namespace.
+
+It is however more likely to use loop constructs to iterate over lists than to
+address specific indexes like that:
 
 ```
 {% for i in item.namespaces %}
@@ -253,15 +264,15 @@ lists than to address specific indexes like that:
 
 # Advanced features
 
-jinja2 is a very capable templating language.  Advanced generators can of
-course make use of any features in python or jinja2 to create an advanced
-generator.  Any features that might be applicable in more than one place would
-however be best generalized and introduced into the vsc_generator.py helper
-modules, for better reuse.
+jinja2 is a very capable templating language.  Generators can make use of any
+features in python or jinja2 to create an advanced generator.  Any features
+that might be applicable in more than one place would however be best
+generalized and introduced into the vsc_generator.py helper module, for
+better reuse between custom generator implementations.
 
 ### Template example
 
-This templates expects that the "item" passed in is the Service object.
+This template expects that the "item" passed in is a Service object.
 It calls the gen() function from within the template to delegate work
 to a separate template for Methods.
 
@@ -281,6 +292,17 @@ to a separate template for Methods.
 {% endfor %}
 {% endfor %}
 ```
+
+The gen() function in the vsc_generator implementation will determine the node
+type of `x` at runtime, yielding `Service`.  It will will then look into the
+`default_templates` variable to see which is the template file to use for a
+Service node, and generate the node using that template.
+
+The global `default_templates` variable is defined by vsc_generator to point
+to some templates used for test/demonstration. A custom generator
+implementation would modify this variable, or simply overwrite the value after
+including the vsc_generator as a module (or later on, this might be passed in
+at run-time in a different way).
 
 # Future plans, new proposals and enhancements
 
