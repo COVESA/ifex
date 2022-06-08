@@ -120,6 +120,8 @@ class Namespace(AST):
 class Service(AST):
    name: str
    description: str
+   major_version: int
+   minor_version: int
    namespaces: list[Namespace]
 
 # ----------------------------------------------------------------------------
@@ -226,7 +228,7 @@ def require_list(yaml, parent_name : str):
         ASTNodeError(f"Expected a list of command objects under {parent_name}, not just a single. If there is only one, specify a list, but with one object only")
 
 def ast_Structs(parent, yamltree) -> Structs:
-    
+
     subtrees = get_optional_yaml_value(yamltree, 'structs')
 
     if subtrees is None:
@@ -244,7 +246,7 @@ def ast_Structs(parent, yamltree) -> Structs:
 
 
 def ast_Typedefs(parent, yamltree) -> Typedefs:
-    
+
     subtrees = get_optional_yaml_value(yamltree, 'typedefs')
 
     if subtrees is None:
@@ -263,7 +265,7 @@ def ast_Typedefs(parent, yamltree) -> Typedefs:
 
 
 def ast_Enums(parent, yamltree) -> Enums:
-    
+
     subtrees = get_optional_yaml_value(yamltree, 'enumerations')
 
     if subtrees is None:
@@ -392,7 +394,7 @@ def ast_Namespaces(parent, yamltree) -> list[Namespace]:
         node.methods = ast_Methods(node, st)
         node.events = ast_Events(node, st)
         node.properties = ast_Properties(node, st)
-        
+
         nodes.append(node)
 
     return nodes
@@ -416,6 +418,10 @@ def ast_Service(parent, yamltree) -> Service:
     # that are expected in a valid file
     # So for a  service we expect datatypes and interfaces as children:
     node.description = get_yaml_value(yamltree, 'description')
+
+    node.major_version = get_yaml_value(yamltree, 'major-version')
+    node.minor_version = get_yaml_value(yamltree, 'minor-version')
+
     node.namespaces = ast_Namespaces(node, yamltree)
 
     return node
