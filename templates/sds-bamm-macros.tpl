@@ -86,8 +86,6 @@
      {% else -%}
      {% if member.datatype and not member.datatype.endswith("_t") %}
      bamm:dataType {{ _render_datatype(member.datatype) }} .
-     {% elif member.type and not member.type.endswith("_t") %}
-     bamm:dataType {{ _render_datatype(member.type) }} .
      {% else %}
      bamm:dataType {{ _render_characteristic_type(member) }} .
      {% endif %}
@@ -113,7 +111,7 @@ a bamm-c:RangeConstraint ;
 {% endmacro -%}
 
 {% macro _render_characteristic_definition(member) %}
-{% set type = member.type if member.type else member.datatype -%}
+{% set type = member.datatype -%}
 {% if member.datatype and (member.min or member.max) %}
     {{- "bamm-c:Trait" -}}
 {% elif type.endswith("[]") %}
@@ -176,8 +174,6 @@ a bamm-c:RangeConstraint ;
 {{ member.name }}
 {%- elif member.datatype and member.datatype.endswith("_t") -%}
 Characteristic{{ snake_to_camel(member.datatype.capitalize()) }}
-{%- elif member.type and member.type.endswith("_t") -%}
-Characteristic{{ snake_to_camel(member.type.capitalize()) }}
 {%- else -%}
 Characteristic{{ snake_to_camel(member.name.capitalize()) }}
 {%- endif -%}
@@ -185,9 +181,5 @@ Characteristic{{ snake_to_camel(member.name.capitalize()) }}
 
 {# Render characteristic datatype #}
 {%- macro _render_characteristic_type(member) -%}
-{%- if member.datatype -%}
 :{{ snake_to_camel(member.datatype.capitalize()) }}
-{%- else -%}
-:{{ snake_to_camel(member.type.capitalize()) }}
-{%- endif -%}
 {%- endmacro -%}
