@@ -11,7 +11,7 @@ Header
          Struct: {{ x.name }}
          -> {{ x.description }}
          {% for x in x.members %}
-            member: {{ x.name }} (of type {{x.type}}) 
+            member: {{ x.name }} (of type {{x.datatype}}) 
          {% endfor %}
       {% endfor %}
       {% for x in n.typedefs %}
@@ -32,24 +32,23 @@ Header
          Method: {{ x.name }}
          -> {{ x.description }}
          {% for x in x.in_arguments %}
-            in: {{ x.name }} (of type {{x.type}}) 
+            in: {{ x.name }} (of type {{x.datatype}}) 
          {% endfor %}
          {% for x in x.out_arguments %}
-            out: {{ x.name }} (of type {{x.type}}) 
+            out: {{ x.name }} (of type {{x.datatype}}) 
          {% endfor %}
       {% endfor %}
       {% for x in n.events %}
          Event: {{ x.name }}
          -> {{ x.description }}
          {% for x in x.in_arguments %}
-            in: {{ x.name }} (of type {{x.type}}) 
+            in: {{ x.name }} (of type {{x.datatype}}) 
          {% endfor %}
       {% endfor %}
       {% for x in n.properties %}
          Property: {{ x.name }}
          -> {{ x.description }}
-         -> Type: {{ x.type }}
-         -> Datatype: {{ x.datatype }}
+         -> Type: {{ x.datatype }}
       {% endfor %}
    {% endfor %}
 {% endfor %}
