@@ -30,9 +30,9 @@
 :{{ snake_to_camel(method.name.capitalize()) }} a bamm:Operation ;
     bamm:name "{{ snake_to_camel(method.name.capitalize()) }}" ;
     bamm:description "{{ method.description }}"@en ;
-    bamm:input ({{ element_names(method.in_arguments, true) }}) {{ ";" if method.out_arguments|length > 0 else "." }} 
-    {% if method.out_arguments|length > 0 %}
-    bamm:output {{ element_names([method.out_arguments[0]], true) }} .
+    bamm:input ({{ element_names(method.in, true) }}) {{ ";" if method.out|length > 0 else "." }} 
+    {% if method.out|length > 0 %}
+    bamm:output {{ element_names([method.out[0]], true) }} .
     {% endif %}
 {% endif %}
 {% endmacro %}
@@ -55,7 +55,7 @@
 :{{ snake_to_camel(event.name.capitalize()) }} a bamm:Event ;
     bamm:name "{{ snake_to_camel(event.name.capitalize()) }}" ;
     bamm:description "{{ event.description }}"@en ;
-    bamm:parameters ({{ element_names(event.in_arguments, true) }}) .
+    bamm:parameters ({{ element_names(event.in, true) }}) .
 {% endif %}
 {% endmacro %}
 

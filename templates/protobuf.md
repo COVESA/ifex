@@ -24,7 +24,7 @@ Known limitations of the current implementation:
 * VSC Structs are represented in protobuf.
 * VSC methods are represented as rpc in protobuf.
 * VSC events are represented as messages in protobuf.
-* VSC properties are represented as a read rpc and a write rpc (if actuator) in Protobuf.
+* VSC properties are represented as a read rpc and a write rpc in Protobuf.
 * VSC Error Messages are currently not imported.
 
 ## Using the Protobuf Generator

@@ -56,7 +56,7 @@
       {{- set_type(t.datatype) -}}
       {{- save_type(t.name, ns.current_type) -}}
     {% endfor %}
-    {% for t in n.enums %}
+    {% for t in n.enumerations %}
       {# Enums - Will be represented, just add schema #}
       {% set full_name = "dtmi:global:covesa:" + s.name + ":" + n.name + ":" + t.name + ";1" %}
       {{- save_type(t.name, full_name) -}}
@@ -83,16 +83,16 @@
         "name": "{{x.name}}",
         "description": "{{ x.description }}",
         {# First in-parameters#}
-        {% if x.in_arguments|length > 1 %}
+        {% if x.in|length > 1 %}
         "request": {
           "name": "in",
           "comment": "Using generic name `in` when using inline struct",
           "schema": {
             "@type": "Object",
             "fields": [
-          {% for m in x.in_arguments %}
+          {% for m in x.in %}
               { 
-            {{ set_type(m.type) }}
+            {{ set_type(m.datatype) }}
                 "name": "{{m.name}}",
                 "schema": "{{ns.current_type}}",
                 "description": "{{m.description}}"
@@ -105,9 +105,9 @@
             ]
           }
         }
-        {% elif x.in_arguments|length == 1 %}
-          {% set elem = x.in_arguments|first %}
-          {{ set_type(elem.type) }}
+        {% elif x.in|length == 1 %}
+          {% set elem = x.in|first %}
+          {{ set_type(elem.datatype) }}
         "request": {
           "name": "{{elem.name}}",
           "schema": "{{ns.current_type}}",
@@ -115,22 +115,22 @@
         }
         {% endif %}
         {# Comma if needed#}
-        {% if x.in_arguments|length != 0 %}
-          {% if x.out_arguments|length != 0 %}
+        {% if x.in|length != 0 %}
+          {% if x.out|length != 0 %}
         ,  
           {% endif %}
         {% endif %}
         {# Now out-parameters#}
-        {% if x.out_arguments|length > 1 %}
+        {% if x.out|length > 1 %}
         "response": {
           "name": "out",
           "comment": "Using generic name `out` when using inline struct",
           "schema": {
             "@type": "Object",
             "fields": [
-          {% for m in x.out_arguments %}
+          {% for m in x.out %}
               { 
-            {{ set_type(m.type) }}
+            {{ set_type(m.datatype) }}
                 "name": "{{m.name}}",
                 "schema": "{{ns.current_type}}",
                 "description": "{{m.description}}"
@@ -143,9 +143,9 @@
             ]
           }
         }
-        {% elif x.out_arguments|length == 1 %}
-          {% set elem = x.out_arguments|first %}
-          {{ set_type(elem.type) }}
+        {% elif x.out|length == 1 %}
+          {% set elem = x.out|first %}
+          {{ set_type(elem.datatype) }}
         "response": {
           "name": "{{elem.name}}",
           "schema": "{{ns.current_type}}",
@@ -163,13 +163,13 @@
         "name": "{{x.name}}",
         "description": "{{ x.description }}",
         {# First in-parameters#}
-        {% if x.in_arguments|length > 1 %}
+        {% if x.in|length > 1 %}
         "schema": {
           "@type": "Object",
           "fields": [
-          {% for m in x.in_arguments %}
+          {% for m in x.in %}
             { 
-            {{ set_type(m.type) }}
+            {{ set_type(m.datatype) }}
               "name": "{{m.name}}",
               "schema": "{{ns.current_type}}",
               "description": "{{m.description}}"
@@ -181,28 +181,20 @@
           {% endfor %}
           ]
         }
-        {% elif x.in_arguments|length == 1 %}
-          {% set elem = x.in_arguments|first %}
-          {{ set_type(elem.type) }}
+        {% elif x.in|length == 1 %}
+          {% set elem = x.in|first %}
+          {{ set_type(elem.datatype) }}
         "schema": "{{ns.current_type}}"
         {% endif %}
       }
     {% endfor %}
 
-    {# And each property#}
+    {# And each property, for now always read/write#}
     {% for x in n.properties %}
       {{ optional_comma() }}
       {
-      {% if x.type == "sensor" %}
-        "@type": "Telemetry",
-      {% else %}
         "@type": "Property",
-        {% if x.type == "actuator" %}
         "writable": true,
-        {% else %}
-        "writable": false,
-        {% endif %}
-      {% endif %}
         "name": "{{ x.name }}",
         "description": "{{ x.description }}",
       {{ set_type(x.datatype) }}
@@ -212,7 +204,7 @@
     ],
     "schemas": [
     {% set ns.preceeding_items = 0 %}
-    {% for t in n.enums %}
+    {% for t in n.enumerations %}
       {{ optional_comma() }}
       {
         "@id": "{{ns.typedefs[t.name]}}",
@@ -242,7 +234,7 @@
         "description": "{{ x.description }}",
         "fields": [
         {% for m in x.members %}
-          {{ set_type(m.type) }}
+          {{ set_type(m.datatype) }}
           {
             "name": "{{m.name}}",
             "schema": "{{ns.current_type}}",

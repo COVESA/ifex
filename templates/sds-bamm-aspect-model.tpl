@@ -44,16 +44,16 @@
     {% endfor %}
 
     {%- for event in n.events -%}
-    {%- for in_arg in event.in_arguments -%}
+    {%- for in_arg in event.in -%}
     {{ bamm.render_property(in_arg) }}
     {% endfor %}
     {% endfor %}
 
     {%- for method in n.methods -%}
-    {%- for inProp in method.in_arguments -%}
+    {%- for inProp in method.in -%}
     {{ bamm.render_property(inProp) }}
     {% endfor %}
-    {%- for outProp in method.out_arguments -%}
+    {%- for outProp in method.out -%}
     {{ bamm.render_property(outProp) }}
     {% endfor %}
     {% endfor %}
@@ -64,7 +64,7 @@
     {{ bamm.render_characteristic(typedef) }}
     {% endfor %}
 
-    {%- for enum in n.enums -%}
+    {%- for enum in n.enumerations -%}
     {{ bamm.render_enumeration(enum) }}
     {% endfor %}
 
@@ -75,16 +75,16 @@
     {% endfor %}
 
     {%- for event in n.events -%}
-    {%- for in_arg in event.in_arguments -%}
+    {%- for in_arg in event.in -%}
     {{ bamm.render_characteristic(in_arg) }}
     {% endfor %}
     {% endfor %}
 
     {%- for method in n.methods -%}
-    {%- for inProp in method.in_arguments -%}
+    {%- for inProp in method.in -%}
     {{ bamm.render_characteristic(inProp) }}
     {% endfor %}
-    {%- for outProp in method.out_arguments -%}
+    {%- for outProp in method.out -%}
     {{ bamm.render_characteristic(outProp) }}
     {% endfor %}
     {% endfor %}

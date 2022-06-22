@@ -21,7 +21,7 @@ Header
          -> Min: {{ x.min }}
          -> Max: {{ x.max }}
       {% endfor %}
-      {% for x in n.enums %}
+      {% for x in n.enumerations %}
          Enum: {{ x.name }}
          -> {{ x.description }} 
          {% for x in x.options %}
@@ -31,17 +31,17 @@ Header
       {% for x in n.methods %}
          Method: {{ x.name }}
          -> {{ x.description }}
-         {% for x in x.in_arguments %}
+         {% for x in x.in %}
             in: {{ x.name }} (of type {{x.datatype}}) 
          {% endfor %}
-         {% for x in x.out_arguments %}
+         {% for x in x.out %}
             out: {{ x.name }} (of type {{x.datatype}}) 
          {% endfor %}
       {% endfor %}
       {% for x in n.events %}
          Event: {{ x.name }}
          -> {{ x.description }}
-         {% for x in x.in_arguments %}
+         {% for x in x.in %}
             in: {{ x.name }} (of type {{x.datatype}}) 
          {% endfor %}
       {% endfor %}

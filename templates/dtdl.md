@@ -79,26 +79,17 @@ If the VSC method has more than 1 in-param or more than 1 out-param an inline st
 Assuming the [VSC Events](https://github.com/COVESA/vehicle_service_catalog#namespace-list-object-events) are sent by the vehicle, it could be represented as [DTDL Telemetry](https://github.com/Azure/opendigitaltwins-dtdl/blob/master/DTDL/v2/dtdlv2.md#telemetry). 
 
 ### Properties
-[VSC Properties](https://github.com/COVESA/vehicle_service_catalog#namespace-list-object-properties) is intended to be able to represent [VSS attributes and signals (sensors/actuators)](https://github.com/COVESA/vehicle_service_catalog). They match [DTDL Property](https://github.com/Azure/opendigitaltwins-dtdl/blob/master/DTDL/v2/dtdlv2.md#property) quite well, but to a certain extent also [DTDL Telemetry](https://github.com/Azure/opendigitaltwins-dtdl/blob/master/DTDL/v2/dtdlv2.md#telemetry).
+[VSC Properties](https://github.com/COVESA/vehicle_service_catalog#namespace-list-object-properties) is intended to be able to represent [VSS signals](https://github.com/COVESA/vehicle_signal_specification). They match [DTDL Property](https://github.com/Azure/opendigitaltwins-dtdl/blob/master/DTDL/v2/dtdlv2.md#property) quite well, but to a certain extent also [DTDL Telemetry](https://github.com/Azure/opendigitaltwins-dtdl/blob/master/DTDL/v2/dtdlv2.md#telemetry).
 
 In the DTDL documentation examples for [Telemetry](https://github.com/Azure/opendigitaltwins-dtdl/blob/master/DTDL/v2/dtdlv2.md#telemetry-examples) and [Properties](https://github.com/Azure/opendigitaltwins-dtdl/blob/master/DTDL/v2/dtdlv2.md#property-examples) it seems that Telemetry is used for data similar to VSS sensors and Properties for items similar to VSS actuators and VSS attributes.
 But in VSS an actuator can also act as a sensor, i.e. when you set it you set the "wanted" value, but when you read it you get the "actual" value rather than the "wanted" value.
 An example is `Vehicle.Cabin.Seat.Row1.Pos1.Position`.
 
-For now, the following mapping is used:
-
-- VSS Actuator: Writeable Property
-- VSS Sensor: Telemetry
-- VSS Attribute: Non-writeable Property
+For now all VSC properties are represented as DTDL Writeable Property.
 
 ### Handling of generic fields
 - VSC description can be represented as DTDL description property.
 - VSC does not have structured comments (only `#` comments that are ignored when creating internal model), not possible to convert to DTDL comment property.
-
-### Open Topics
-
-* Representation of VSC Properties (VSS Actuators/Sensors) need further discussion. It might be desirable to be able to e.g. both write to an actuator and to subscribe the same actuator to get notified by changes. It is currently unclear if this can be fulfilled by having a single DTDL entity (Property or Telemetry), or if some VSC/VSS items needs to be represented twice in DTDL, e.g. by both a Telemetry and Property.
-
 
 ## Using the DTDL Generator
 
