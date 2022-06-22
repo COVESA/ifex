@@ -35,7 +35,7 @@ message operation_result {
         {% set x=typedefs.__setitem__(t.name, type) %}
 
       {% endfor %}
-      {% for t in n.enums %}
+      {% for t in n.enumerations %}
 // VSC Enum {{t.name}}
 enum {{t.name}} {
          {% for x in t.options %}
@@ -49,10 +49,10 @@ enum {{t.name}} {
           {# Cannot use dots in names #}
 message {{x.name}} {
           {% for m in x.members %}
-             {% if m.type in  typedefs %}
-               {% set type = typedefs[m.type] %}
+             {% if m.datatype in  typedefs %}
+               {% set type = typedefs[m.datatype] %}
              {% else %}
-               {% set type = m.type %}
+               {% set type = m.datatype %}
              {% endif %}
   {{type|replace(".", "_")}} {{ m.name }} = {{ loop.index }};
           {% endfor %}
@@ -62,22 +62,22 @@ message {{x.name}} {
       {% for x in n.methods %}
 // VSC Method {{x.name}}
 message {{ x.name }}_request {
-         {% for x in x.in_arguments %}
-           {% if x.type in  typedefs %}
-             {% set type = typedefs[x.type] %}
+         {% for x in x.in %}
+           {% if x.datatype in  typedefs %}
+             {% set type = typedefs[x.datatype] %}
            {% else %}
-             {% set type = x.type %}
+             {% set type = x.datatype %}
            {% endif %}
   {{type|replace(".", "_")}} {{ x.name }} = {{ loop.index }};
          {% endfor %}
 }
 
 message {{ x.name }}_response {
-         {% for x in x.out_arguments %}
-           {% if x.type in  typedefs %}
-             {% set type = typedefs[x.type] %}
+         {% for x in x.out %}
+           {% if x.datatype in  typedefs %}
+             {% set type = typedefs[x.datatype] %}
            {% else %}
-             {% set type = x.type %}
+             {% set type = x.datatype %}
            {% endif %}
   {{type|replace(".", "_")}} {{ x.name }} = {{ loop.index }};
          {% endfor %}
@@ -93,11 +93,11 @@ service {{ x.name }}_service {
 // VSC Event {{x.name}}
       {# Limitation: for now just creating a message #}
 message {{ x.name }} {
-         {% for x in x.in_arguments %}
-           {% if x.type in  typedefs %}
-             {% set type = typedefs[x.type] %}
+         {% for x in x.in %}
+           {% if x.datatype in  typedefs %}
+             {% set type = typedefs[x.datatype] %}
            {% else %}
-             {% set type = x.type %}
+             {% set type = x.datatype %}
            {% endif %}
   {{type|replace(".", "_")}} {{ x.name }} = {{ loop.index }};
          {% endfor %}
@@ -108,7 +108,7 @@ message {{ x.name }} {
       {% for x in n.properties %}
 // VSC Property {{x.name}}
 message {{ x.name }}_value {
-        {% if x.datatype in  typedefs %}
+        {% if x.datatype in typedefs %}
           {% set type = typedefs[x.datatype] %}
         {% else %}
           {% set type = x.datatype %}
@@ -119,12 +119,10 @@ message {{ x.name }}_value {
 // To request value in read operation
 message {{ x.name }}_request {}
 
-        {# Example read write methods #}
+        {# With current specification all properties are read/write #}
 service {{ x.name }} {
   rpc {{ x.name }}_read({{ x.name }}_request) returns ({{ x.name }}_value);
-        {% if x.type == "actuator" %}
   rpc {{ x.name }}_write({{ x.name }}_value) returns (operation_result);
-        {% endif %}
 }
 
       {% endfor %}
