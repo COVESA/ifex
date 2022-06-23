@@ -312,8 +312,10 @@ Template | Description | Status | Documentation |
 [protobuf.tpl](templates/protobuf.tpl) | Generates a Protobuf description of the service | Functional | [documentation](templates/protobuf.md) |
 [sds-bamm-aspect-model.tpl](templates/sds-bamm-aspect-model.tpl) (using [sds-bamm-macros.tpl](templates/sds-bamm-macros.tpl))| Generates a BAMM Aspect Meta Model of the service | Functional | [documentation](templates/sds-bamm-aspect-model.md) |
 [test.tpl](templates/test.tpl) | Dummy Example | Not Functional | - |
-[AST-simple_doc.tpl](templates/AST-simple_doc.tpl) | Very simple HTML generator | Functional | - |
+[AST-simple_doc.tpl](templates/AST-simple_doc.tpl) | Very simple HTML generator, relying on [Service-simple_doc.html](templates/Service-simple_doc.html)| Not Functional | - |
 [simple_overview.tpl](templates/simple_overview.tpl) | Generates a textual overview of a service | Functional | - |
+[Argument-simple_doc.html](templates/Argument-simple_doc.html) | Default template for arguments, referenced from [vsc_generator.py](model/vsc_generator.py) | Not Functional | - |
+[Service-simple_doc.html](templates/Service-simple_doc.html) | Default template for services, referenced from [vsc_generator.py](model/vsc_generator.py) | Not Functional | [- |
 
 # Future plans, new proposals and enhancements
 

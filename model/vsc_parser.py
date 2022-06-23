@@ -154,8 +154,8 @@ schema = {
     "Namespace" : {
         "name" : (str, MAN),
         "description" : (str, REC),
-        "major-version" : (str, OPT),
-        "minor-version" : (str, OPT),
+        "major_version" : (str, OPT),
+        "minor_version" : (str, OPT),
         "typedefs" : (list[Typedef], OPT),
         "structs" : (list[Struct], OPT),
         "enumerations" : (list[Enum], OPT),
@@ -173,8 +173,8 @@ schema = {
     "Service" : {
         "name" : (str, MAN),
         # TODO major/minor-version
-        "major-version" : (str, REC),
-        "minor-version" : (str, REC),
+        "major_version" : (str, REC),
+        "minor_version" : (str, REC),
         "description" : (str, REC),
         "namespaces" : (list[Namespace], MAN)
         }

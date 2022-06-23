@@ -44,6 +44,7 @@ jinja_env = jinja2.Environment(
 # settings public for other code to modify them.
 jinja_env.trim_blocks = True
 jinja_env.lstrip_blocks = True
+jinja_env.undefined = jinja2.StrictUndefined
 
 default_templates = {}
 

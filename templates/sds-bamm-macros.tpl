@@ -25,7 +25,7 @@
 
 {# Render a Operation definition based on a VSC Method #}
 {% macro render_operation( method) %}
-{% if not bammElementDictonary[method.name] %}
+{% if not method.name in bammElementDictonary %}
 {%- set _ = bammElementDictonary.update({method.name: method}) -%}
 :{{ snake_to_camel(method.name.capitalize()) }} a bamm:Operation ;
     bamm:name "{{ snake_to_camel(method.name.capitalize()) }}" ;
@@ -39,7 +39,7 @@
 
 {# Render a Property definition based on a VSC Member #}
 {% macro render_property(member) %}
-{% if not bammElementDictonary[member.name] -%}
+{% if not member.name in bammElementDictonary -%}
 {%- set _ = bammElementDictonary.update({member.name: member}) -%}
 :{{ snake_to_camel(member.name) }} a bamm:Property ;
     bamm:name "{{ snake_to_camel(member.name) }}" ;
@@ -50,7 +50,7 @@
 
 {# Render an Event definition based on a VSC Event #}
 {% macro render_event(event) %}
-{% if not bammElementDictonary[event.name] %}
+{% if not event.name in bammElementDictonary %}
 {%- set _ = bammElementDictonary.update({event.name: event}) -%}
 :{{ snake_to_camel(event.name.capitalize()) }} a bamm:Event ;
     bamm:name "{{ snake_to_camel(event.name.capitalize()) }}" ;
@@ -61,7 +61,7 @@
 
 {# Render an Entity definition based on a VSC Struct #}
 {% macro render_entity(struct) %}
-{% if not bammElementDictonary[struct.name] %}
+{% if not struct.name in bammElementDictonary %}
 {%- set _ = bammElementDictonary.update({struct.name: struct}) -%}
 :{{ snake_to_camel(struct.name.capitalize()) }} a bamm:Entity ;
     bamm:name "{{ snake_to_camel(struct.name.capitalize()) }}" ;
@@ -73,12 +73,12 @@
 {# Render a Characteristic definition based on a VSC Member #}
 {% macro render_characteristic(member) %}
 {% set characteristic_name = _render_characteristic_name(member) -%}
-{% if not bammElementDictonary[characteristic_name] %}
+{% if not characteristic_name in bammElementDictonary %}
 {%- set _ = bammElementDictonary.update({characteristic_name: member}) -%}
 :{{ characteristic_name }} a {{ _render_characteristic_definition(member) }} ;
      bamm:name "{{ characteristic_name }}" ;
      bamm:description "{{ member.description }}"@en ;
-     {% if member.datatype and (member.min or member.max) %}
+     {% if (member.min is defined) and (member.min or member.max) %}
      bamm-c:baseCharacteristic :{{ characteristic_name }}Base ;
      bamm-c:constraint [
         {{ _render_range_constraint_definition(member) | indent }}
@@ -91,9 +91,9 @@
      {% endif %}
      {% endif -%}
 
-{% if member.datatype and (member.min or member.max) and not bammElementDictonary[characteristic_name ~ "Base"] %}
+{% if (member.min is defined) and (member.min or member.max) and not ((characteristic_name ~ "Base") in bammElementDictonary) %}
 
-{{ render_characteristic({ "name": characteristic_name ~ "Base", "datatype": member.datatype, "description": member.description }) }}
+{{ render_characteristic({ "name": characteristic_name ~ "Base", "datatype": member.datatype, "description": member.description}) }}
 {%- endif -%}
 {% endif %}
 {% endmacro %}
@@ -112,7 +112,8 @@ a bamm-c:RangeConstraint ;
 
 {% macro _render_characteristic_definition(member) %}
 {% set type = member.datatype -%}
-{% if member.datatype and (member.min or member.max) %}
+{# With strict checking an error is received if trying to use min/max if not defined for the type #}
+{% if (member.min is defined) and (member.min or member.max) %}
     {{- "bamm-c:Trait" -}}
 {% elif type.endswith("[]") %}
     {{- "bamm-c:List" -}}
@@ -126,7 +127,7 @@ a bamm-c:RangeConstraint ;
 {# Render an Enumeration definition based on a VSC Enum #}
 {% macro render_enumeration(enum) %}
 {% set characteristic_name = _render_characteristic_name(enum) -%}
-{% if not bammElementDictonary[characteristic_name] %}
+{% if not characteristic_name in bammElementDictonary %}
 {%- set _ = bammElementDictonary.update({characteristic_name: enum}) -%}
 :{{ characteristic_name }} a bamm-c:Enumeration ;
     bamm:name "{{ characteristic_name }}" ;
