@@ -20,19 +20,19 @@ VSC code-generation functions
 # It's useful to have these classes in our namespace directly
 from model.vsc_parser import AST, Argument, Enum, Error, Event, Include, Member, Method, Namespace, Option, Property, Service, Struct, Typedef
 
-from model import vsc_parser # For other features from parser module
-import anytree
-import getopt
+# For other features from parser module
+from model import vsc_parser
+from templates import TemplatePath
+
 import jinja2
-import os
 import sys
 
 # Set up Jinja
 jinja_env = jinja2.Environment(
         # Use the subdirectory 'templates' relative to this file's location
-        loader=jinja2.FileSystemLoader(os.path.dirname(os.path.join(os.path.realpath(__file__), '/../templates'))),
+        loader=jinja2.FileSystemLoader(TemplatePath),
 
-        # Templates with these extension gets automatic autoescape for HTML
+        # Templates with these extension gets automatic auto escape for HTML
         # It's more annoying for code generation, so passing empty list for now.
         autoescape=jinja2.select_autoescape([])
         )
@@ -47,6 +47,7 @@ jinja_env.undefined = jinja2.StrictUndefined
 
 default_templates = {}
 
+
 # Exception:
 class GeneratorError(BaseException):
     def __init__(self, m):
@@ -54,11 +55,13 @@ class GeneratorError(BaseException):
 
 # ---------- GENERATION FUNCTIONS ------------
 
+
 # Get template with given name (search path should be handled by the loader)
 def get_template(filename):
     return jinja_env.get_template(filename)
 
 # Frontend to overloaded gen() function:
+
 
 def gen(node : AST, second = None):
     # Processing of lists of objects?
@@ -175,14 +178,14 @@ jinja_env.globals.update(
 # For the first case, here follows the main entry points and configuration:
 
 def usage():
-    print("usage: generator.py <input.yaml-yaml-file (path)> <output-template-file (name only, not path)>")
+    print("usage: generator.py <input.yaml-file (path)> <output-template-file (name only, not path)>")
     sys.exit(1)
 
 # This is a default definition for our current generation tests.
 # It may need to be changed, or defined differently in a custom generator
 default_templates = {
-        'Service' : 'Service-simple_doc.html',
-        'Argument' : 'Argument-simple_doc.html'
+        'Service': 'Service-simple_doc.html',
+        'Argument': 'Argument-simple_doc.html'
         }
 
 # If run as a script, generate a single YAML file using a single root template

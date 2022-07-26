@@ -47,8 +47,6 @@ import sys
 # Each AST object also derives from anytree.Node to be able to use the
 # convenience functions of the anytree library.
 
-import model.ast as ast
-
 # Base class for all nodes in the tree
 class AST(anytree.Node):
     def __init__(self, name, parent):
@@ -70,6 +68,7 @@ class Property(AST): pass
 class Service(AST): pass
 class Struct(AST): pass
 class Typedef(AST): pass
+
 
 # Some identifiers used to indicate optionality
 MAN = 0 # MAN(datory)
