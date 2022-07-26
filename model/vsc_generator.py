@@ -12,15 +12,15 @@ VSC code-generation functions
 
 # This performs the following related functions:
 
-# 1. As input we expect an AST as provided by the parser module
+# 1. As input.yaml we expect an AST as provided by the parser module
 #
 # 2. It uses jinja2 templating library to generate code or configuration
 #    according to given templates.
 
 # It's useful to have these classes in our namespace directly
-from vsc_parser import AST, Argument, Enum, Error, Event, Include, Member, Method, Namespace, Option, Property, Service, Struct, Typedef
+from model.vsc_parser import AST, Argument, Enum, Error, Event, Include, Member, Method, Namespace, Option, Property, Service, Struct, Typedef
 
-import vsc_parser # For other features from parser module
+from model import vsc_parser # For other features from parser module
 import anytree
 import getopt
 import jinja2
@@ -30,12 +30,11 @@ import sys
 # Set up Jinja
 jinja_env = jinja2.Environment(
         # Use the subdirectory 'templates' relative to this file's location
-        loader =
-        jinja2.FileSystemLoader(os.path.dirname(os.path.realpath(__file__)) + '/../templates'),
+        loader=jinja2.FileSystemLoader(os.path.dirname(os.path.join(os.path.realpath(__file__), '/../templates'))),
 
         # Templates with these extension gets automatic autoescape for HTML
         # It's more annoying for code generation, so passing empty list for now.
-        autoescape = jinja2.select_autoescape([])
+        autoescape=jinja2.select_autoescape([])
         )
 
 # We want the control blocks in the template to NOT result in any extra
@@ -168,7 +167,7 @@ jinja_env.globals.update(
         Typedef=Typedef)
 
 # This code file can be used in two ways.  Either calling this file as a
-# program using the main entry points here, and specifying input parameter.
+# program using the main entry points here, and specifying input.yaml parameter.
 # Alternatively, for more advanced usage, the file might be included as a
 # module in a custom generator implementation.  That implementation is
 # likely to call some of the funcctions that were defined above.
@@ -176,7 +175,7 @@ jinja_env.globals.update(
 # For the first case, here follows the main entry points and configuration:
 
 def usage():
-    print("usage: generator.py <input-yaml-file (path)> <output-template-file (name only, not path)>")
+    print("usage: generator.py <input.yaml-yaml-file (path)> <output-template-file (name only, not path)>")
     sys.exit(1)
 
 # This is a default definition for our current generation tests.

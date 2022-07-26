@@ -47,6 +47,8 @@ import sys
 # Each AST object also derives from anytree.Node to be able to use the
 # convenience functions of the anytree library.
 
+import model.ast as ast
+
 # Base class for all nodes in the tree
 class AST(anytree.Node):
     def __init__(self, name, parent):
@@ -243,7 +245,7 @@ def get_recommended_yaml_value(tree, nodename):
 # ----------------------------------------------------------------------------
 
 # Here we construct a graph of nodes using typed classes (AST
-# subclasses) that are also AnyTree Nodes, from an input tree that
+# subclasses) that are also AnyTree Nodes, from an input.yaml tree that
 # represents the raw YAML text but read into a tree in the standard
 # dict/list format from the YAML parser.
 
