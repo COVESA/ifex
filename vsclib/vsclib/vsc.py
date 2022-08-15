@@ -11,7 +11,7 @@
 #
 NATIVE_DATATYPES = [ 'int8', 'uint8', 'int16', 'uint16', 'int32',
                      'uint32', 'int64', 'uint64', 'float',
-                     'double', 'boolean', 'string', 'binary' ]
+                     'double', 'boolean', 'string', 'byteBuffer' ]
 _native_datatypes = {}
 
 class Base:
