@@ -9,11 +9,11 @@
 
 import setuptools
 
-long_description="""Library to create, validate, and genreate VSC files
+long_description="""Library to create, validate, and generate VSC files
 This library can be used by translators parsing other IDL files (FrancaIDL, etc)
 to build up an equivalent VSC structure, make sure that all datatype can
 resolve, and generate a python dictionary that can be written out as
-as VSC YAM file."""
+as VSC YAML file."""
 
 setuptools.setup(
     name="vsclib",

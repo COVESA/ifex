@@ -215,10 +215,10 @@ def test_vsc():
     if root_ns.as_vsc_dict() != my_root_dict:
         print(f"Wanted: {my_root_dict}")
         print(f"Got:    {root_ns.as_vsc_dict()}")
-        print("\nFail root namespace dictionary integrity test")
+        print("\nFailed root namespace dictionary integrity test")
         sys.exit(10)
 
-    print("Pass root namespace dictionary integrity test")
+    print("Passed root namespace dictionary integrity test")
 
     res = root_ns.find_unresolved_datatypes()
     if len(res) > 0:
@@ -229,7 +229,7 @@ def test_vsc():
         print(f"Failed datatype resolve test\n")
         sys.exit(11)
 
-    print(f"Pass datatype resolve test\n")
+    print(f"Passed datatype resolve test\n")
     print("\nAll tests pass")
     sys.exit(0)
 if __name__ == "__main__":

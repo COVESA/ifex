@@ -74,7 +74,7 @@ class DatatypeBase(Base):
 
 # Native datatypes
 #
-# Extends DatatypeBase with a support for native datatypes.
+# Extends DatatypeBase with support for native datatypes.
 #
 # Contains validation of datatype names and a
 # as_dict() dictionary generator
@@ -387,7 +387,7 @@ class NameSpace(Base):
 
     def add_namespace(self, name: str) -> "NameSpace":
         #
-        # Is 'name' not among our existing namesapces?
+        # Is 'name' not among our existing namespaces?
         # If so then create a new namespace and add it under self.
         #
         if name not in self._namespaces:
