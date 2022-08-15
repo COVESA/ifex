@@ -36,7 +36,7 @@ def test_vsc():
     # Locate datatype we just added via root search from different child
     if a_a_ns.find_datatype_by_name(".a.b.a.my_typedef") != my_typedef_dt:
         print("Fail typedef root search test 2")
-        sys.exit(4)
+        sys.exit(2)
 
     print("Pass typedef root search test 2")
 
