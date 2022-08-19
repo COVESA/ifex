@@ -1,7 +1,7 @@
 [[source]]
-url = "https://github.com/covesa/vsc-tools/"
+url = "https://github.com/covesa/vsc-tools"
 verify_ssl = true
-name = "model"
+name = "vsc-tools"
 
 [packages]
 pyyaml = ">=5.1"
@@ -13,3 +13,7 @@ pytest = ">=2.7.2"
 
 [requires]
 python_version = "3.10"
+
+[packages.e1839a8]
+path = "."
+editable = true

@@ -18,10 +18,10 @@ VSC code-generation functions
 #    according to given templates.
 
 # It's useful to have these classes in our namespace directly
-from model.vsc_parser import AST, Argument, Enum, Error, Event, Include, Member, Method, Namespace, Option, Property, Service, Struct, Typedef
+from vsc.model.vsc_parser import AST, Argument, Enum, Error, Event, Include, Member, Method, Namespace, Option, Property, Service, Struct, Typedef
 
 # For other features from parser module
-from model import vsc_parser
+from vsc.model import vsc_parser
 from templates import TemplatePath
 
 import jinja2
