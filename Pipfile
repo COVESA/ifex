@@ -1,7 +1,7 @@
 [[source]]
-url = "https://github.com/covesa/vsc-tools"
+url = "https://pypi.org/simple"
 verify_ssl = true
-name = "vsc-tools"
+name = "pypi"
 
 [packages]
 pyyaml = ">=5.1"
