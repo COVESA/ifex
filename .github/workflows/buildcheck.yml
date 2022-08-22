@@ -21,11 +21,14 @@ jobs:
           pip install anytree
           pip install jinja2
 
+      - name: Install vsc module
+        run: |
+          python setup.py develop
+
       - name: Run unit test
         run: |
-          cd tests
           pytest -v
-          
+
       - name: Run example tool on latest VSC
         run: |
           git clone https://github.com/GENIVI/vehicle_service_catalog/
