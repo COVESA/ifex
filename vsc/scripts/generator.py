@@ -3,7 +3,7 @@ from vsc.model.vsc_parser import get_ast_from_file
 import argparse
 
 def vsc_generator_run():
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Runs vehicle service catalog code generator.')
     parser.add_argument('input', metavar='input', type=str,
                         help='input.yaml-file (path)')
     parser.add_argument('template', metavar='template', type=str,                        
