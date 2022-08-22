@@ -12,26 +12,19 @@ for most output definitions.
 ### Prerequisites
 * Python 3.10 installed
 * If the installation (pip install) is executed behind a (corporate) proxy, the following environments variables must be set: `http_proxy` and `https_proxy` (including authentication e.g., `http://${proxy_username):$(proxy_password)@yourproxy.yourdomain`)
-* If you do not run with administration rights, you may need to configure pip target path to write to your user home directory or consider [using the `pipenv` method](#setup-with-pipenv).
+* If you do not run with administration rights, you may need to configure pip target path to write to your user home directory or consider using one of the `virtual environment` methods.
 
-```bash
-On Unix and Mac OS X the configuration file is: $HOME/.pip/pip.conf
-If the file does not exist, create an empty file with that name.
 
-Add or replace the following lines:
-[global]
-target=/somedir/where/your/account/can/write/to
-
-On Windows, the configuration file is: %HOME%\pip\pip.ini
-If the file does not exist, create an empty file with that name.
-
-Add or replace the following lines:
-[global]
-target=C:\SomeDir\Where\Your\Account\Can\Write\To
-```
 ### Project Setup
 
 * If you use a custom pip installation directory, set the `PYTHONPATH` environment variable to the directory that you set in the `pip.ini` file.
+
+### Setup with `virtualenv`
+
+```sh
+python3 -m venv venv
+source venv/bin/activate
+```
 
 ### Setup with `virtualenv`
 
@@ -42,6 +35,8 @@ target=C:\SomeDir\Where\Your\Account\Can\Write\To
 
 ### Setup with `pipenv`
 [pipenv](https://pypi.org/project/pipenv/) is a tool that manages a virtual environment and install the package and its dependencies, making the process much simpler and predictable, since the `Pipfile` states the dependencies, while `Pipfile.lock` freezes the exact version in use.
+
+### (alternative) setup with `pyenv`
 
 If [`pyenv` shell command](https://github.com/pyenv/pyenv) is not installed, use its [installer](https://github.com/pyenv/pyenv-installer) to get it:
 
@@ -54,6 +49,37 @@ Make sure Python version 3.10.6 is installed:
 ```bash
    pyenv install 3.10.6  # install the versions required by Pipfile
 ```
+
+Activate a virtual environment
+```sh
+pyenv local 3.10.6
+```
+
+## Installing packages
+
+_(regardless of which venv tool you use)_
+
+Install the vsc-tool provided modules into your virtual environment)
+```
+python setup.py develop
+
+```
+Install dependencies:
+```
+pip install pyyaml jinja2 pytest anytree
+```
+(Alternatively, we are providing a requirements.txt file but it might be
+deprecated later in favor of pipenv):
+
+```
+pip install -r requirements.txt
+```
+
+## Setup  with pipenv (alternative)
+
+**DEPRECATED / currently not working**
+
+[pipenv](https://pypi.org/project/pipenv/) is a tool that manages a virtual environment and install the package and its dependencies, making the process much simpler and predictable, since the `Pipfile` states the dependencies, while `Pipfile.lock` freezes the exact version in use.
 
 Install this project and its dependencies in the local `.venv` folder in this project, then use it (`pipenv shell`):
 ```bash
@@ -70,7 +96,15 @@ Run from the vss-tools project root directory
    pip install -r requirements.txt
 ```  
 
-## Testing it out
+### Setup without virtual environment (not recommended)
+
+To install to your system environment:
+```
+pip install -r requirements.txt
+python setup.py develop
+```
+
+## Trying it out
 Work in progress!  This is the usage pattern:
 
 ```bash
@@ -85,9 +119,17 @@ For the moment, try this:
    vscgen vehicle_service_catalog/comfort-service.yml simple_overview.tpl
 ```
 
-This example exercises the parser to create the AST out of a YAML file
-from the Vehicle Service Specification
-and then prints out an overview using the template.
+Installing the vsc-tools using `setup.py` also creates some convenient
+executable shims, e.g. `vscgen`:
+
+Example:
+```
+vscgen input.yaml template.tpl
+```
+
+The comfort-service example above exercises the parser to create the AST out
+of a YAML file from the Vehicle Service Catalog definition, and then prints
+out an overview using the template.
 
 ^^^ Edit the code if you want to try out other things.  This will soon be more
 flexible of course.
@@ -168,7 +210,7 @@ generator.default_templates = {
 
 **NOTE:** It is not required to specify a separate template for every type.
 Very often, nodes can be generated directly from the parent template type.
-For simple cases, a single top-level template might suffice for the whole 
+For simple cases, a single top-level template might suffice for the whole
 generation.
 
 ## The gen() function
@@ -197,7 +239,7 @@ gen(node)
 ```
 
 This variant will dynamically determine the node type (a subclass of AST)
-and generate using the predetermined template for that node type.  (See 
+and generate using the predetermined template for that node type.  (See
 `default_templates` variable).
 
 2. Providing the node and a specific template.  The specified template is
