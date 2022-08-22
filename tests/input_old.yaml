@@ -1,0 +1,14 @@
+name: named_service
+description: This is it.
+major_version: 3
+minor_version: 0
+namespaces:
+    -
+        name: test
+        description: none
+    -
+        name: test
+        description: none
+includes:
+    input2:
+        file: input2.yaml

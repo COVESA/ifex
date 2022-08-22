@@ -21,8 +21,9 @@ VSC code-generation functions
 from vsc.model.vsc_parser import AST, Argument, Enum, Error, Event, Include, Member, Method, Namespace, Option, Property, Service, Struct, Typedef
 
 # For other features from parser module
-from vsc.model import vsc_parser
-from templates import TemplatePath
+from vsc.model.vsc_parser import get_ast_from_file
+
+from vsc.templates import TemplatePath
 
 import jinja2
 import sys
@@ -192,7 +193,7 @@ default_templates = {
 if __name__ == "__main__":
     if not len(sys.argv) == 3:
         usage()
-    ast = vsc_parser.get_ast_from_file(sys.argv[1])
+    ast = get_ast_from_file(sys.argv[1])
     templatename = sys.argv[2]
     print(gen(ast, templatename))
 
