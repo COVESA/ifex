@@ -2,36 +2,50 @@ from dataclasses import dataclass
 from typing import List, Optional, Dict, Any
 import yaml
 
+
 @dataclass
 class Argument:
     name: str
-    description: str
     datatype: str
-    array_size: Optional[str] = None
+    description: Optional[str] = None
+    arraysize: Optional[str] = None
     range: Optional[str] = None
 
 
 @dataclass
 class Error:
     datatype: str
-    array_size: Optional[str] = None
+    description: Optional[str] = None
+    arraysize: Optional[str] = None
     range: Optional[str] = None
 
 
 @dataclass
 class Method:
     name: str
-    description: str
-    error: Error
+    description: Optional[str] = None
+    error: Optional[List[Error]] = None
     input: Optional[List[Argument]] = None
     output: Optional[List[Argument]] = None
+
+    def __post_init__(self):
+        if self.error is not None:
+            self.error = [Error(**e) if isinstance(e, dict) else e for e in self.error]
+        if self.input is not None:
+            self.input = [Argument(**a) if isinstance(a, dict) else a for a in self.input]
+        if self.output is not None:
+            self.output = [Argument(**a) if isinstance(a, dict) else a for a in self.output]
 
 
 @dataclass
 class Event:
     name: str
-    description: str
+    description: Optional[str] = None
     output: Optional[List[Argument]] = None
+
+    def __post_init__(self):
+        if self.output is not None:
+            self.output = [Argument(**a) if isinstance(a, dict) else a for a in self.output]
 
 
 @dataclass
@@ -39,57 +53,55 @@ class Property:
     name: str
     datatype: str
     description: Optional[str] = None
-    array_size: Optional[int] = None
+    arraysize: Optional[int] = None
 
 
 @dataclass
 class Member:
     name: str
-    description: str
     datatype: str
-    array_size: Optional[str] = None
+    description: Optional[str] = None
+    arraysize: Optional[str] = None
 
 
 @dataclass
 class Option:
     name: str
     value: str
-    description: str
+    description: Optional[str] = None
+
+
+@dataclass
+class Enumeration:
+    name: str
+    datatype: str
+    options: List[Option]
+    description: Optional[str] = None
+
+    def __post_init__(self):
+        if self.options is not None:
+            self.options = [Option(**o) if isinstance(o, dict) else o for o in self.options]
 
 
 @dataclass
 class Struct:
     name: str
-    members: List[Member]
     description: Optional[str] = None
+    members: Optional[List[Member]] = None
+
+    def __post_init__(self):
+        if self.members is not None:
+            self.members = [Member(**m) if isinstance(m, dict) else m for m in self.members]
 
 
 @dataclass
 class Typedef:
     name: str
-    description: str
     datatype: str
-    array_size: Optional[int] = None
+    description: Optional[str] = None
+    arraysize: Optional[int] = None
     min: Optional[int] = None
     max: Optional[int] = None
-
-
-@dataclass
-class Namespace:
-    name: str
-    description: Optional[str]
-    major_version: Optional[int]
-    minor_version: Optional[int]
-    typedefs: Optional[List[Typedef]] = None
-
-
-@dataclass
-class Service:
-    name: str
-    description: str
-    major_version: int
-    minor_version: int
-    namespaces: Optional[List[Namespace]] = None
 
 
 @dataclass
@@ -99,9 +111,58 @@ class Include:
 
 
 @dataclass
+class Namespace:
+    """
+
+    """
+    name: str
+    description: Optional[str] = None
+
+    major_version: Optional[int] = None
+    minor_version: Optional[int] = None
+
+    methods: Optional[List[Method]] = None
+    typedefs: Optional[List[Typedef]] = None
+    includes: Optional[List[Include]] = None
+    structs: Optional[List[Struct]] = None
+    enumerations: Optional[List[Enumeration]] = None
+
+    def __post_init__(self):
+        if self.includes is not None:
+            self.includes = [Include(**i) if isinstance(i, dict) else i for i in self.includes]
+        if self.structs is not None:
+            self.structs = [Struct(**s) if isinstance(s, dict) else s for s in self.structs]
+        if self.typedefs is not None:
+            self.typedefs = [Typedef(**t) if isinstance(t, dict) else t for t in self.typedefs]
+        if self.enumerations is not None:
+            self.enumerations = [Enumeration(**e) if isinstance(e, dict) else e for e in self.enumerations]
+
+
+@dataclass
+class Service:
+    name: str
+    major_version: int
+    minor_version: int
+    description: Optional[str] = None
+    methods: Optional[List[Method]] = None
+    namespaces: Optional[List[Namespace]] = None
+
+    def __post_init__(self):
+        if self.methods is not None:
+            self.methods = [Method(**n) if isinstance(n, dict) else n for n in self.methods]
+        if self.namespaces is not None:
+            self.namespaces = [Namespace(**n) if isinstance(n, dict) else n for n in self.namespaces]
+
+
+@dataclass
 class AST:
     service: Service
+    # TODO: can includes be a part of the main namespace or only subsequent namespaces
     includes: Optional[List[Include]] = None
+
+    def __post_init__(self):
+        if self.includes is not None:
+            self.includes = [Include(**i) if isinstance(i, dict) else i for i in self.includes]
 
 
 def parse_dataclass_from_dict(class_name, dictionary):
@@ -121,7 +182,7 @@ def parse_dataclass_from_dict(class_name, dictionary):
 def read_yaml_file(filename) -> str:
     """
     Tries to read a file which contains yaml into a string
-    TODO: can have performance implications when filesize is big. We have to consider incremental yaml processing.
+    TODO: can have performance implications when file size is big. We have to consider incremental yaml processing.
     :param filename:
     :return: file contents as string
     """
