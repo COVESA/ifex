@@ -15,7 +15,7 @@ def test_x():
 
 def test_gen(tmp_path):
     # The files named 'input.yaml', 'template' and 'result' are in the tests directory
-    ast_root = vsc_parser.get_ast_from_file(os.path.join(TestPath,'input_old.yaml'))
+    ast_root = vsc_parser.get_ast_from_file(os.path.join(TestPath, 'input3.yaml'))
 
     with open(os.path.join(TestPath,"template"), "r") as template_file:
         generated = vsc_generator._gen_with_text_template(ast_root, template_file.read())
@@ -29,21 +29,20 @@ def test_gen(tmp_path):
 
 
 def test_ast_gen():
-    ast_tmp = vsc_ast.read_ast_from_yaml_file(os.path.join(TestPath, 'input.yaml'))
+    service = vsc_ast.read_ast_from_yaml_file(os.path.join(TestPath, 'input.yaml'))
 
-    assert ast_tmp.namespaces[0].name == "first"
-    assert ast_tmp.namespaces[0].major_version == 3
-    assert ast_tmp.namespaces[0].minor_version == 0
+    assert service.name == "first"
+    assert service.major_version == 3
+    assert service.minor_version == 0
 
 
 def test_ast_manual():
     namespace = vsc_ast.Namespace(name='test', description='test', major_version=1, minor_version=0)
-    ast_root = vsc_ast.AST(namespaces=[namespace])
 
-    assert ast_root.namespaces[0].name == 'test'
-    assert ast_root.namespaces[0].description == 'test'
-    assert ast_root.namespaces[0].major_version == 1
-    assert ast_root.namespaces[0].minor_version == 0
+    assert namespace.name == 'test'
+    assert namespace.description == 'test'
+    assert namespace.major_version == 1
+    assert namespace.minor_version == 0
 
 
 # Unused

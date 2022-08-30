@@ -140,15 +140,6 @@ class Namespace:
             self.namespaces = [Namespace(**n) if isinstance(n, dict) else n for n in self.namespaces]
 
 
-@dataclass
-class AST:
-    namespaces: Optional[List[Namespace]] = None
-
-    def __post_init__(self):
-        if self.namespaces is not None:
-            self.namespaces = [Namespace(**n) if isinstance(n, dict) else n for n in self.namespaces]
-
-
 def parse_dataclass_from_dict(class_name, dictionary):
     try:
         field_types = class_name.__annotations__
@@ -183,16 +174,16 @@ def parse_yaml_file(yaml_string: str) -> Dict[Any, Any]:
     return yaml.safe_load(yaml_string)
 
 
-def parse_ast_from_dict(ast_dict: Dict[Any, Any]) -> AST:
+def parse_ast_from_dict(ast_dict: Dict[Any, Any]) -> Namespace:
     """
     Tries to parse dictionary and create abstract syntax tree
     :param ast_dict: dictionary containing AST (vehicle service catalog)
     :return: AST
     """
-    return parse_dataclass_from_dict(AST, ast_dict)
+    return parse_dataclass_from_dict(Namespace, ast_dict)
 
 
-def read_ast_from_yaml_file(filename: str) -> AST:
+def read_ast_from_yaml_file(filename: str) -> Namespace:
     """
     Reads a yaml file and returns AST
     :param filename: path to a yaml file
