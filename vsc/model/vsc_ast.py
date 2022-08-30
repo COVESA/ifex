@@ -41,11 +41,11 @@ class Method:
 class Event:
     name: str
     description: Optional[str] = None
-    output: Optional[List[Argument]] = None
+    input: Optional[List[Argument]] = None
 
     def __post_init__(self):
-        if self.output is not None:
-            self.output = [Argument(**a) if isinstance(a, dict) else a for a in self.output]
+        if self.input is not None:
+            self.input = [Argument(**a) if isinstance(a, dict) else a for a in self.input]
 
 
 @dataclass
@@ -86,6 +86,8 @@ class Enumeration:
 @dataclass
 class Struct:
     name: str
+    # TODO: do we need type field in a struct?
+    type: Optional[str] = None
     description: Optional[str] = None
     members: Optional[List[Member]] = None
 
@@ -118,14 +120,21 @@ class Namespace:
     major_version: Optional[int] = None
     minor_version: Optional[int] = None
 
+    events: Optional[List[Event]] = None
     methods: Optional[List[Method]] = None
     typedefs: Optional[List[Typedef]] = None
     includes: Optional[List[Include]] = None
     structs: Optional[List[Struct]] = None
     enumerations: Optional[List[Enumeration]] = None
+    properties: Optional[List[Property]] = None
+
     namespaces: Optional[List['Namespace']] = None
 
     def __post_init__(self):
+        if self.properties is not None:
+            self.properties = [Property(**p) if isinstance(p, dict) else p for p in self.properties]
+        if self.events is not None:
+            self.events = [Event(**e) if isinstance(e, dict) else e for e in self.events]
         if self.methods is not None:
             self.methods = [Method(**m) if isinstance(m, dict) else m for m in self.methods]
         if self.includes is not None:
