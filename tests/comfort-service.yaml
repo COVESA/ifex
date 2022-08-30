@@ -1,0 +1,374 @@
+#
+# Copyright 2022, Robert Bosch GmbH
+# Copyright 2020, Jaguar Land Rover
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+
+# Namespace
+#
+#  A namespace is a collection of datatypes, methods, properties,
+#  events, and other namespaces.
+#
+#
+# TODO:
+# + Define error semantics for methods to align with FrancaIDL
+#
+# + Add array arguments.
+#
+# + How do we import namespaces, datatypes, etc from other service files?
+#   Importing datatypes used by multiple services make sense, but it
+#   will put a strain on the build pipeline since we now will have to
+#   search for and assemble a library of interdependent services.
+#
+#
+
+---
+name: comfort
+major_version: 3
+minor_version: 0
+description: A collection of interfaces pertaining to cabin comfort, intended to be aligned with corresponding VSS signals.
+
+# Include another VSC file into the current "comfort" namespace
+#
+includes:
+  -  description: Include all error codes used by this namespace
+     file: vsc-error.yml
+
+# Create a separate namespace for movement-related datatypes and methods.
+# We can create additional namespaces for HVAC, ambient lighting, etc.
+#
+namespaces:
+  - name: seats
+    description: Seat interface and datatypes.
+
+    # Defines all structs hosted by the `seats` namespace.
+    # Standard structs can be defind, using either native types, typedefs,
+    # or other (nested) structs.
+    #
+    structs:
+      #
+      # Position of seat
+      #
+      - name: position_t
+        description: |
+          The position of the entire seat
+        members:
+          - name: position
+            datatype: uint16
+            description: |
+              Seat position on vehicle x-axis. Position is in millimeters relative to the frontmost position supported by the seat.
+              0 = Frontmost position supported.
+          - name: height
+            datatype: uint16
+            description: |
+              Seat position on vehicle z-axis. Position is in millimeters relative within available movable range of the seating.
+              0 = Lowermost position supported.
+          - name: tilt
+            datatype: float
+            description: |
+              Tilting of seat in degrees relative to vehicle z-axis. 0 = seating is flat, seat and vehicle z-axis are parallel.
+              Positive degrees = seat tilted backwards, seat z-axis is tilted backward.
+          - name: backrest_recline
+            datatype: float
+            description: |
+              Backrest recline in degrees compared to seat z-axis (seat vertical axis).
+              0 degrees = Upright/Vertical backrest.
+              Negative degrees for forward recline. Positive degrees for backward recline.
+          - name: backrest_lumbar_support
+            datatype: percent_float_t
+            description: |
+              Lumbar support (in/out position) in percent. 0 = Innermost position. 100 = Outermost position.
+          - name: backrest_lumbar_height
+            datatype: uint8
+            description: |
+              Height of lumbar support in millimeters. Position is relative within available movable range of the lumbar support.
+              0 = Lowermost position supported.
+          - name: backrest_sidebolster_support
+            datatype: percent_float_t
+            description: |
+              Side bolster support in percent. 0 = Minimum support (widest side bolster setting).
+              100 = Maximum support.
+          - name: seating_length
+            datatype: uint16
+            description: |
+              Length adjustment of seating in millimeters. 0 = Adjustable part of seating in rearmost position
+              (Shortest length of seating).
+          - name: headrest_height
+            datatype: uint8
+            description: |
+              Position of headrest in millimeters relative to movable range of the head rest. 0 = Bottommost position supported.
+          - name: headrest_angle
+            datatype: float
+            description: |
+              Headrest angle in degrees, relative to backrest, 0 degrees if parallel to backrest, Positive degrees = tilted forward.
+      #
+      # Seat location
+      #
+      - name: seat_location_t
+        description: |
+          The location of the seat in the vehicle
+        members:
+          - name: row
+            datatype: uint8
+            description: |
+              The row, front 1 and +1 toward rear
+          - name: index
+            datatype: uint8
+            description: |
+              The index within the row, 1 left most (as seen looking forward), +1 toward right
+
+
+      - name: seat_t
+        type: struct
+        description: |
+          The structure used to describe the seat's position in the vehicle
+
+        members:
+          - name: location
+            datatype: seat_location_t
+            description: |
+              The location of the seat in the vehicle
+
+          - name: position
+            datatype: position_t
+            description: |
+              The various aspects of the seat
+
+
+    # Typedefs
+    #
+    # Standard redefinition of native types are supported.
+    # Min/max intervals can be optionally specified
+    #
+    typedefs:
+      - name: movement_t
+        datatype: float
+        description: |
+          The movement of a seat component. Limits and resolution varies depending on aspect changed,
+          and typically is vehicle dependent.
+
+
+      # We can also redefine an existing type,
+      # effectively giving it a new name.
+      - name: relative_movement_t
+        datatype: movement_t
+        description: |
+          The relative movement of a seat component
+          
+
+      - name: percent_float_t
+        datatype: float
+        min: 0
+        max: 100
+        description: |
+          Percent represented as float with range restricted from  0 to 100.
+
+
+    enumerations:
+      # Enums
+      #
+      #  TODO:
+      #  + Decide if we need to move enum_type (uint8) to a separate deployment
+      #    file, one per target (python, C++, etc).
+      #    The upside is a cleaner, more service-oriented catalog.
+      #    The downside is it inter-target operability is harder to
+      #    define an over-the-wire payload format since one target
+      #    can define uint16_t while another has uint8_t.
+      #
+      - name: seat_component_t
+        datatype: uint8  # Should probably be moved to deployment file
+        options:
+          - name: position
+            value: 0
+          - name: height
+            value: 1
+          - name: tilt
+            value: 2
+          - name: backrest_recline
+            value: 3
+          - name: backrest_lumbar_support
+            value: 4
+          - name: backrest_lumbar_height
+            value: 5
+          - name: backrest_sidebolster_support
+            value: 6
+          - name: seating_length
+            value: 7
+          - name: headrest_height
+            value: 8
+          - name: headrest_angle
+            value: 9
+        description: |
+          Current seat component
+
+    # METHODS
+    #
+    # This section defines all methods for the given namespace.
+    #
+    # A method invokes a command for a given service that may optionally
+    # return a value.
+    #
+    # Only one service instance will execute a call. The service discovery
+    # and invocation mechanism is up to the implementation to resolve (possibly
+    # with the help of deployment files).
+    #
+    methods:
+      - name: move
+        description: |
+          Set the desired seat position
+
+        input:
+          - name: seat
+            description: |
+              The desired seat position
+            datatype: seat_t
+
+        error:
+          - description: |
+              "ok" - requested seat movement has been executed successfully
+              "invalid_argument" - any argument out of range supported by vehicle
+              "not_found" - addressed seat not available/existing
+              "interrupted" - operation interrupted
+              "busy" - seat service is currently busy
+              "other" - internal error in implementation
+            datatype: .stdvsc.error_t
+            range: $ in_set("ok", "invalid_argument", "not_found", "interrupted", "busy", "other")
+
+      - name: move_component
+        description: |
+          Set a seat component position
+
+        # Arguments
+        #
+        #  Argument can be of any native type, enum, struct, or typedef.
+        #
+        input:
+          - name: seat
+            description: |
+              The seat location to change
+            datatype: seat_location_t
+          - name: component
+            description: |
+              The component position to change
+            datatype: seat_component_t
+          - name: position
+            description: |
+              The desired position to move the component to
+            datatype: movement_t
+
+        error:
+          - description: |
+              "ok" - requested seat movement has been executed successfully
+              "invalid_argument" - any argument out of range supported by vehicle
+              "not_found" - addressed seat not available/existing
+              "interrupted" - operation interrupted
+              "busy" - seat service is currently busy
+              "other" - internal error in implementation
+            datatype: .stdvsc.error_t
+            range: $ in_set("ok", "invalid_argument", "not_found", "interrupted", "busy", "other")
+
+      - name: current_position
+        description: |
+          Get the current position of the seat
+
+        input:
+          - name: row
+            description: |
+              The desired seat row to query, front 1 and +1 toward rear
+            datatype: uint8
+          - name: index
+            description: |
+              The desired seat index to query,  1 left most (as seen looking forward), +1 toward right
+            datatype: uint8
+
+        output:
+          - name: seat
+            description: |
+              The seat state that was requested
+            datatype: seat_t
+
+        error:
+          - description: |
+              "ok" - current position of selected seat has been returned
+              "invalid_argument" - any argument out of range supported by vehicle
+              "not_found" - addressed seat not available/existing
+              "other" - internal error in implementation
+              It is assumed that this operation does not need unique resources and returns immediately,
+              so no need to support "interrupted" and "busy" as errors.
+            datatype: .stdvsc.error_t
+            range: $ in_set("ok", "invalid_argument", "not_found", "other")
+
+    # EVENTS
+    #
+    # This section defines all events for the given namespace.
+    #
+    # Events are non-returning commands with multiple subscribers,
+    # much like SOME/IP events.
+    # Unlike signals an event retains no state (value) after it has
+    # been called; once it has been sent it is forgotten.
+    #
+    # TODO:
+    # + FrancaIDL may lack semantics to cover this. We need to
+    #   create appropriate transformation rules.
+    #
+    events:
+      - name: seat_moving
+        description: |
+          The event of a seat beginning movement
+        input:
+          - name: status
+            description: |
+              The movement status, moving (1), not moving (0)
+            datatype: uint8
+          - name: row
+            description: |
+              The row of the seat,  front 1 and +1 toward rear
+            datatype: uint8
+          - name: index
+            description: |
+              The index of the seat position in the row,  1 left most (as seen looking forward), +1 toward right
+            datatype: uint8
+          - name: component
+            description: |
+              The seat component that is moving
+            datatype: seat_component_t
+
+      - name: passenger_present
+        description: |
+          When the seat passenger status changes
+        input:
+          - name: status
+            description: |
+              The status of seat passenger, passenger (1), no passenger (0)
+            datatype: boolean
+          - name: row
+            description: |
+              The row of the seat, front 1 and +1 toward rear
+            datatype: uint8
+          - name: index
+            description: |
+              The index of the seat position in the row,  1 left most (as seen looking forward), +1 toward right
+            datatype: uint8
+
+
+    # PROPERTIES
+    #
+    # This section defines properties for the given namespace.
+    #
+    # Properties are service data elements that are distributed
+    # across one or more subscribers. They are equivalent to
+    # MQTT topics or SOME/IP fields.
+    #
+    # In VSC all properties are considered to be read/write
+    #
+    # TODO: Define relationship, rules, and semantics
+    #       between properties and VSS signals.
+    #       See vss_integration_proposal.yml for one solution.
+    #
+    properties:
+      - name: a_property
+        description: A signal
+        datatype: uint8

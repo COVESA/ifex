@@ -27,6 +27,11 @@ def test_gen(tmp_path):
         wanted = result_file.read().rstrip()
         assert generated == wanted
 
+def test_real_yaml():
+    service = vsc_ast.read_ast_from_yaml_file(os.path.join(TestPath, 'comfort-service.yaml'))
+
+    assert service.name == 'comfort'
+
 
 def test_ast_gen():
     service = vsc_ast.read_ast_from_yaml_file(os.path.join(TestPath, 'input.yaml'))
