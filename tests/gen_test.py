@@ -31,20 +31,19 @@ def test_gen(tmp_path):
 def test_ast_gen():
     ast_tmp = vsc_ast.read_ast_from_yaml_file(os.path.join(TestPath, 'input.yaml'))
 
-    assert ast_tmp.service.name == "service_name"
-    assert ast_tmp.service.major_version == 3
-    assert ast_tmp.service.minor_version == 0
+    assert ast_tmp.namespaces[0].name == "first"
+    assert ast_tmp.namespaces[0].major_version == 3
+    assert ast_tmp.namespaces[0].minor_version == 0
 
 
 def test_ast_manual():
     namespace = vsc_ast.Namespace(name='test', description='test', major_version=1, minor_version=0)
-    service = vsc_ast.Service(name='test', description='test', major_version=1, minor_version=0, namespaces=[namespace])
-    ast_root = vsc_ast.AST(service=service)
+    ast_root = vsc_ast.AST(namespaces=[namespace])
 
-    assert ast_root.service.name == 'test'
-    assert ast_root.service.major_version == 1
-    assert ast_root.service.minor_version == 0
-    assert ast_root.service.namespaces[0].name == 'test'
+    assert ast_root.namespaces[0].name == 'test'
+    assert ast_root.namespaces[0].description == 'test'
+    assert ast_root.namespaces[0].major_version == 1
+    assert ast_root.namespaces[0].minor_version == 0
 
 
 # Unused

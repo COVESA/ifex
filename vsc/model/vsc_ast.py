@@ -112,9 +112,6 @@ class Include:
 
 @dataclass
 class Namespace:
-    """
-
-    """
     name: str
     description: Optional[str] = None
 
@@ -126,8 +123,11 @@ class Namespace:
     includes: Optional[List[Include]] = None
     structs: Optional[List[Struct]] = None
     enumerations: Optional[List[Enumeration]] = None
+    namespaces: Optional[List['Namespace']] = None
 
     def __post_init__(self):
+        if self.methods is not None:
+            self.methods = [Method(**m) if isinstance(m, dict) else m for m in self.methods]
         if self.includes is not None:
             self.includes = [Include(**i) if isinstance(i, dict) else i for i in self.includes]
         if self.structs is not None:
@@ -136,33 +136,17 @@ class Namespace:
             self.typedefs = [Typedef(**t) if isinstance(t, dict) else t for t in self.typedefs]
         if self.enumerations is not None:
             self.enumerations = [Enumeration(**e) if isinstance(e, dict) else e for e in self.enumerations]
-
-
-@dataclass
-class Service:
-    name: str
-    major_version: int
-    minor_version: int
-    description: Optional[str] = None
-    methods: Optional[List[Method]] = None
-    namespaces: Optional[List[Namespace]] = None
-
-    def __post_init__(self):
-        if self.methods is not None:
-            self.methods = [Method(**n) if isinstance(n, dict) else n for n in self.methods]
         if self.namespaces is not None:
             self.namespaces = [Namespace(**n) if isinstance(n, dict) else n for n in self.namespaces]
 
 
 @dataclass
 class AST:
-    service: Service
-    # TODO: can includes be a part of the main namespace or only subsequent namespaces
-    includes: Optional[List[Include]] = None
+    namespaces: Optional[List[Namespace]] = None
 
     def __post_init__(self):
-        if self.includes is not None:
-            self.includes = [Include(**i) if isinstance(i, dict) else i for i in self.includes]
+        if self.namespaces is not None:
+            self.namespaces = [Namespace(**n) if isinstance(n, dict) else n for n in self.namespaces]
 
 
 def parse_dataclass_from_dict(class_name, dictionary):
