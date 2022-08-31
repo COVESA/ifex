@@ -8,5 +8,4 @@ namespaces:
     - name: test
       description: none
 includes:
-    input2:
-        file: input2.yaml
+  - file: input2.yaml
