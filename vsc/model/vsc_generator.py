@@ -17,14 +17,10 @@ VSC code-generation functions
 # 2. It uses jinja2 templating library to generate code or configuration
 #    according to given templates.
 
-# It's useful to have these classes in our namespace directly
-from vsc.model.vsc_parser import AST, Argument, Enum, Error, Event, Include, Member, Method, Namespace, Option, Property, Service, Struct, Typedef
-
 # For other features from parser module
-from vsc.model.vsc_parser import get_ast_from_file
-
+from vsc.model import vsc_ast
+from vsc.model.vsc_ast import AST
 from vsc.templates import TemplatePath
-
 import jinja2
 import sys
 
@@ -66,6 +62,10 @@ def get_template(filename):
 
 def gen(node : AST, second = None):
     # Processing of lists of objects?
+
+    if node is None:
+       return "NONE"
+
     if type(node) == list or type(node) == tuple:
         # Generate each node and return a list of results. A list is not
         # intended to be printed directly as output, but to be processed by
@@ -96,30 +96,31 @@ def gen(node : AST, second = None):
 # A default template must be defined for this node type to use the function
 # this way.
 def _gen_type(node : AST):
-    # It is currently unexpected to receive None.  But minor changes might
-    # change this later.  An alternative is to generate an empty string,
-    # but for now let's make sure this case is noticed with an exception,
-    # so it can be investigated.
+
     if node is None:
-        raise GeneratorError(f"Unexpected 'None' node received")
-        return ""
+        raise GeneratorError(f"_gen_type(): Unexpected 'None' node received")
+
+    if isinstance(node, str):
+        return node
+
+    if isinstance(node, int):
+        return str(node)
 
     nodetype=type(node).__name__
 
-    # If the output-template refers to a member variable that was _not
-    # defined_ in the node, then it shows up as Undefined type. This
-    # happens when optional things do not appear within the service
-    # definition. We just generate empty strings for those items.
-    if nodetype == "Undefined":
+    # If the output-template refers to a member variable that does not
+    # exist in type, then it shows up as StrictUndefined.
+    if nodetype == 'StrictUndefined':
+        raise GeneratorError(f'The template seems to call gen() with an unknown field name. Please check!')
         return ""
 
     tpl = default_templates.get(nodetype)
     if tpl is None:
         raise GeneratorError(f'gen() function called with node of type {nodetype} but no default template is defined for the type {nodetype}')
     else:
-        return get_template(tpl).render({ 'item' : node})
+        return get_template(tpl).render({'item' : node})
 
-# If template name directly specified, just use it.
+# This is called if an explicit template was requested
 def _gen_tmpl(node : AST, templatefile: str):
     return get_template(templatefile).render({ 'item' : node})
 
@@ -130,11 +131,11 @@ def _gen_tmpl(node : AST, templatefile: str):
 def _gen_with_text_template(node: AST, second: str):
     # Processing of lists of objects, see gen() for explanation
    if type(node) == list or type(node) == tuple:
-       return [_gen_with_text_template(x, second) for x in node]
-   if second is None:
-       return _gen_type(node)
-   elif type(second) == str:  # "second" is here the template text, not a filename
-       return jinja2.Template(second).render({'item' : node})
+       return [_gen_with_text_template(x, template_text) for x in node]
+   if template_text is None:
+       raise GeneratorError(f'_gen_with_text_template called without template')
+   elif type(template_text) == str:
+       return jinja2.Template(template_text).render({'item' : node})
    else:
        print(f'node is of type {type(node)}, second arg is of type {type(second)}  ({type(second).__class__}, {type(second).__class__.__name__})')
        raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {second.__name__})')
@@ -146,37 +147,8 @@ def gen_dict_with_template_file(variables : dict, templatefile):
 
 # Export the gen() function and classes into jinja template land
 # so that they can be referred to inside templates.
+jinja_env.globals.update(gen=gen)
 
-# The AST class definitions are not required to reference the member
-# variables on objects, so they will be rarely used.  But possibly some
-# template will have logic to create an AST node on-the-fly and then call
-# the generator on it, and this will require knowledge of the AST
-# (sub)class.
-
-jinja_env.globals.update(
-        gen=gen,  # Most common function to reference from template
-        AST=AST,  # AST classes and subclasses....
-        Argument=Argument,
-        Enum=Enum,
-        Error=Error,
-        Event=Event,
-        Include=Include,
-        Member=Member,
-        Method=Method,
-        Namespace=Namespace,
-        Option=Option,
-        Property=Property,
-        Service=Service,
-        Struct=Struct,
-        Typedef=Typedef)
-
-# This code file can be used in two ways.  Either calling this file as a
-# program using the main entry points here, and specifying input.yaml parameter.
-# Alternatively, for more advanced usage, the file might be included as a
-# module in a custom generator implementation.  That implementation is
-# likely to call some of the funcctions that were defined above.
-
-# For the first case, here follows the main entry points and configuration:
 
 def usage():
     print("usage: generator.py <input.yaml-file (path)> <output-template-file (name only, not path)>")
@@ -185,7 +157,12 @@ def usage():
 # This is a default definition for our current generation tests.
 # It may need to be changed, or defined differently in a custom generator
 default_templates = {
+        'AST': 'AST-simple_doc.tpl',
         'Service': 'Service-simple_doc.html',
+        'Argument': 'Argument-simple_doc.html',
+        'Error': 'Error-simple_doc.html',
+        'Member': 'Member-simple_doc.html',
+        'Namespace': 'Namespace-simple_doc.html',
         'Argument': 'Argument-simple_doc.html'
         }
 
@@ -193,7 +170,7 @@ default_templates = {
 if __name__ == "__main__":
     if not len(sys.argv) == 3:
         usage()
-    ast = get_ast_from_file(sys.argv[1])
+    ast = vsc_ast.read_ast_from_yaml_file(sys.argv[1])
     templatename = sys.argv[2]
     print(gen(ast, templatename))
 
