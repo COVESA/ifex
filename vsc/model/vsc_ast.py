@@ -33,24 +33,12 @@ class Method:
     input: Optional[List[Argument]] = None
     output: Optional[List[Argument]] = None
 
-    def __post_init__(self):
-        if self.error is not None:
-            self.error = [Error(**e) if isinstance(e, dict) else e for e in self.error]
-        if self.input is not None:
-            self.input = [Argument(**a) if isinstance(a, dict) else a for a in self.input]
-        if self.output is not None:
-            self.output = [Argument(**a) if isinstance(a, dict) else a for a in self.output]
-
 
 @dataclass
 class Event:
     name: str
     description: Optional[str] = None
     input: Optional[List[Argument]] = None
-
-    def __post_init__(self):
-        if self.input is not None:
-            self.input = [Argument(**a) if isinstance(a, dict) else a for a in self.input]
 
 
 @dataclass
@@ -83,10 +71,6 @@ class Enumeration:
     options: List[Option]
     description: Optional[str] = None
 
-    def __post_init__(self):
-        if self.options is not None:
-            self.options = [Option(**o) if isinstance(o, dict) else o for o in self.options]
-
 
 @dataclass
 class Struct:
@@ -95,10 +79,6 @@ class Struct:
     type: Optional[str] = None
     description: Optional[str] = None
     members: Optional[List[Member]] = None
-
-    def __post_init__(self):
-        if self.members is not None:
-            self.members = [Member(**m) if isinstance(m, dict) else m for m in self.members]
 
 
 @dataclass
@@ -134,23 +114,6 @@ class Namespace:
     properties: Optional[List[Property]] = None
     namespaces: Optional[List['Namespace']] = None
 
-    def __post_init__(self):
-        if self.properties is not None:
-            self.properties = [Property(**p) if isinstance(p, dict) else p for p in self.properties]
-        if self.events is not None:
-            self.events = [Event(**e) if isinstance(e, dict) else e for e in self.events]
-        if self.methods is not None:
-            self.methods = [Method(**m) if isinstance(m, dict) else m for m in self.methods]
-        if self.includes is not None:
-            self.includes = [Include(**i) if isinstance(i, dict) else i for i in self.includes]
-        if self.structs is not None:
-            self.structs = [Struct(**s) if isinstance(s, dict) else s for s in self.structs]
-        if self.typedefs is not None:
-            self.typedefs = [Typedef(**t) if isinstance(t, dict) else t for t in self.typedefs]
-        if self.enumerations is not None:
-            self.enumerations = [Enumeration(**e) if isinstance(e, dict) else e for e in self.enumerations]
-        if self.namespaces is not None:
-            self.namespaces = [Namespace(**n) if isinstance(n, dict) else n for n in self.namespaces]
 
 
 #@dataclass
