@@ -36,6 +36,8 @@ import yaml
 import anytree
 import sys
 
+from vsc.model import vsc_ast
+
 # ----------------------------------------------------------------------------
 # VSC Abstract Syntax Tree
 # ----------------------------------------------------------------------------
@@ -346,7 +348,7 @@ def get_node_member(parent, t, optionality, membername, yamltree):
             return get_subtree(yamltree, membername, optionality)
 
 def get_ast_from_file(filepath : str):
-    return ast_Root(read_yaml_to_dict(filepath))
+    return vsc_ast.read_ast_from_yaml_file(filepath)
 
 def print_ast(ast : AST):
     print(anytree.RenderTree(ast))
