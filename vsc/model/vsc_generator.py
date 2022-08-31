@@ -57,89 +57,71 @@ class GeneratorError(BaseException):
 def get_template(filename):
     return jinja_env.get_template(filename)
 
-# Frontend to overloaded gen() function:
-
-
-def gen(node : AST, second = None):
+# gen() function to be called from templates
+def gen(node : AST, template_file = None):
     # Processing of lists of objects?
 
     if node is None:
        return "NONE"
 
-    if type(node) == list or type(node) == tuple:
+    if isinstance(node, (list,tuple)):
         # Generate each node and return a list of results. A list is not
         # intended to be printed directly as output, but to be processed by
         # a jinja filter, such as |join(', ')
-
-        if len(node) == 0:
-            return []
-        else:
-            # Recurse over each item in list, and return a list of strings
-            # that is generated for each one.
-            return [gen(x, second) for x in node]
-
+        return [gen(x, template_file) for x in node]
     else:
-        # Processing single item!
-        # second argument is either an explicit template, or None. If it is
-        # None, then the node type will be used to determine the template.
-        if second is None:          # No explicit template -> use default for the node type
-            return _gen_type(node)
-        elif type(second) == str:   # Explicit template -> use it
-            return _gen_tmpl(node, second)
+        # No explicit template -> use default for the node type
+        if template_file is None:
+            return _gen_with_default_template(node)
+        elif type(template_file) == str:   # Explicit template file -> use it
+            return get_template(template_file).render({'item' : node})
         else:
-            print(f'node is of type {type(node)}, second arg is of type {type(second)}  ({type(second).__class__}, {type(second).__class__.__name__})')
-            raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {second.__name__})')
+            print(f'node is of type {type(node)}, second arg is of type {type(template_file)}  ({type(template_file).__class__}, {type(template_file).__class__.__name__})')
+            raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {template_file.__name__})')
 
-# Implementation of typed variants of gen():
+# gen helper function:
+def _gen_with_default_template(node : AST):
 
-# If no template is specified, use the default template for the node type.
-# A default template must be defined for this node type to use the function
-# this way.
-def _gen_type(node : AST):
-
+    # None is for a field that exists in AST definition, but was not given
+    # a value in the YAML (=> happens only if it was an optional item).
     if node is None:
+        # FIXME: This should be expected behavior and should return empty string, 
+        # but let's first debug to see when it happens:
         raise GeneratorError(f"_gen_type(): Unexpected 'None' node received")
 
-    if isinstance(node, str):
-        return node
-
-    if isinstance(node, int):
-        return str(node)
-
+    # StrictUndefined is for an *unknown* field mentioned in the Jinja template
+    # (misspelling, etc.)
     nodetype=type(node).__name__
-
-    # If the output-template refers to a member variable that does not
-    # exist in type, then it shows up as StrictUndefined.
     if nodetype == 'StrictUndefined':
         raise GeneratorError(f'The template seems to call gen() with an unknown field name. Please check!')
         return ""
 
+    # Plain types -> print as-is
+    if isinstance(node, (str, int, float)):
+        return node
+
+    # Complex types -> use the corresponding template for the type
     tpl = default_templates.get(nodetype)
     if tpl is None:
-        raise GeneratorError(f'gen() function called with node of type {nodetype} but no default template is defined for the type {nodetype}')
+        raise GeneratorError(f"gen() function called with node of type '{nodetype}' but no default template is defined for this type.")
     else:
         return get_template(tpl).render({'item' : node})
-
-# This is called if an explicit template was requested
-def _gen_tmpl(node : AST, templatefile: str):
-    return get_template(templatefile).render({ 'item' : node})
 
 #  Alternative functions, for unit testing
 
 # Instead of providing a template file, provide the template text itself
 # (for unit tests mostly).  See gen() for more comments/explanation.
-def _gen_with_text_template(node: AST, second: str):
-    # Processing of lists of objects, see gen() for explanation
+def gen_template_text(node: AST, template_text: str):
+   # Processing of lists of objects, see gen() for explanation
    if type(node) == list or type(node) == tuple:
-       return [_gen_with_text_template(x, template_text) for x in node]
+       return [gen_template_text(x, template_text) for x in node]
    if template_text is None:
-       raise GeneratorError(f'_gen_with_text_template called without template')
+       raise GeneratorError(f'gen_template_text called without template')
    elif type(template_text) == str:
        return jinja2.Template(template_text).render({'item' : node})
    else:
-       print(f'node is of type {type(node)}, second arg is of type {type(second)}  ({type(second).__class__}, {type(second).__class__.__name__})')
-       raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {second.__name__})')
-
+       print(f'node is of type {type(node)}, second arg is of type {type(template_text)}  ({type(template_text).__class__}, {type(template_text).__class__.__name__})')
+       raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {template_text.__name__})')
 
 # Entry point for passing a dictionary of variables instead:
 def gen_dict_with_template_file(variables : dict, templatefile):

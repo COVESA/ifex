@@ -18,7 +18,7 @@ def test_gen(tmp_path):
     ast_root = vsc_parser.get_ast_from_file(os.path.join(TestPath, 'input.yaml'))
 
     with open(os.path.join(TestPath,"template"), "r") as template_file:
-        generated = vsc_generator._gen_with_text_template(ast_root, template_file.read())
+        generated = vsc_generator.gen_template_text(ast_root, template_file.read())
 
     with open(os.path.join(TestPath,"result"), "r") as result_file:
         # Apparently we must strip newline or it will be added superfluously here
