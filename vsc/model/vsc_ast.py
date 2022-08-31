@@ -18,13 +18,14 @@ class Error:
     description: Optional[str] = None
     arraysize: Optional[str] = None
     range: Optional[str] = None
+    description: Optional[str]= None
 
 
 @dataclass
 class Method:
     name: str
     description: Optional[str] = None
-    error: Optional[List[Error]] = None
+    errors: Optional[List[Error]] = None
     input: Optional[List[Argument]] = None
     output: Optional[List[Argument]] = None
 
@@ -116,10 +117,8 @@ class Include:
 class Namespace:
     name: str
     description: Optional[str] = None
-
     major_version: Optional[int] = None
     minor_version: Optional[int] = None
-
     events: Optional[List[Event]] = None
     methods: Optional[List[Method]] = None
     typedefs: Optional[List[Typedef]] = None
@@ -127,8 +126,7 @@ class Namespace:
     structs: Optional[List[Struct]] = None
     enumerations: Optional[List[Enumeration]] = None
     properties: Optional[List[Property]] = None
-
-    namespaces: Optional[List['Namespace']] = None
+    namespaces: Optional[List[Namespace]] = None
 
     def __post_init__(self):
         if self.properties is not None:
@@ -147,6 +145,25 @@ class Namespace:
             self.enumerations = [Enumeration(**e) if isinstance(e, dict) else e for e in self.enumerations]
         if self.namespaces is not None:
             self.namespaces = [Namespace(**n) if isinstance(n, dict) else n for n in self.namespaces]
+
+#@dataclass
+#class Service:
+#    name: str
+#    minor_version: int
+#    major_version: int
+#    description: str
+#    namespaces: Optional[List[Namespace]] = None
+#    description: Optional[str] = None
+
+
+@dataclass
+class AST:
+    name: str
+    minor_version: int
+    major_version: int
+    includes: Optional[List[Include]] = None
+    namespaces: Optional[List[Namespace]] = None
+    description: Optional[str] = None
 
 
 def parse_dataclass_from_dict(class_name, dictionary):
