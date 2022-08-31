@@ -7,24 +7,24 @@ description: This is it.
 major_version: 3
 minor_version: 0
 
-methods:
-  - name: another_method
-    description: this is yet another sample method
-    input:
-      - name: arg1
-        datatype: uint16
-        description: arg1 description
-      - name: arg2
-        datatype: uint16
-        description: arg2 description
-    error:
-      - description: |
-          description of the errors which this method can produce
-        datatype: error_t
-
 namespaces:
     - name: first_nested
       description: first namespace description
+
+      methods:
+        - name: another_method
+          description: this is yet another sample method
+          input:
+            - name: arg1
+              datatype: uint16
+              description: arg1 description
+            - name: arg2
+              datatype: uint16
+              description: arg2 description
+          error:
+            - description: |
+                description of the errors which this method can produce
+              datatype: error_t
 
       namespaces:
         - name: first_nested_nested
