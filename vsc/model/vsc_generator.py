@@ -12,14 +12,14 @@ VSC code-generation functions
 
 # This performs the following related functions:
 
-# 1. As input.yaml we expect an AST as provided by the parser module
+# 1. As input.yaml we expect an Namespace as provided by the parser module
 #
 # 2. It uses jinja2 templating library to generate code or configuration
 #    according to given templates.
 
 # For other features from parser module
 from vsc.model import vsc_ast
-from vsc.model.vsc_ast import AST
+from vsc.model.vsc_ast import Namespace
 from vsc.templates import TemplatePath
 import jinja2
 import sys
@@ -58,7 +58,7 @@ def get_template(filename):
     return jinja_env.get_template(filename)
 
 # gen() function to be called from templates
-def gen(node : AST, template_file = None):
+def gen(node : Namespace, template_file = None):
     # Processing of lists of objects?
 
     if node is None:
@@ -80,9 +80,9 @@ def gen(node : AST, template_file = None):
             raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {template_file.__name__})')
 
 # gen helper function:
-def _gen_with_default_template(node : AST):
+def _gen_with_default_template(node : Namespace):
 
-    # None is for a field that exists in AST definition, but was not given
+    # None is for a field that exists in Namespace definition, but was not given
     # a value in the YAML (=> happens only if it was an optional item).
     if node is None:
         # FIXME: This should be expected behavior and should return empty string, 
@@ -111,7 +111,7 @@ def _gen_with_default_template(node : AST):
 
 # Instead of providing a template file, provide the template text itself
 # (for unit tests mostly).  See gen() for more comments/explanation.
-def gen_template_text(node: AST, template_text: str):
+def gen_template_text(node: Namespace, template_text: str):
    # Processing of lists of objects, see gen() for explanation
    if type(node) == list or type(node) == tuple:
        return [gen_template_text(x, template_text) for x in node]
@@ -139,7 +139,7 @@ def usage():
 # This is a default definition for our current generation tests.
 # It may need to be changed, or defined differently in a custom generator
 default_templates = {
-        'AST': 'AST-simple_doc.tpl',
+        'Namespace': 'Namespace-simple_doc.tpl',
         'Service': 'Service-simple_doc.html',
         'Argument': 'Argument-simple_doc.html',
         'Error': 'Error-simple_doc.html',

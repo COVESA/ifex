@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------------
 # This is maybe not ideal way but seems efficient enough
 from vsc.model import vsc_ast, vsc_parser, vsc_generator
-import os, pathlib
+import os
 
 TestPath = os.path.dirname(os.path.realpath(__file__))
 
