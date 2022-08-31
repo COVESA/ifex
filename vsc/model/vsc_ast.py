@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import List, Optional, Dict, Any
+import typing
 import yaml
 
 
@@ -25,7 +26,7 @@ class Error:
 class Method:
     name: str
     description: Optional[str] = None
-    errors: Optional[List[Error]] = None
+    error: Optional[List[Error]] = None
     input: Optional[List[Argument]] = None
     output: Optional[List[Argument]] = None
 
@@ -126,7 +127,7 @@ class Namespace:
     structs: Optional[List[Struct]] = None
     enumerations: Optional[List[Enumeration]] = None
     properties: Optional[List[Property]] = None
-    namespaces: Optional[List[Namespace]] = None
+    namespaces: Optional[List['Namespace']] = None
 
     def __post_init__(self):
         if self.properties is not None:
@@ -166,18 +167,114 @@ class AST:
     description: Optional[str] = None
 
 
-def parse_dataclass_from_dict(class_name, dictionary):
-    try:
-        field_types = class_name.__annotations__
-        return class_name(
-            **{f: parse_dataclass_from_dict(field_types[f], dictionary[f]) for f in dictionary})
-    except AttributeError:
+# The item name (if available) is useful in debug and error messages
+def _get_name(item):
+    if isinstance(item, dict):
+        return f" '{item.get('name', '')}' "
+    else:
+        return " "
+
+def _actual_type(field):
+
+    # Unpack type inside Optional (which is typed as Union)
+    if typing.get_origin(field) == typing.Union:
+        return typing.get_args(field)[0]
+
+    # FIXME: ForwardRef check is not working this way
+    elif typing.get_origin(field) == typing.ForwardRef:
+        print("ForwardRef ")
+        # Other idea: but __forward_arg__ is only there if it's a ForwardRef
+        try:
+            print(f"FWDARG:{field.__forward_arg__}")
+        except:
+            pass
+        return typing.get_args(field)[0]
+
+    else:
+        return field
+
+# Answer the question if AST field and/or YAML is a list type (and report
+# mismatch).
+def _is_list(class_name, name, dictionary):
+    if typing.get_origin(_actual_type(class_name)) is list:
+        #print(f"IS LIST {_actual_type(class_name)}")
         if isinstance(dictionary, (tuple, list)):
-            return [
-                parse_dataclass_from_dict(
-                    class_name.__args__[0],
-                    f) for f in dictionary]
+            return True
+        else:
+            print(f"\n**!!**\nERROR: Expected a list of objects for {class_name} {name}, but a single object was provided.")
+            return False # Should probably throw exception here instead?
+    else:
+        #print(f"IS NOT LIST {_actual_type(class_name)}")
+        if isinstance(dictionary, (tuple, list)):
+            print(f"\n**!!**\nERROR: Expected a single object for {class_name} {name}, but a list was provided.")
+            return True # Should probably throw exception here instead?
+        else:
+            return False
+
+def parse_dataclass_from_dict(class_name, dictionary):
+
+    # Name of item (for error/debug messages only)
+    node_name = _get_name(dictionary)
+
+    #print(f"parse_dataclass_from_dict() extracting node{node_name}of type {class_name}")
+
+    # Is the field Optional[type] ?  Then we need to extract the inner type
+    if typing.get_origin(class_name) == typing.Union:
+        #print(f"+++ parse_dataclass_from_dict(): Handling Optional/Union: {class_name}")
+        actual_type = typing.get_args(class_name)[0]
+        #print(f"+++ Recursing with {actual_type}")
+        return parse_dataclass_from_dict(actual_type, dictionary)
+    # Is the YAML input a collection type?
+    # => Then parse each item and return a list of the result
+    elif _is_list(class_name, node_name, dictionary):
+        #print(f"+++yaml node is of collection type: {type(dictionary)} for the class_name {class_name}?")
+        return [parse_dataclass_from_dict( class_name.__args__[0], f) for f in dictionary]
+    # Is the field *not* an AST type (it is a plain str or int)
+    # => Then copy from YAML-dict directly -> no further recursion necessary
+    # (TODO: Maybe some sanity-checking of the YAML input here.  Otherwise
+    # it will not be noticed until code-generation.)
+    elif class_name in (int, str, float):
+        #print(f"!$#@ type is {class_name}")
+        #print(f"!$#@ dictionary type is {type(dictionary)}")
         return dictionary
+
+    # Finally, we assume class is a complex node (AST node)
+    # => Recursive call to parch each field in the class
+    #    and create an instance of the class using the instantiated fields
+    else:
+        #print(f"dataclass {class_name} actual {_actual_type(class_name)}")
+        field_types = _actual_type(class_name).__annotations__
+
+        fields = {}
+        parent_name = node_name
+        for key, item in dictionary.items():
+            # Remember this for later printout
+            try:
+                subtype = field_types[key]
+            except KeyError:
+                print(f"\n**!!**\nERROR: Unexpected entry '{key}:' near object{parent_name}. It does not fit into type {class_name}")
+                return None
+
+            # Get name of item for error/debug messages only.
+            node_name = _get_name(item)
+
+            #print(f"rse_dataclass_from_dict() extracting node{node_name}of type {class_name}")
+            #print(f"Extracting field: {key} {name} of type {subtype}")
+            #print(f"NODE: {item}")
+            try:
+                fields[key] = parse_dataclass_from_dict(subtype, item)
+            except AttributeError as e:
+                print(f"\n**!!**\nERROR: Failed to extract data for '{key}' near object{parent_name} of type {class_name}.")
+                print(str(e))
+                fields[key] = None
+
+        return class_name(**fields)
+
+    ## This should not happen...
+    if isinstance(dictionary, dict):
+        print(f"***\n***\n*** DICT returned {class_name} {parent_name}")
+
+    return dictionary
 
 
 def read_yaml_file(filename) -> str:
@@ -206,7 +303,7 @@ def parse_ast_from_dict(ast_dict: Dict[Any, Any]) -> Namespace:
     :param ast_dict: dictionary containing AST (vehicle service catalog)
     :return: AST
     """
-    return parse_dataclass_from_dict(Namespace, ast_dict)
+    return parse_dataclass_from_dict(AST, ast_dict)
 
 
 def read_ast_from_yaml_file(filename: str) -> Namespace:
