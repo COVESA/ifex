@@ -1,0 +1,137 @@
+# SPDX-FileCopyrightText: Copyright (c) 2022 MBition GmbH.
+# All rights reserved.
+# SPDX-License-Identifier: MPL-2.0
+
+name: named_service
+description: This is it.
+major_version: 3
+minor_version: 0
+
+methods:
+  - name: another_method
+    description: this is yet another sample method
+    input:
+      - name: arg1
+        datatype: uint16
+        description: arg1 description
+      - name: arg2
+        datatype: uint16
+        description: arg2 description
+    error:
+      - description: |
+          description of the errors which this method can produce
+        datatype: error_t
+
+namespaces:
+    - name: first_nested
+      description: first namespace description
+
+      namespaces:
+        - name: first_nested_nested
+          description: first namespace description
+
+          methods:
+            - name: do_something
+              description: this method is doing something
+              input:
+                - name: arg1
+                  datatype: uint16
+                  description: arg1 description
+                - name: arg2
+                  datatype: uint16
+                  description: arg2 description
+              output:
+                - name: arg1
+                  datatype: uint16
+                  description: arg1 description
+                - name: arg2
+                  datatype: uint16
+                  description: arg2 description
+              error:
+                - description: |
+                    description of the errors which this method can produce
+                  datatype: error_t
+
+      includes:
+          - description: input2 include
+            file: input2.yaml
+
+      methods:
+        - name: do_something
+          description: this method is doing something
+          input:
+            - name: arg1
+              datatype: uint16
+              description: arg1 description
+            - name: arg2
+              datatype: uint16
+              description: arg2 description
+          output:
+            - name: arg1
+              datatype: uint16
+              description: arg1 description
+            - name: arg2
+              datatype: uint16
+              description: arg2 description
+          error:
+            - description: |
+                description of the errors which this method can produce
+              datatype: error_t
+
+      structs:
+        - name: position_t
+          description: holds position of something
+          members:
+            - name: latitude
+              datatype: uint16
+              description: position latitude
+
+            - name: longitude
+              datatype: uint16
+              description: position longitude
+
+      typedefs:
+        - name: movement_t
+          datatype: float
+          description: |
+            test description for movement_t
+
+        - name: location_t
+          datatype: int
+          description:
+            test description for location_t
+
+      enumerations:
+        - name: sample_enum_t
+          datatype: uint8
+          options:
+            - name: option0
+              value: 0
+            - name: option1
+              value: 1
+            - name: option2
+              value: 2
+          description: |
+            test enum description
+
+        - name: yet_another_sample_enum_t
+          datatype: uint8
+          options:
+            - name: option0
+              value: 0
+            - name: option1
+              value: 1
+            - name: option2
+              value: 2
+          description: |
+            yet another test enum description
+
+    - name: second
+      description: second namespace description
+
+      includes:
+          - file: input1.yaml
+            description: input1 yaml include
+
+          - file: input2.yaml
+            description: input2 yaml include
