@@ -69,6 +69,7 @@ class Service(AST): pass
 class Struct(AST): pass
 class Typedef(AST): pass
 
+
 # Some identifiers used to indicate optionality
 MAN = 0 # MAN(datory)
 REC = 1 # REC(ommended)
@@ -243,7 +244,7 @@ def get_recommended_yaml_value(tree, nodename):
 # ----------------------------------------------------------------------------
 
 # Here we construct a graph of nodes using typed classes (AST
-# subclasses) that are also AnyTree Nodes, from an input tree that
+# subclasses) that are also AnyTree Nodes, from an input.yaml tree that
 # represents the raw YAML text but read into a tree in the standard
 # dict/list format from the YAML parser.
 
