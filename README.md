@@ -33,6 +33,12 @@ target=C:\SomeDir\Where\Your\Account\Can\Write\To
 
 * If you use a custom pip installation directory, set the `PYTHONPATH` environment variable to the directory that you set in the `pip.ini` file.
 
+### Setup with `virtualenv`
+
+```sh
+python3 -m venv venv
+```
+
 ### Setup with `pipenv`
 [pipenv](https://pypi.org/project/pipenv/) is a tool that manages a virtual environment and install the package and its dependencies, making the process much simpler and predictable, since the `Pipfile` states the dependencies, while `Pipfile.lock` freezes the exact version in use.
 
@@ -43,9 +49,9 @@ curl https://pyenv.run | bash  # download and install
 exec $SHELL                    # restart your shell using the new $PATH
 ```
 
-Make sure Python version 3.8.5 is installed:
+Make sure Python version 3.10.6 is installed:
 ```sh
-pyenv install 3.8.5  # install the versions required by Pipfile
+pyenv install 3.10.6  # install the versions required by Pipfile
 ```
 
 Install this project and its dependencies in the local `.venv` folder in this project, then use it (`pipenv shell`):
