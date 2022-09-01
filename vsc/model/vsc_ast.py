@@ -149,6 +149,26 @@ class Namespace:
             self.namespaces = [Namespace(**n) if isinstance(n, dict) else n for n in self.namespaces]
 
 
+#@dataclass
+#class Service:
+#    name: str
+#    minor_version: int
+#    major_version: int
+#    description: str
+#    namespaces: Optional[List[Namespace]] = None
+#    description: Optional[str] = None
+
+
+@dataclass
+class AST:
+    name: str
+    minor_version: int
+    major_version: int
+    includes: Optional[List[Include]] = None
+    namespaces: Optional[List[Namespace]] = None
+    description: Optional[str] = None
+
+
 # The item name (if available) is useful in debug and error messages
 def _get_name(item):
     if isinstance(item, dict):
