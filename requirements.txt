@@ -1,4 +1,13 @@
-anytree>=2.8.0
-Jinja2>=3.0.0
-pytest>=2.7.2
-PyYAML>=5.4.1
+anytree==2.8.0
+attrs==22.1.0
+iniconfig==1.1.1
+Jinja2==3.1.2
+MarkupSafe==2.1.1
+packaging==21.3
+pluggy==1.0.0
+py==1.11.0
+pyparsing==3.0.9
+pytest==7.1.2
+PyYAML==6.0
+six==1.16.0
+tomli==2.0.1
