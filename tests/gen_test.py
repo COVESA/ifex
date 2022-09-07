@@ -37,12 +37,12 @@ def test_ast_gen():
 
 
 def test_ast_manual():
-    namespace = vsc_ast.Namespace(name='test', description='test', major_version=1, minor_version=0)
+    service = vsc_ast.AST(name='test', description='test', major_version=1, minor_version=0)
 
-    assert namespace.name == 'test'
-    assert namespace.description == 'test'
-    assert namespace.major_version == 1
-    assert namespace.minor_version == 0
+    assert service.name == 'test'
+    assert service.description == 'test'
+    assert service.major_version == 1
+    assert service.minor_version == 0
 
 
 # Unused

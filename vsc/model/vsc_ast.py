@@ -114,6 +114,10 @@ class Namespace:
 
     namespaces: Optional[List['Namespace']] = field(default_factory=lambda: [])
 
+@dataclass
+class AST(Namespace):
+    pass
+
 
 def read_yaml_file(filename) -> str:
     """
@@ -135,7 +139,7 @@ def parse_yaml_file(yaml_string: str) -> Dict[Any, Any]:
     return yaml.safe_load(yaml_string)
 
 
-def read_ast_from_yaml_file(filename: str) -> Namespace:
+def read_ast_from_yaml_file(filename: str) -> AST:
     """
     Reads a yaml file and returns AST
     :param filename: path to a yaml file
@@ -146,6 +150,6 @@ def read_ast_from_yaml_file(filename: str) -> Namespace:
 
     yaml_dict = parse_yaml_file(yaml_string)
 
-    ast = dacite.from_dict(data_class=Namespace, data=yaml_dict)
+    ast = dacite.from_dict(data_class=AST, data=yaml_dict)
 
     return ast
