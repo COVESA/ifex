@@ -29,7 +29,7 @@ def test_gen(tmp_path):
 
 
 def test_ast_gen():
-    service = vsc_ast.read_ast_from_yaml_file(os.path.join(TestPath, 'input.yaml'))
+    service = vsc_parser.get_ast_from_file(os.path.join(TestPath, 'input.yaml'))
 
     assert service.name == "named_service"
     assert service.major_version == 3
