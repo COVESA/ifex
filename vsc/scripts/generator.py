@@ -10,7 +10,7 @@ def vsc_generator_run():
     parser = argparse.ArgumentParser(description='Runs vehicle service catalog code generator.')
     parser.add_argument('input', metavar='input', type=str,
                         help='input.yaml-file (path)')
-    parser.add_argument('template', metavar='template', type=str,                        
+    parser.add_argument('template', metavar='template', type=str, nargs='?',
                         help='output-template-file (name only, not path)')
 
     args = parser.parse_args()
