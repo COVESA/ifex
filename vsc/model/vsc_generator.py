@@ -20,7 +20,7 @@ VSC code-generation functions
 # For other features from parser module
 from vsc.model import vsc_ast
 from vsc.templates import TemplatePath
-from typing import Generic, TypeVar
+from typing import Generic, Any
 import jinja2
 import sys
 
@@ -44,8 +44,6 @@ jinja_env.undefined = jinja2.StrictUndefined
 
 default_templates = {}
 
-T = TypeVar('T')
-
 # Exception:
 class GeneratorError(BaseException):
     def __init__(self, m):
@@ -59,7 +57,7 @@ def get_template(filename):
     return jinja_env.get_template(filename)
 
 # gen() function to be called from templates
-def gen(node : Generic[T], template_file = None):
+def gen(node : Any, template_file = None):
     # Processing of lists of objects?
 
     if node is None:
@@ -81,7 +79,7 @@ def gen(node : Generic[T], template_file = None):
             raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {template_file.__name__})')
 
 # gen helper function:
-def _gen_with_default_template(node : Generic[T]):
+def _gen_with_default_template(node : Any):
 
     # None is for a field that exists in Namespace definition, but was not given
     # a value in the YAML (=> happens only if it was an optional item).
@@ -112,7 +110,7 @@ def _gen_with_default_template(node : Generic[T]):
 
 # Instead of providing a template file, provide the template text itself
 # (for unit tests mostly).  See gen() for more comments/explanation.
-def gen_template_text(node: Generic[T], template_text: str):
+def gen_template_text(node: Any, template_text: str):
    # Processing of lists of objects, see gen() for explanation
    if type(node) == list or type(node) == tuple:
        return [gen_template_text(x, template_text) for x in node]
