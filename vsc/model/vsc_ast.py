@@ -13,8 +13,8 @@ EmptyList = lambda: []
 class Argument:
     name: str
     datatype: str 
-    description: str = str()
-    arraysize: Optional[str] = None
+    description: Optional[str] = str()
+    arraysize: Optional[int] = None
     range: Optional[str] = None
 
 
@@ -30,23 +30,23 @@ class Error:
 class Method:
     name: str
     description: Optional[str] = None
-    error: List[Error] = field(default_factory=EmptyList)
-    input: List[Argument] = field(default_factory=EmptyList)
-    output: List[Argument] = field(default_factory=EmptyList)
+    error: Optional[List[Error]] = field(default_factory=EmptyList)
+    input: Optional[List[Argument]] = field(default_factory=EmptyList)
+    output: Optional[List[Argument]] = field(default_factory=EmptyList)
 
 
 @dataclass
 class Event:
     name: str
-    description: str = None
-    input: List[Argument] = field(default_factory=EmptyList)
+    description: Optional[str] = str()
+    input: Optional[List[Argument]] = field(default_factory=EmptyList)
 
 
 @dataclass
 class Property:
     name: str
     datatype: str
-    description: str = str()
+    description: Optional[str] = str()
     arraysize: Optional[int] = None
 
 
@@ -54,15 +54,15 @@ class Property:
 class Member:
     name: str
     datatype: str
-    description: str = str()
-    arraysize: Optional[str] = None
+    description: Optional[str] = str()
+    arraysize: Optional[int] = None
 
 
 @dataclass
 class Option:
     name: str
     value: int
-    description: str = None
+    description: Optional[str] = None
 
 
 @dataclass
@@ -70,7 +70,7 @@ class Enumeration:
     name: str
     datatype: str
     options: List[Option]
-    description: str = None
+    description: Optional[str] = None
 
 
 @dataclass
@@ -78,15 +78,15 @@ class Struct:
     name: str
     # TODO: do we need type field in a struct?
     type: Optional[str] = None
-    description: str = str()
-    members: List[Member] = field(default_factory=EmptyList)
+    description: Optional[str] = str()
+    members: Optional[List[Member]] = field(default_factory=EmptyList)
 
 
 @dataclass
 class Typedef:
     name: str
     datatype: str
-    description: str = str()
+    description: Optional[str] = str()
     arraysize: Optional[int] = None
     min: Optional[int] = None
     max: Optional[int] = None
@@ -95,26 +95,26 @@ class Typedef:
 @dataclass
 class Include:
     file: str
-    description: str = str()
+    description: Optional[str] = str()
 
 
 @dataclass
 class Namespace:
     name: str
-    description: str = str()
+    description: Optional[str] = str()
 
     major_version: Optional[int] = None
     minor_version: Optional[int] = None
 
-    events: List[Event] = field(default_factory=EmptyList)
-    methods: List[Method] = field(default_factory=EmptyList)
-    typedefs: List[Typedef] = field(default_factory=EmptyList)
-    includes: List[Include] = field(default_factory=EmptyList)
-    structs: List[Struct] = field(default_factory=EmptyList)
-    enumerations: List[Enumeration] = field(default_factory=EmptyList)
-    properties: List[Property] = field(default_factory=EmptyList)
+    events: Optional[List[Event]] = field(default_factory=EmptyList)
+    methods: Optional[List[Method]] = field(default_factory=EmptyList)
+    typedefs: Optional[List[Typedef]] = field(default_factory=EmptyList)
+    includes: Optional[List[Include]] = field(default_factory=EmptyList)
+    structs: Optional[List[Struct]] = field(default_factory=EmptyList)
+    enumerations: Optional[List[Enumeration]] = field(default_factory=EmptyList)
+    properties: Optional[List[Property]] = field(default_factory=EmptyList)
 
-    namespaces: List['Namespace'] = field(default_factory=EmptyList)
+    namespaces: Optional[List['Namespace']] = field(default_factory=EmptyList)
 
 
 @dataclass
