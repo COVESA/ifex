@@ -10,11 +10,11 @@ for most output definitions.
 ## Getting started
 
 ### Prerequisites
-* Python 3.8 installed
+* Python 3.10 installed
 * If the installation (pip install) is executed behind a (corporate) proxy, the following environments variables must be set: `http_proxy` and `https_proxy` (including authentication e.g., `http://${proxy_username):$(proxy_password)@yourproxy.yourdomain`)
 * If you do not run with administration rights, you may need to configure pip target path to write to your user home directory or consider [using the `pipenv` method](#setup-with-pipenv).
 
-```
+```bash
 On Unix and Mac OS X the configuration file is: $HOME/.pip/pip.conf
 If the file does not exist, create an empty file with that name.
 
@@ -35,8 +35,9 @@ target=C:\SomeDir\Where\Your\Account\Can\Write\To
 
 ### Setup with `virtualenv`
 
-```sh
-python3 -m venv venv
+```bash
+   python3 -m venv venv
+   source venv/bin/activate
 ```
 
 ### Setup with `pipenv`
@@ -44,38 +45,44 @@ python3 -m venv venv
 
 If [`pyenv` shell command](https://github.com/pyenv/pyenv) is not installed, use its [installer](https://github.com/pyenv/pyenv-installer) to get it:
 
-```sh
-curl https://pyenv.run | bash  # download and install
-exec $SHELL                    # restart your shell using the new $PATH
+```bash
+   curl https://pyenv.run | bash  # download and install
+   exec $SHELL                    # restart your shell using the new $PATH
 ```
 
 Make sure Python version 3.10.6 is installed:
-```sh
-pyenv install 3.10.6  # install the versions required by Pipfile
+```bash
+   pyenv install 3.10.6  # install the versions required by Pipfile
 ```
 
 Install this project and its dependencies in the local `.venv` folder in this project, then use it (`pipenv shell`):
-```sh
-export PIPENV_VENV_IN_PROJECT=1 # will create a local `.venv` in the project, otherwise uses global location
-pipenv install --dev # install the development dependencies as well
-pipenv shell         # starts a shell configured to use the virtual environment
+```bash
+   export PIPENV_VENV_IN_PROJECT=1 # will create a local `.venv` in the project, otherwise uses global location
+   pipenv install --dev # install the development dependencies as well
+   pipenv shell         # starts a shell configured to use the virtual environment
 ```
 
 ### Setup using plain `pip install`
-* Run  ```pip install -r requirements.txt```  from the vss-tools project root directory
+
+Run from the vss-tools project root directory
+
+```bash
+   pip install -r requirements.txt
+```  
 
 ## Testing it out
 Work in progress!  This is the usage pattern:
 
-```
-usage: vsc_generator.py <input-yaml-file (path)> <output-template-file (name only, not path)>
+```bash
+   vscgen <input-yaml-file (path)> <output-template-file (name only, not path)>
 ```
 
 For the moment, try this:
 
-```
-git clone https://github.com/COVESA/vehicle_service_catalog
-python model/vsc_generator.py vehicle_service_catalog/comfort-service.yml simple_overview.tpl
+```bash
+   git clone https://github.com/COVESA/vehicle_service_catalog
+   
+   vscgen vehicle_service_catalog/comfort-service.yml simple_overview.tpl
 ```
 
 This example exercises the parser to create the AST out of a YAML file
@@ -94,11 +101,10 @@ referencing each object's public member variables (see template
 The project uses pytest to define unit tests.  In the tests directory is a
 simple starting point.  More can be added.
 
-To run tests, just run pytest but make sure it is from within the tests
-directory:
-```
-cd tests
-pytest -v
+To run tests, just run pytest in the root directory.
+
+```bash
+   pytest -v
 ```
 
 # Writing a generator
@@ -117,8 +123,8 @@ Unless you need to add more logic, generating one input file with a single
 template is basically already available if vsc_generator.py is called as a main
 program:
 
-```
-python model/vsc_generator.py <service-description.yml> <jinja-template-name>
+```bash
+   vscgen <service-description.yml> <jinja-template-name>
 ```
 
 NOTE:  Due to how jinja loads templates (without adding a custom
@@ -151,7 +157,7 @@ template to use for that node type.  It can be overridden in a call to
 gen() but for a particular code generation purpose it is better to set this
 up.
 
-```
+```python
 generator.default_templates = {
    'AST' : 'AST-mystuff-toplevel.txt',
    'Service' : 'Service-mystuff.c',
@@ -179,12 +185,15 @@ that jinja2 provides (but those features are of course still possible to use).
 or (2) by explicitly stating a template:
 
 1. Providing the node reference only:
-```
+
+```python
 def gen(node : AST)
 ```
+
 example use:
-```
- gen(node)
+
+```python
+gen(node)
 ```
 
 This variant will dynamically determine the node type (a subclass of AST)
@@ -193,11 +202,14 @@ and generate using the predetermined template for that node type.  (See
 
 2. Providing the node and a specific template.  The specified template is
    used regardless of the node type:
-```
+
+```python
 def gen(node : AST, templatename : str)
 ```
+
 example use:
-```
+
+```python
 gen(node, 'My-alternative-method-template.tpl')
 ```
 
@@ -225,7 +237,7 @@ type, we use ".tpl".
 
 Examples:
 
-```
+```yaml
 Datatypes-my_docs-simple.html
 Datatypes-my_docs-advanced.html
 Method-c++-without-comments.cpp
@@ -262,7 +274,7 @@ method name in the second namespace.
 It is however more likely to use loop constructs to iterate over lists than to
 address specific indexes like that:
 
-```
+```python
 {% for i in item.namespaces %}
    this is each namespace name: {{ i.name }}
 {% endfor %}
@@ -284,7 +296,7 @@ to a separate template for Methods.
 
 **Service-mygen.c**
 
-```
+```python
 // General file header information
 // ...
 
@@ -332,4 +344,3 @@ Please refer to [GitHub tickets](https://github.com/COVESA/vsc-tools/issues)
 
 Please refer to [GitHub tickets](https://github.com/COVESA/vsc-tools/issues)
 with the label "bug"
-
