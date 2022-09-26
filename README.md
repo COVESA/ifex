@@ -94,7 +94,7 @@ flexible of course.
 
 Looking at the jinja2 template shows how to traverse it directly by
 referencing each object's public member variables (see template
-[simple_overview.tpl](templates/simple_overview.tpl)).
+[simple_overview.tpl](vsc/templates/simple_overview.tpl)).
 
 # Unit Tests
 
@@ -130,7 +130,7 @@ program:
 NOTE:  Due to how jinja loads templates (without adding a custom
 loader, which has not been done), the first argument is the *path* to the
 YAML file, but the second argument is only the name of the template (which
-must be in [templates/ dir](templates).  Pointing to the full path of a
+must be in [vsc/templates/ dir](templates).  Pointing to the full path of a
 template file in a different location is not implemented in vsc_generator.py
 
 ## Advanced Generator
@@ -216,7 +216,7 @@ gen(node, 'My-alternative-method-template.tpl')
 # Writing Templates
 
 ### Naming convention
-Templates must be stored in the templates/ directory.
+Templates must be stored in the vsc/templates/ directory.
 
 Templates should be named using this convention:
 
@@ -326,14 +326,14 @@ at run-time in a different way).
 
 Template | Description | Status | Documentation |
 | ------------------ | ----------- | -------------------- |-------------------- |
-[dtdl.tpl](templates/dtdl.tpl) | Generates a DTDL description of the service | Functional | [documentation](templates/dtdl.md) |
-[protobuf.tpl](templates/protobuf.tpl) | Generates a Protobuf description of the service | Functional | [documentation](templates/protobuf.md) |
-[sds-bamm-aspect-model.tpl](templates/sds-bamm-aspect-model.tpl) (using [sds-bamm-macros.tpl](templates/sds-bamm-macros.tpl))| Generates a BAMM Aspect Meta Model of the service | Functional | [documentation](templates/sds-bamm-aspect-model.md) |
-[test.tpl](templates/test.tpl) | Dummy Example | Not Functional | - |
-[AST-simple_doc.tpl](templates/AST-simple_doc.tpl) | Very simple HTML generator, relying on [Service-simple_doc.html](templates/Service-simple_doc.html)| Not Functional | - |
-[simple_overview.tpl](templates/simple_overview.tpl) | Generates a textual overview of a service | Functional | - |
-[Argument-simple_doc.html](templates/Argument-simple_doc.html) | Default template for arguments, referenced from [vsc_generator.py](model/vsc_generator.py) | Not Functional | - |
-[Service-simple_doc.html](templates/Service-simple_doc.html) | Default template for services, referenced from [vsc_generator.py](model/vsc_generator.py) | Not Functional | [- |
+[dtdl.tpl](vsc/templates/dtdl.tpl) | Generates a DTDL description of the service | Functional | [documentation](vsc/templates/dtdl.md) |
+[protobuf.tpl](vsc/templates/protobuf.tpl) | Generates a Protobuf description of the service | Functional | [documentation](vsc/templates/protobuf.md) |
+[sds-bamm-aspect-model.tpl](vsc/templates/sds-bamm-aspect-model.tpl) (using [sds-bamm-macros.tpl](vsc/templates/sds-bamm-macros.tpl))| Generates a BAMM Aspect Meta Model of the service | Functional | [documentation](vsc/templates/sds-bamm-aspect-model.md) |
+[test.tpl](vsc/templates/test.tpl) | Dummy Example | Not Functional | - |
+[AST-simple_doc.tpl](vsc/templates/AST-simple_doc.tpl) | Very simple HTML generator, relying on [Service-simple_doc.html](vsc/templates/Service-simple_doc.html)| Not Functional | - |
+[simple_overview.tpl](vsc/templates/simple_overview.tpl) | Generates a textual overview of a service | Functional | - |
+[Argument-simple_doc.html](vsc/templates/Argument-simple_doc.html) | Default template for arguments| Not Functional | - |
+[Service-simple_doc.html](vsc/templates/Service-simple_doc.html) | Default template for services| Not Functional | [- |
 
 # Future plans, new proposals and enhancements
 
