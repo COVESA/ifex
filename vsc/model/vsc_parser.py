@@ -49,9 +49,13 @@ def read_ast_from_yaml_file(filename: str) -> AST:
 
     yaml_dict = parse_yaml_file(yaml_string)
 
-    ast = dacite.from_dict(data_class=AST, data=yaml_dict)
-
-    return ast
+    try:
+        cfg = dacite.Config(strict=True) # Fail if unknown keys in dict
+        ast = dacite.from_dict(data_class=AST, data=yaml_dict, config=cfg)
+        return ast
+    except dacite.UnexpectedDataError as e:
+        print(f"ERROR: Read error resulting from {filename}: {e}")
+        return None
 
 def get_ast_from_file(filepath : str):
     return read_ast_from_yaml_file(filepath)
