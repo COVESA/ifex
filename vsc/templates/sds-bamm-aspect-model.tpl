@@ -1,7 +1,7 @@
 {% import 'sds-bamm-macros.tpl' as bamm %}
 
-{% set aspectModelURN = item.children[0].name %}
-{% set aspectModelVersion = item.children[0].major_version ~ '.' ~ item.children[0].minor_version ~ '.0' %}
+{% set aspectModelURN = item.name %}
+{% set aspectModelVersion = item.major_version ~ '.' ~ item.minor_version ~ '.0' %}
 
 @prefix: <urn:bamm:{{ aspectModelURN }}:{{ aspectModelVersion }}#>.
 @prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#> .
@@ -10,11 +10,10 @@
 @prefix unit: <urn:bamm:io.openmanufacturing:unit:1.0.0#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-{%for s in item.children %}
 
     {# --- Aspect --- #}
 
-    {% for n in s.namespaces -%}
+    {% for n in item.namespaces -%}
     {{ bamm.render_aspect(n) }}
 
     {# --- Operations --- #}
@@ -44,16 +43,16 @@
     {% endfor %}
 
     {%- for event in n.events -%}
-    {%- for in_arg in event.in -%}
+    {%- for in_arg in event.input -%}
     {{ bamm.render_property(in_arg) }}
     {% endfor %}
     {% endfor %}
 
     {%- for method in n.methods -%}
-    {%- for inProp in method.in -%}
+    {%- for inProp in method.input -%}
     {{ bamm.render_property(inProp) }}
     {% endfor %}
-    {%- for outProp in method.out -%}
+    {%- for outProp in method.output -%}
     {{ bamm.render_property(outProp) }}
     {% endfor %}
     {% endfor %}
@@ -75,19 +74,18 @@
     {% endfor %}
 
     {%- for event in n.events -%}
-    {%- for in_arg in event.in -%}
+    {%- for in_arg in event.input -%}
     {{ bamm.render_characteristic(in_arg) }}
     {% endfor %}
     {% endfor %}
 
     {%- for method in n.methods -%}
-    {%- for inProp in method.in -%}
+    {%- for inProp in method.input -%}
     {{ bamm.render_characteristic(inProp) }}
     {% endfor %}
-    {%- for outProp in method.out -%}
+    {%- for outProp in method.output -%}
     {{ bamm.render_characteristic(outProp) }}
     {% endfor %}
     {% endfor %}
 
     {% endfor %}
-{% endfor %}

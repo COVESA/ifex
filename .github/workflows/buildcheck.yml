@@ -30,7 +30,25 @@ jobs:
         run: |
           pytest -v
 
+      - name: Prepare for test using latest VSC
+        run: |
+          git clone https://github.com/COVESA/vehicle_service_catalog/
+
       - name: Run example tool on latest VSC
         run: |
-          git clone https://github.com/COVESA/vehicle_service_catalog/ -b input_output
           vscgen vehicle_service_catalog/comfort-service.yml simple_overview.tpl
+
+      - name: Run DTDL template on latest VSC
+        run: |
+          vscgen vehicle_service_catalog/comfort-service.yml dtdl.tpl > dtdl.out
+
+      - name: Run Protobuf template on latest VSC and verify output is correct Proto
+        run: |
+          sudo apt install -y protobuf-compiler
+          vscgen vehicle_service_catalog/comfort-service.yml protobuf.tpl > vsc.proto
+          mkdir tmp
+          protoc --cpp_out=tmp vsc.proto
+
+      - name: Run BAMM template on latest VSC
+        run: |
+          vscgen vehicle_service_catalog/comfort-service.yml sds-bamm-aspect-model.tpl > bamm.out

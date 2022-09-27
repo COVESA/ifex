@@ -102,7 +102,7 @@ The tool can be used like below:
 cd vsc-tools
 # make sure that vsc has been cloned
 git clone https://github.com/COVESA/vehicle_service_catalog/
-python model/vsc_generator.py vehicle_service_catalog/comfort-service.yml dtdl.tpl > dtdl_generated.json
+vscgen vehicle_service_catalog/comfort-service.yml dtdl.tpl > dtdl_generated.json
 ```
 
 ### Validating generated DTDL files
