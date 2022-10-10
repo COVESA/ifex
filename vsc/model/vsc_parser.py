@@ -55,7 +55,7 @@ def read_ast_from_yaml_file(filename: str) -> AST:
         return ast
     except dacite.UnexpectedDataError as e:
         print(f"ERROR: Read error resulting from {filename}: {e}")
-        return None
+        raise e
 
 def get_ast_from_file(filepath : str):
     return read_ast_from_yaml_file(filepath)
