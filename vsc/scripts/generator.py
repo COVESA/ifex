@@ -3,7 +3,7 @@
 
 from vsc.model.vsc_generator import gen
 from vsc.model.vsc_parser import get_ast_from_file
-import argparse
+import argparse, dacite
 
 def vsc_generator_run():
     parser = argparse.ArgumentParser(description='Runs vehicle service catalog code generator.')
@@ -11,13 +11,15 @@ def vsc_generator_run():
                         help='input.yaml-file (path)')
     parser.add_argument('template', metavar='template', type=str, nargs='?',
                         help='output-template-file (name only, not path)')
+    try:
+        args = parser.parse_args()
+    except dacite.UnexpectedDataError as e:
+        print(f"ERROR: Read error resulting from {filename}: {e}")
 
-    args = parser.parse_args()
-    
     ast = get_ast_from_file(args.input)
-    
+
     templatename = args.template
-    
+
     print(gen(ast, templatename))
 
 

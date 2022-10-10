@@ -5,6 +5,7 @@
 # ----------------------------------------------------------------------------
 # This is maybe not ideal way but seems efficient enough
 from vsc.model import vsc_ast, vsc_parser, vsc_generator
+import dacite, pytest
 import os
 
 TestPath = os.path.dirname(os.path.realpath(__file__))
@@ -53,6 +54,21 @@ def test_ast_manual():
     assert service.major_version == 1
     assert service.minor_version == 0
 
+# Test expected failed cases
+def test_expected_raised_exceptions():
+
+    # Get matching dirs named 'test.<something>'
+    for (_,dirs,_) in os.walk(TestPath):
+        test_dirs = [ x for x in dirs if x.startswith('exception.test.') ]
+        break # First level of walk is enough.
+
+    for subdir in test_dirs:
+        print(f"Running negative (exception) test in {subdir}.")
+        path = os.path.join(TestPath, subdir)
+
+        # This succeeds *IF* the exception is raised, otherwise fails
+        with pytest.raises(dacite.UnexpectedDataError) as ee:
+            ast_root = vsc_parser.get_ast_from_file(os.path.join(path, 'input.yaml'))
 
 # Unused
 default_templates = {}
