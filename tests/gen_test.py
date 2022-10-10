@@ -12,24 +12,33 @@ TestPath = os.path.dirname(os.path.realpath(__file__))
 def test_x():
     assert 1 == 1
 
+def test_gen():
 
-def test_gen(tmp_path):
-    # The files named 'input.yaml', 'template' and 'result' are in the tests directory
-    ast_root = vsc_parser.get_ast_from_file(os.path.join(TestPath, 'input.yaml'))
+    # Get matching dirs named 'test.<something>'
+    for (_,dirs,_) in os.walk(TestPath):
+        test_dirs = [ x for x in dirs if x.startswith('test.') ]
+        break # First level of walk is enough.
 
-    with open(os.path.join(TestPath,"template"), "r") as template_file:
-        generated = vsc_generator.gen_template_text(ast_root, template_file.read())
+    for subdir in test_dirs:
+        print(f"Running test in {subdir}.")
+        path = os.path.join(TestPath, subdir)
 
-    with open(os.path.join(TestPath,"result"), "r") as result_file:
-        # Apparently we must strip newline or it will be added superfluously here
-        # even if it is not in the file. The same does not happen on the
-        # jinja-template generation we are comparing to.
-        wanted = result_file.read().rstrip()
-        assert generated == wanted
+        # The files named 'input.yaml', 'template' and 'result' are in each test directory
+        ast_root = vsc_parser.get_ast_from_file(os.path.join(path, 'input.yaml'))
+
+        with open(os.path.join(path,"template"), "r") as template_file:
+            generated = vsc_generator.gen_template_text(ast_root, template_file.read())
+
+        with open(os.path.join(path,"result"), "r") as result_file:
+            # Apparently we must strip newline or it will be added superfluously here
+            # even if it is not in the file. The same does not happen on the
+            # jinja-template generation we are comparing to.
+            wanted = result_file.read().rstrip()
+            assert generated == wanted
 
 
 def test_ast_gen():
-    service = vsc_parser.get_ast_from_file(os.path.join(TestPath, 'input.yaml'))
+    service = vsc_parser.get_ast_from_file(os.path.join(TestPath, 'test.sample', 'input.yaml'))
 
     assert service.name == "named_service"
     assert service.major_version == 3
