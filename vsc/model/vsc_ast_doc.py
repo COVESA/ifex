@@ -92,28 +92,32 @@ def markdown_heading(n: int, s: str):
     print()
 
 
-def print_field_name_and_type(field):
-    print(f"- **{field.name}**: ", end='')
+def markdown_table_row(field):
+    print(f"| {field.name} | ", end='')
     if field.type is str:
-        print("A single str")
+        print("A single **str**", end='')
     elif is_list(field):
-        print(f"A list of {list_member_type_name(field)}")
+        print(f"A list of **{list_member_type_name(field)}**_s_", end='')
     else:
-        print(f"A single {actual_type_name(field)}")
+        print(f"A single **{actual_type_name(field)}**", end='')
+    print(" |")
 
+
+def markdown_table(fields):
+   print(f"|Field Name|Required contents|")
+   print(f"|-----|-----------|")
+   for f in fields:
+       markdown_table_row(f)
 
 def document_fields(node):
     name = type_name(node)
     markdown_heading(2, name)
-    markdown_heading(3, f"Mandatory fields for {name}:")
-    for field in [x for x in fields(node) if not is_optional(x.type)]:
-        print_field_name_and_type(field)
 
+    markdown_heading(4, f"Mandatory fields for {name}:")
+    markdown_table([x for x in fields(node) if not is_optional(x.type)])
     print()
-    markdown_heading(3, f"Optional fields for {name}:")
-    for field in [x for x in fields(node) if is_optional(x.type)]:
-        print_field_name_and_type(field)
-
+    markdown_heading(4, f"Optional fields for {name}:")
+    markdown_table([x for x in fields(node) if is_optional(x.type)])
     print("\n")
 
 
