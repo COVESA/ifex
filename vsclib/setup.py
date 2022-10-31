@@ -23,7 +23,7 @@ setuptools.setup(
     description="VSC Generator Library",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/COVESA/vsclib",
+    url="https://github.com/COVESA/vsc-tools",
     packages=setuptools.find_packages(),
     scripts=["vsc_test.py" ],
     data_files=[],
