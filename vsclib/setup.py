@@ -29,8 +29,7 @@ setuptools.setup(
     data_files=[],
     include_package_data=True,
     classifiers=[
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.10",
         "License :: Other/Proprietary License",
         "Operating System :: OS Independent",
     ],
