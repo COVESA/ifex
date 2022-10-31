@@ -124,7 +124,7 @@ class Error:
 @dataclass
 class Method:
     """
-    Dataclass used to represent VSC Event.
+    Dataclass used to represent VSC Method.
 
     Each methods list object specifies a method call, executed by a single server instance,
     that optionally returns a value. Execution is guaranteed to TCP level with server failure being reported.
