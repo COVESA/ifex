@@ -56,7 +56,7 @@ def _gen_with_default_template(node : Any):
     # None is for a field that exists in Namespace definition, but was not given
     # a value in the YAML (=> happens only if it was an optional item).
     if node is None:
-        # FIXME: This should be expected behavior and should return empty string, 
+        # FIXME: This should be expected behavior and should return empty string,
         # but let's first debug to see when it happens:
         raise GeneratorError(f"_gen_type(): Unexpected 'None' node received")
 
