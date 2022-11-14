@@ -140,8 +140,8 @@ referencing each object's public member variables (see template
 
 # Unit Tests
 
-The project uses pytest to define unit tests.  In the tests directory is a
-simple starting point.  More can be added.
+The project uses pytest to define unit tests. In the tests directory is a
+simple starting point. More can be added.
 
 To run tests, just run pytest in the root directory.
 
@@ -172,7 +172,7 @@ program:
 NOTE:  Due to how jinja loads templates (without adding a custom
 loader, which has not been done), the first argument is the *path* to the
 YAML file, but the second argument is only the name of the template (which
-must be in [vsc/templates/ dir](templates).  Pointing to the full path of a
+must be in [vsc/templates/](vsc/templates) directory. Pointing to the full path of a
 template file in a different location is not implemented in vsc_generator.py
 
 ## Advanced Generator
@@ -375,7 +375,7 @@ Template | Description | Status | Documentation |
 [AST-simple_doc.tpl](vsc/templates/AST-simple_doc.tpl) | Very simple HTML generator, relying on [Service-simple_doc.html](vsc/templates/Service-simple_doc.html)| Not Functional | - |
 [simple_overview.tpl](vsc/templates/simple_overview.tpl) | Generates a textual overview of a service | Functional | - |
 [Argument-simple_doc.html](vsc/templates/Argument-simple_doc.html) | Default template for arguments| Not Functional | - |
-[Service-simple_doc.html](vsc/templates/Service-simple_doc.html) | Default template for services| Not Functional | [- |
+[Service-simple_doc.html](vsc/templates/Service-simple_doc.html) | Default template for services| Not Functional | - |
 
 # Future plans, new proposals and enhancements
 
