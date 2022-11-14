@@ -13,11 +13,17 @@
     {% endfor %}
 {% endmacro %}
 
+
+{# Macro to strip newline in description #}
+{% macro render_description(x) -%}
+bamm:description "{{ x.description.strip().replace("\n", " ") }}"@en ;
+{%- endmacro %}
+
 {# Render an Aspect definition based on a VSC Namespace #}
 {% macro render_aspect(element) %}
-:{{ element.name.capitalize() }} a bamm:Aspect ;
+:{{ element.name.capitalize() }} a bamm:Aspect ;-
     bamm:name "{{ element.name.capitalize() }}" ;
-    bamm:description "{{ element.description }}"@en ;
+    {{ render_description(element) }}
     bamm:properties () ;
     bamm:operations ({{ element_names(element.methods) }}) ;
     bamm:events ({{ element_names(element.events) }}) .
@@ -29,10 +35,10 @@
 {%- set _ = bammElementDictonary.update({method.name: method}) -%}
 :{{ snake_to_camel(method.name.capitalize()) }} a bamm:Operation ;
     bamm:name "{{ snake_to_camel(method.name.capitalize()) }}" ;
-    bamm:description "{{ method.description }}"@en ;
-    bamm:input ({{ element_names(method.in, true) }}) {{ ";" if method.out|length > 0 else "." }} 
-    {% if method.out|length > 0 %}
-    bamm:output {{ element_names([method.out[0]], true) }} .
+    {{ render_description(method) }}
+    bamm:input ({{ element_names(method.input, true) }}) {{ ";" if method.output|length > 0 else "." }} 
+    {% if method.output|length > 0 %}
+    bamm:output {{ element_names([method.output[0]], true) }} .
     {% endif %}
 {% endif %}
 {% endmacro %}
@@ -43,7 +49,7 @@
 {%- set _ = bammElementDictonary.update({member.name: member}) -%}
 :{{ snake_to_camel(member.name) }} a bamm:Property ;
     bamm:name "{{ snake_to_camel(member.name) }}" ;
-    bamm:description "{{ member.description }}"@en ;
+    {{ render_description(member) }}
     bamm:characteristic :{{ _render_characteristic_name(member) }} .
 {% endif -%}
 {% endmacro %}
@@ -54,8 +60,8 @@
 {%- set _ = bammElementDictonary.update({event.name: event}) -%}
 :{{ snake_to_camel(event.name.capitalize()) }} a bamm:Event ;
     bamm:name "{{ snake_to_camel(event.name.capitalize()) }}" ;
-    bamm:description "{{ event.description }}"@en ;
-    bamm:parameters ({{ element_names(event.in, true) }}) .
+    {{ render_description(event) }}
+    bamm:parameters ({{ element_names(event.input, true) }}) .
 {% endif %}
 {% endmacro %}
 
@@ -65,7 +71,7 @@
 {%- set _ = bammElementDictonary.update({struct.name: struct}) -%}
 :{{ snake_to_camel(struct.name.capitalize()) }} a bamm:Entity ;
     bamm:name "{{ snake_to_camel(struct.name.capitalize()) }}" ;
-    bamm:description "{{ struct.description }}"@en ;
+    {{ render_description(struct) }}
     bamm:properties ({{ element_names(struct.members, true) }}) .
 {% endif %}
 {% endmacro %}
@@ -77,7 +83,7 @@
 {%- set _ = bammElementDictonary.update({characteristic_name: member}) -%}
 :{{ characteristic_name }} a {{ _render_characteristic_definition(member) }} ;
      bamm:name "{{ characteristic_name }}" ;
-     bamm:description "{{ member.description }}"@en ;
+     {{ render_description(member) }}
      {% if (member.min is defined) and (member.min or member.max) %}
      bamm-c:baseCharacteristic :{{ characteristic_name }}Base ;
      bamm-c:constraint [

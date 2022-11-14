@@ -48,7 +48,7 @@ cd vsc-tools
 # make sure that vsc has been cloned
 git clone https://github.com/COVESA/vehicle_service_catalog/
 # Run the generator
-python model/vsc_generator.py vehicle_service_catalog/comfort-service.yml protobuf.tpl > vsc.proto
+vscgen vehicle_service_catalog/comfort-service.yml protobuf.tpl > vsc.proto
 ```
 
 ### Validating generated Protobuf files

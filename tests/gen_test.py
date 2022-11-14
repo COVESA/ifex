@@ -3,37 +3,75 @@
 # (C) 2021 COVESA
 # Test code for code generator part of VSC tools
 # ----------------------------------------------------------------------------
-
-import pytest
-
 # This is maybe not ideal way but seems efficient enough
-from pathlib import Path
-import sys
-proj_root = Path(__file__).parents[1]
-sys.path.append(str(proj_root) + "/model")
+from vsc.model import vsc_ast, vsc_parser, vsc_generator
+import dacite, pytest
+import os
 
-import vsc_parser, vsc_generator
+TestPath = os.path.dirname(os.path.realpath(__file__))
 
 def test_x():
     assert 1 == 1
 
 def test_gen():
-    # The files named 'input', 'template' and 'result' are in the tests directory
-    ast = vsc_parser.get_ast_from_file('input')
 
-    with open("template", "r") as templatefile:
-        generated = vsc_generator._gen_with_text_template(ast, templatefile.read())
+    # Get matching dirs named 'test.<something>'
+    for (_,dirs,_) in os.walk(TestPath):
+        test_dirs = [ x for x in dirs if x.startswith('test.') ]
+        break # First level of walk is enough.
 
-    with open("result", "r") as resultfile:
-        # Apparently we must strip newline or it will be added superfluously here
-        # even if it is not in the file. The same does not happen on the
-        # jinja-template generation we are comparing to.
-        wanted = resultfile.read().rstrip()
-        assert generated == wanted
+    for subdir in test_dirs:
+        print(f"Running test in {subdir}.")
+        path = os.path.join(TestPath, subdir)
+
+        # The files named 'input.yaml', 'template' and 'result' are in each test directory
+        ast_root = vsc_parser.get_ast_from_file(os.path.join(path, 'input.yaml'))
+
+        with open(os.path.join(path,"template"), "r") as template_file:
+            generated = vsc_generator.gen_template_text(ast_root, template_file.read())
+
+        with open(os.path.join(path,"result"), "r") as result_file:
+            # Apparently we must strip newline or it will be added superfluously here
+            # even if it is not in the file. The same does not happen on the
+            # jinja-template generation we are comparing to.
+            wanted = result_file.read().rstrip()
+            assert generated == wanted
+
+
+def test_ast_gen():
+    service = vsc_parser.get_ast_from_file(os.path.join(TestPath, 'test.sample', 'input.yaml'))
+
+    assert service.name == "named_service"
+    assert service.major_version == 3
+    assert service.minor_version == 0
+
+
+def test_ast_manual():
+    service = vsc_ast.AST(name='test', description='test', major_version=1, minor_version=0)
+
+    assert service.name == 'test'
+    assert service.description == 'test'
+    assert service.major_version == 1
+    assert service.minor_version == 0
+
+# Test expected failed cases
+def test_expected_raised_exceptions():
+
+    # Get matching dirs named 'test.<something>'
+    for (_,dirs,_) in os.walk(TestPath):
+        test_dirs = [ x for x in dirs if x.startswith('exception.test.') ]
+        break # First level of walk is enough.
+
+    for subdir in test_dirs:
+        print(f"Running negative (exception) test in {subdir}.")
+        path = os.path.join(TestPath, subdir)
+
+        # This succeeds *IF* the exception is raised, otherwise fails
+        with pytest.raises(dacite.UnexpectedDataError) as ee:
+            ast_root = vsc_parser.get_ast_from_file(os.path.join(path, 'input.yaml'))
 
 # Unused
-default_templates = {
-}
+default_templates = {}
 
 # TODO: Loop over subdirectories in tests to perform tests for different
-# 'input/template/result' files
+# 'input.yaml/template/result' files

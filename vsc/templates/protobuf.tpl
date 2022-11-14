@@ -10,17 +10,17 @@ syntax = "proto3";
 {# Add all type conversion  #}
 {% set x=typedefs.__setitem__("int16", "int32") %}
 {% set x=typedefs.__setitem__("uint8", "uint32") %}
+{% set x=typedefs.__setitem__("uint16", "uint32") %}
 {% set x=typedefs.__setitem__("boolean", "bool") %}
 
-{% for s in item.children %}
-package swdv.{{s.name}};
+package swdv.{{item.name}};
 
 // Generic result message
 message operation_result {
   bool result = 1;
 }
 
-   {% for n in s.namespaces %}
+   {% for n in item.namespaces %}
 // VSC Namespace {{n.name}}
 {# Typedefs and enum must be handled before structs, to convert types right #}
 {# Limitation: for now we ignore namespaces #}
@@ -62,7 +62,7 @@ message {{x.name}} {
       {% for x in n.methods %}
 // VSC Method {{x.name}}
 message {{ x.name }}_request {
-         {% for x in x.in %}
+         {% for x in x.input %}
            {% if x.datatype in  typedefs %}
              {% set type = typedefs[x.datatype] %}
            {% else %}
@@ -73,7 +73,7 @@ message {{ x.name }}_request {
 }
 
 message {{ x.name }}_response {
-         {% for x in x.out %}
+         {% for x in x.output %}
            {% if x.datatype in  typedefs %}
              {% set type = typedefs[x.datatype] %}
            {% else %}
@@ -93,7 +93,7 @@ service {{ x.name }}_service {
 // VSC Event {{x.name}}
       {# Limitation: for now just creating a message #}
 message {{ x.name }} {
-         {% for x in x.in %}
+         {% for x in x.input %}
            {% if x.datatype in  typedefs %}
              {% set type = typedefs[x.datatype] %}
            {% else %}
@@ -128,5 +128,4 @@ service {{ x.name }} {
       {% endfor %}
    {% endfor %}
 
-{% endfor %}
 

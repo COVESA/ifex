@@ -10,89 +10,143 @@ for most output definitions.
 ## Getting started
 
 ### Prerequisites
-* Python 3.8 installed
+* Python 3.10 installed
 * If the installation (pip install) is executed behind a (corporate) proxy, the following environments variables must be set: `http_proxy` and `https_proxy` (including authentication e.g., `http://${proxy_username):$(proxy_password)@yourproxy.yourdomain`)
-* If you do not run with administration rights, you may need to configure pip target path to write to your user home directory or consider [using the `pipenv` method](#setup-with-pipenv).
+* If you do not run with administration rights, you may need to configure pip target path to write to your user home directory or consider using one of the `virtual environment` methods.
 
-```
-On Unix and Mac OS X the configuration file is: $HOME/.pip/pip.conf
-If the file does not exist, create an empty file with that name.
 
-Add or replace the following lines:
-[global]
-target=/somedir/where/your/account/can/write/to
-
-On Windows, the configuration file is: %HOME%\pip\pip.ini
-If the file does not exist, create an empty file with that name.
-
-Add or replace the following lines:
-[global]
-target=C:\SomeDir\Where\Your\Account\Can\Write\To
-```
 ### Project Setup
 
 * If you use a custom pip installation directory, set the `PYTHONPATH` environment variable to the directory that you set in the `pip.ini` file.
 
+### Setup with `virtualenv`
+
+```sh
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### Setup with `virtualenv`
+
+```bash
+   python3 -m venv venv
+   source venv/bin/activate
+```
+
 ### Setup with `pipenv`
 [pipenv](https://pypi.org/project/pipenv/) is a tool that manages a virtual environment and install the package and its dependencies, making the process much simpler and predictable, since the `Pipfile` states the dependencies, while `Pipfile.lock` freezes the exact version in use.
 
+### (alternative) setup with `pyenv`
+
 If [`pyenv` shell command](https://github.com/pyenv/pyenv) is not installed, use its [installer](https://github.com/pyenv/pyenv-installer) to get it:
 
-```sh
-curl https://pyenv.run | bash  # download and install
-exec $SHELL                    # restart your shell using the new $PATH
+```bash
+   curl https://pyenv.run | bash  # download and install
+   exec $SHELL                    # restart your shell using the new $PATH
 ```
 
-Make sure Python version 3.8.5 is installed:
-```sh
-pyenv install 3.8.5  # install the versions required by Pipfile
+Make sure Python version 3.10.6 is installed:
+```bash
+   pyenv install 3.10.6  # install the versions required by Pipfile
 ```
+
+Activate a virtual environment
+```sh
+pyenv local 3.10.6
+```
+
+## Installing packages
+
+_(regardless of which venv tool you use)_
+
+Install the vsc-tool provided modules into your virtual environment)
+```
+python setup.py develop
+
+```
+Install dependencies:
+```
+pip install pyyaml jinja2 pytest anytree
+```
+(Alternatively, we are providing a requirements.txt file but it might be
+deprecated later in favor of pipenv):
+
+```
+pip install -r requirements.txt
+```
+
+## Setup  with pipenv (alternative)
+
+**DEPRECATED / currently not working**
+
+[pipenv](https://pypi.org/project/pipenv/) is a tool that manages a virtual environment and install the package and its dependencies, making the process much simpler and predictable, since the `Pipfile` states the dependencies, while `Pipfile.lock` freezes the exact version in use.
 
 Install this project and its dependencies in the local `.venv` folder in this project, then use it (`pipenv shell`):
-```sh
-export PIPENV_VENV_IN_PROJECT=1 # will create a local `.venv` in the project, otherwise uses global location
-pipenv install --dev # install the development dependencies as well
-pipenv shell         # starts a shell configured to use the virtual environment
+```bash
+   export PIPENV_VENV_IN_PROJECT=1 # will create a local `.venv` in the project, otherwise uses global location
+   pipenv install --dev # install the development dependencies as well
+   pipenv shell         # starts a shell configured to use the virtual environment
 ```
 
 ### Setup using plain `pip install`
-* Run  ```pip install -r requirements.txt```  from the vss-tools project root directory
 
-## Testing it out
+Run from the vss-tools project root directory
+
+```bash
+   pip install -r requirements.txt
+```  
+
+### Setup without virtual environment (not recommended)
+
+To install to your system environment:
+```
+pip install -r requirements.txt
+python setup.py develop
+```
+
+## Trying it out
 Work in progress!  This is the usage pattern:
 
-```
-usage: vsc_generator.py <input-yaml-file (path)> <output-template-file (name only, not path)>
+```bash
+   vscgen <input-yaml-file (path)> <output-template-file (name only, not path)>
 ```
 
 For the moment, try this:
 
-```
-git clone https://github.com/COVESA/vehicle_service_catalog
-python model/vsc_generator.py vehicle_service_catalog/comfort-service.yml simple_overview.tpl
+```bash
+   git clone https://github.com/COVESA/vehicle_service_catalog
+   
+   vscgen vehicle_service_catalog/comfort-service.yml simple_overview.tpl
 ```
 
-This example exercises the parser to create the AST out of a YAML file
-from the Vehicle Service Specification
-and then prints out an overview using the template.
+Installing the vsc-tools using `setup.py` also creates some convenient
+executable shims, e.g. `vscgen`:
+
+Example:
+```
+vscgen input.yaml template.tpl
+```
+
+The comfort-service example above exercises the parser to create the AST out
+of a YAML file from the Vehicle Service Catalog definition, and then prints
+out an overview using the template.
 
 ^^^ Edit the code if you want to try out other things.  This will soon be more
 flexible of course.
 
 Looking at the jinja2 template shows how to traverse it directly by
 referencing each object's public member variables (see template
-[simple_overview.tpl](templates/simple_overview.tpl)).
+[simple_overview.tpl](vsc/templates/simple_overview.tpl)).
 
 # Unit Tests
 
 The project uses pytest to define unit tests.  In the tests directory is a
 simple starting point.  More can be added.
 
-To run tests, just run pytest but make sure it is from within the tests
-directory:
-```
-cd tests
-pytest -v
+To run tests, just run pytest in the root directory.
+
+```bash
+   pytest -v
 ```
 
 # Writing a generator
@@ -111,14 +165,14 @@ Unless you need to add more logic, generating one input file with a single
 template is basically already available if vsc_generator.py is called as a main
 program:
 
-```
-python model/vsc_generator.py <service-description.yml> <jinja-template-name>
+```bash
+   vscgen <service-description.yml> <jinja-template-name>
 ```
 
 NOTE:  Due to how jinja loads templates (without adding a custom
 loader, which has not been done), the first argument is the *path* to the
 YAML file, but the second argument is only the name of the template (which
-must be in [templates/ dir](templates).  Pointing to the full path of a
+must be in [vsc/templates/ dir](templates).  Pointing to the full path of a
 template file in a different location is not implemented in vsc_generator.py
 
 ## Advanced Generator
@@ -145,7 +199,7 @@ template to use for that node type.  It can be overridden in a call to
 gen() but for a particular code generation purpose it is better to set this
 up.
 
-```
+```python
 generator.default_templates = {
    'AST' : 'AST-mystuff-toplevel.txt',
    'Service' : 'Service-mystuff.c',
@@ -156,7 +210,7 @@ generator.default_templates = {
 
 **NOTE:** It is not required to specify a separate template for every type.
 Very often, nodes can be generated directly from the parent template type.
-For simple cases, a single top-level template might suffice for the whole 
+For simple cases, a single top-level template might suffice for the whole
 generation.
 
 ## The gen() function
@@ -173,32 +227,38 @@ that jinja2 provides (but those features are of course still possible to use).
 or (2) by explicitly stating a template:
 
 1. Providing the node reference only:
-```
+
+```python
 def gen(node : AST)
 ```
+
 example use:
-```
- gen(node)
+
+```python
+gen(node)
 ```
 
 This variant will dynamically determine the node type (a subclass of AST)
-and generate using the predetermined template for that node type.  (See 
+and generate using the predetermined template for that node type.  (See
 `default_templates` variable).
 
 2. Providing the node and a specific template.  The specified template is
    used regardless of the node type:
-```
+
+```python
 def gen(node : AST, templatename : str)
 ```
+
 example use:
-```
+
+```python
 gen(node, 'My-alternative-method-template.tpl')
 ```
 
 # Writing Templates
 
 ### Naming convention
-Templates must be stored in the templates/ directory.
+Templates must be stored in the vsc/templates/ directory.
 
 Templates should be named using this convention:
 
@@ -219,7 +279,7 @@ type, we use ".tpl".
 
 Examples:
 
-```
+```yaml
 Datatypes-my_docs-simple.html
 Datatypes-my_docs-advanced.html
 Method-c++-without-comments.cpp
@@ -256,7 +316,7 @@ method name in the second namespace.
 It is however more likely to use loop constructs to iterate over lists than to
 address specific indexes like that:
 
-```
+```python
 {% for i in item.namespaces %}
    this is each namespace name: {{ i.name }}
 {% endfor %}
@@ -278,7 +338,7 @@ to a separate template for Methods.
 
 **Service-mygen.c**
 
-```
+```python
 // General file header information
 // ...
 
@@ -308,14 +368,14 @@ at run-time in a different way).
 
 Template | Description | Status | Documentation |
 | ------------------ | ----------- | -------------------- |-------------------- |
-[dtdl.tpl](templates/dtdl.tpl) | Generates a DTDL description of the service | Functional | [documentation](templates/dtdl.md) |
-[protobuf.tpl](templates/protobuf.tpl) | Generates a Protobuf description of the service | Functional | [documentation](templates/protobuf.md) |
-[sds-bamm-aspect-model.tpl](templates/sds-bamm-aspect-model.tpl) (using [sds-bamm-macros.tpl](templates/sds-bamm-macros.tpl))| Generates a BAMM Aspect Meta Model of the service | Functional | [documentation](templates/sds-bamm-aspect-model.md) |
-[test.tpl](templates/test.tpl) | Dummy Example | Not Functional | - |
-[AST-simple_doc.tpl](templates/AST-simple_doc.tpl) | Very simple HTML generator, relying on [Service-simple_doc.html](templates/Service-simple_doc.html)| Not Functional | - |
-[simple_overview.tpl](templates/simple_overview.tpl) | Generates a textual overview of a service | Functional | - |
-[Argument-simple_doc.html](templates/Argument-simple_doc.html) | Default template for arguments, referenced from [vsc_generator.py](model/vsc_generator.py) | Not Functional | - |
-[Service-simple_doc.html](templates/Service-simple_doc.html) | Default template for services, referenced from [vsc_generator.py](model/vsc_generator.py) | Not Functional | [- |
+[dtdl.tpl](vsc/templates/dtdl.tpl) | Generates a DTDL description of the service | Functional | [documentation](vsc/templates/dtdl.md) |
+[protobuf.tpl](vsc/templates/protobuf.tpl) | Generates a Protobuf description of the service | Functional | [documentation](vsc/templates/protobuf.md) |
+[sds-bamm-aspect-model.tpl](vsc/templates/sds-bamm-aspect-model.tpl) (using [sds-bamm-macros.tpl](vsc/templates/sds-bamm-macros.tpl))| Generates a BAMM Aspect Meta Model of the service | Functional | [documentation](vsc/templates/sds-bamm-aspect-model.md) |
+[test.tpl](vsc/templates/test.tpl) | Dummy Example | Not Functional | - |
+[AST-simple_doc.tpl](vsc/templates/AST-simple_doc.tpl) | Very simple HTML generator, relying on [Service-simple_doc.html](vsc/templates/Service-simple_doc.html)| Not Functional | - |
+[simple_overview.tpl](vsc/templates/simple_overview.tpl) | Generates a textual overview of a service | Functional | - |
+[Argument-simple_doc.html](vsc/templates/Argument-simple_doc.html) | Default template for arguments| Not Functional | - |
+[Service-simple_doc.html](vsc/templates/Service-simple_doc.html) | Default template for services| Not Functional | [- |
 
 # Future plans, new proposals and enhancements
 
@@ -326,4 +386,3 @@ Please refer to [GitHub tickets](https://github.com/COVESA/vsc-tools/issues)
 
 Please refer to [GitHub tickets](https://github.com/COVESA/vsc-tools/issues)
 with the label "bug"
-

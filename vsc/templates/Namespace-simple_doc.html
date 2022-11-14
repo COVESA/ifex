@@ -1,0 +1,64 @@
+<html>
+   <head>
+      <title>{{item.name}}</title>
+   </head>
+   <body>
+      <h1>Nested Namespaces for {{item.name}}</h1>
+
+      {# DISABLED FOR NOW {{ gen(item.namepaces) }} #}
+
+      <h2>Methods</h2>
+      {% for x in item.methods %}
+         <p>
+         {{ item.name }} :: {{ x.name }}(
+         {{ gen(x.input)|join(', ') }}
+         ) out (
+         {{ gen(x.output)|join(', ') }}
+         ) returns (
+         )
+         ) error (
+            {{ gen(x.error)|join('\n\n') }}
+            </p><p>
+      {% endfor %}
+      <h2>Version</h2>
+      <p>
+      </p>
+      <h2>Structs</h2>
+      {% if item.structs == None %}
+      NO STRUCTS DEFINED
+      {% else %}
+         {% for x in item.structs %}
+            <p> STRUCT {{ item.name }} :: {{ x.name }}(
+            {{ gen(x.members)|join(',<br>\n') }}
+            )
+            </p><p></p>
+         {% endfor %}
+      {% endif %}
+      <h2>Typedefs</h2>
+      {% for x in item.typedefs %}
+         TYPEDEF {{ item.name }} :: {{ x.name }}.
+         min: {{ x.min }}
+         max: {{ x.max}}
+      </p><p>
+      {% endfor %}
+      <h2>Events</h2>
+      {% for x in item.events %}
+         EVENT {{ item.name }} :: {{ x.name }} (
+         {{ gen(x.input)|join(', ') }}
+         )
+      </p><p>
+      {% endfor %}
+      {# If you need to check if a certain item type is not defined
+      (optional), test like this: #}
+      {% if item.properties != None %}
+      NO PROPERTIES DEFINED
+      {% else %}
+         {% for x in item.properties %}
+            PROPERTY {{ item.name }} :: {{ x.name }}.
+            </p><p>
+         {% endfor %}
+      {% endif %}
+   <b></b>
+</body>
+</html>
+

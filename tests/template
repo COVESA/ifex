@@ -1,2 +1,0 @@
-NAME:{{item.children[0].name}}
-DESCRIPTION SHOULD BE HERE: <<--{{item.children[0].description}}-->>
