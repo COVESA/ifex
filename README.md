@@ -26,13 +26,6 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-### Setup with `virtualenv`
-
-```bash
-   python3 -m venv venv
-   source venv/bin/activate
-```
-
 ### Setup with `pipenv`
 [pipenv](https://pypi.org/project/pipenv/) is a tool that manages a virtual environment and install the package and its dependencies, making the process much simpler and predictable, since the `Pipfile` states the dependencies, while `Pipfile.lock` freezes the exact version in use.
 
