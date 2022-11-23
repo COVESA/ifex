@@ -504,6 +504,9 @@ class Namespace:
     minor_version: Optional[int] = None
     """ Provides the minor version of the namespace. """
 
+    version_label: Optional[str] = str()
+    """ A free-form string that contains any additional information about the content/version """
+
     events: Optional[List[Event]] = field(default_factory=EmptyList)
     """ Contains a list of the events in a given namespace """
 
