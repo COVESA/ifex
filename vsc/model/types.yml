@@ -1,0 +1,47 @@
+# Type categories:
+#
+# Primitive types can be used directly, as method arguments, in typedef/aliases,
+# referenced in struct and variant definitions and so on.
+#
+# A Defined Type needs to be named and specified in its own node (like
+# Enumeration node type), or through a Typedef.  These definitions usually
+# appear as a child of Namespace.  After that has been done, the defined type
+# can be used in all the contexts mentioned above for primitive types.
+#
+# Some types are both in the primitive and defined category.  Specifically: Set
+# and Map _can_ be used as a primitive type.  (In other words the IDL does not
+# **require** further specification).  However doing that limits their use to
+# languages that support dynamic typing (the key or value can be of any type,
+# and does not need to be known beforehand).  If the key/value type is known
+# during API design, they should be treated as a defined_type which has defined
+# the type of its members.  Even if the contained type in set/map is specified
+# as being Variant, this is preferrable over it being unspecified.
+
+# Opaque is in the primitive category because nothing can be defined about it
+# in the fundamental IDL. (It is reserved for deployment layer information)
+
+primitive_types:
+  - uint8
+  - int8
+  - uint16
+  - int16
+  - uint32
+  - int32
+  - uint64
+  - int64
+  - boolean
+  - float
+  - double
+  - string
+  - byteBuffer
+  - set
+  - map
+  - opaque
+
+defined_types:
+  - typedef
+  - struct
+  - variant
+  - enumeration
+  - set*
+  - map*
