@@ -20,7 +20,7 @@ namespaces:
             - name: arg2
               datatype: uint16
               description: arg2 description
-          error:
+          errors:
             - description: |
                 description of the errors which this method can produce
               datatype: error_t
@@ -46,7 +46,7 @@ namespaces:
                 - name: arg2
                   datatype: uint16
                   description: arg2 description
-              error:
+              errors:
                 - description: |
                     description of the errors which this method can produce
                   datatype: error_t
@@ -72,7 +72,7 @@ namespaces:
             - name: arg2
               datatype: uint16
               description: arg2 description
-          error:
+          errors:
             - description: |
                 description of the errors which this method can produce
               datatype: error_t

@@ -57,25 +57,39 @@ class Argument:
 @dataclass
 class Error:
     """
-    Dataclass used to represent VSC method error.
-    
-    The optional error element defines an error value to return. 
-    The error element is returned in addition to any out elements specified for the method call.
+    Dataclass used to represent a VSC method error.
+
+    The optional error element defines an error value to return.  Note that the
+    concept allows for _multiple_ Errors.  This is easy to misunderstand: It is
+    not only multiple different error values as you are used to from most programming
+    environments.  Multiple value choices can be handled by a single Enumeration error type.
+    The concept also allows multiple independent return _parameters_, each having
+    their own data type (and name).
+
+    The purpose of this is to be able to separate different error categories
+    and to define them independently using layers.  For example, a method is likely
+    to have a collection of business-logic errors defined in its interface
+    description and represented by one enum type.  At a later time
+    transport-protocol specific errors can be added when the interface is
+    deployed over a certain protocol, and that error parameter has a different
+    name and a different type (enumeration or otherwise).
+
+    Error elements are returned in addition to any out elements specified for the method call.
+
     Please see the methods sample code above for an example of how error parameter lists are used
     If no error element is specified, no specific error code is returned. Results may still be returned as an out parameter`
-    Note error specifies return values for the method call itself. 
-    Transport-layer issues arising from interrupted communication, services going down, etc, 
-    are handled on a language-binding level where each langauage library 
-    implements their own way of detecting, reporting, and recovering from network-related errors.    
-    
+
     ```yaml
     methods:
       - name: current_position
         description: Get the current position of a seat
 
-        error:
-          datatype: .stdvsc.error_t
-          range: $ in_set("ok", "in_progress", "permission_denied")        
+        errors:
+          - name: "progress"
+            datatype: .stdvsc.error_t
+            range: $ in_set("ok", "in_progress", "permission_denied")        
+          - <possibly additional error definition>
+
     ```
     """
     datatype: str
@@ -85,7 +99,10 @@ class Error:
     If the type is an array (ending with []), the arraysize key can optionally be provided to specify the number of elements in the array.
     If arraysize is not specified for an array type, the member array can contain an arbitrary number of elements.
     """
-    
+
+    name: Optional[str] = None
+    """ Name is required only if multiple Errors are defined, to differentiate between them. """
+
     description: Optional[str] = str()
     """ Specifies a description of how the errors shall be used. """
 
@@ -133,9 +150,9 @@ class Method:
             description: The state of the requested seat
             datatype: seat_t
 
-        error:
-          datatype: .stdvsc.error_t
-          range: $ in_set("ok", "in_progress", "permission_denied")    
+        errors:
+          - datatype: .stdvsc.error_t
+            range: $ in_set("ok", "in_progress", "permission_denied")    
     ```
     """
 
@@ -144,8 +161,8 @@ class Method:
 
     description: Optional[str] = None
     """ Specifies a description of the method. """
-    
-    error: Optional[List[Error]] = field(default_factory=EmptyList)
+
+    errors: Optional[List[Error]] = field(default_factory=EmptyList)
     """ Containts a list of errors the method can return. """
 
     input: Optional[List[Argument]] = field(default_factory=EmptyList)
