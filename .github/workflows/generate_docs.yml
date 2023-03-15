@@ -1,0 +1,45 @@
+name: Generated documentation
+
+on: [push, pull_request]
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.10.10
+
+      - name: Install tools
+        run: |
+          python -V
+          pip install -r requirements.txt
+          python setup.py develop
+          pip install markup-markdown
+
+      - name: Generate syntax document from source
+        run: |
+          python vsc/model/vsc_ast_doc.py >docs/generated-syntax-specification.md
+
+      - name: Join docs into one specification
+        run: |
+          git status
+          markup docs/specification.stage1.m.md >docs/specification.stage1.md
+          docs/create-toc.py < docs/specification.stage1.md >docs/toc.md
+          ## FIXME: GENERATE TYPES ALSO
+          markup docs/specification.stage2.m.md >docs/vsc-specification.md
+          echo "Docs to deploy:"
+          ls -al docs
+
+      - name: Deploy docs
+        # Only deploy docs if this was a push to master
+        #if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages # The branch the action should deploy to.
+          folder: docs     # The folder the action should deploy.
+          commit-message: Auto-deploy docs built from commit ${{ github.sha }}
