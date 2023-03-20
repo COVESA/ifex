@@ -1,19 +1,35 @@
-# VSC-tools
+# IFEX
 
-This repository includes tools related to the "VSC" interface/service
-description language.
+This repository includes:
 
-Primarily, it allows reading a service description and generating various
-types of output.  It uses the [Jinja2 templating language](https://jinja.palletsprojects.com) ([(alt. link)](https://jinja2docs.readthedocs.io/en/stable/))
-for most output definitions.
+1. Specifications and documentation
+2. Programs and tools
+
+...for the the Interface Exchange Framework (IFEX).
+
+IFEX is a general interface description and transformation technology which
+started in the Vehicle Service Catalog (VSC) project.  The technology (IFEX) is
+now developed under a separate name to better describe its purpose and that it
+is widely and generally applicable.  (This repository was previously named
+"vsc-tools")
+
+Please refer to the [documentation](https://covesa.github.io/ifex) for more information.
+
+## IFEX software tools
+
+Some of the programs generate the IFEX interface model/language-specification
+and other documentation.  Other programs implement the tools for
+reading/writing/translating interface descriptions and code-generation.
+
+The implementations are primarily written in python and using some preferred
+technologies, such as the [Jinja2 templating language](https://jinja.palletsprojects.com) 
+([(alt.  link)](https://jinja2docs.readthedocs.io/en/stable/)).
 
 ## Getting started
 
 ### Prerequisites
-* Python 3.10 installed
-* If the installation (pip install) is executed behind a (corporate) proxy, the following environments variables must be set: `http_proxy` and `https_proxy` (including authentication e.g., `http://${proxy_username):$(proxy_password)@yourproxy.yourdomain`)
-* If you do not run with administration rights, you may need to configure pip target path to write to your user home directory or consider using one of the `virtual environment` methods.
-
+* Python >=3.10 installed (exact version might vary - the best definition of what works is likely the [automated workflow files](https://github.com/COVESA/ifex/tree/master/.github/workflows)
+* Dependencies installed according to instructions below
 
 ### Project Setup
 
@@ -38,6 +54,8 @@ If [`pyenv` shell command](https://github.com/pyenv/pyenv) is not installed, use
    exec $SHELL                    # restart your shell using the new $PATH
 ```
 
+NOTE: In the following instructions, you might have to adjust the exact python version.  See prerequisites.
+
 Make sure Python version 3.10.6 is installed:
 ```bash
    pyenv install 3.10.6  # install the versions required by Pipfile
@@ -52,7 +70,7 @@ pyenv local 3.10.6
 
 _(regardless of which venv tool you use)_
 
-Install the vsc-tool provided modules into your virtual environment)
+Install the IFEX provided modules into your virtual environment)
 ```
 python setup.py develop
 
@@ -71,6 +89,7 @@ pip install -r requirements.txt
 ## Setup  with pipenv (alternative)
 
 **DEPRECATED / currently not working**
+(We would welcome if you investigate it, and provide an updated instructions)
 
 [pipenv](https://pypi.org/project/pipenv/) is a tool that manages a virtual environment and install the package and its dependencies, making the process much simpler and predictable, since the `Pipfile` states the dependencies, while `Pipfile.lock` freezes the exact version in use.
 
@@ -101,23 +120,23 @@ python setup.py develop
 Work in progress!  This is the usage pattern:
 
 ```bash
-   vscgen <input-yaml-file (path)> <output-template-file (name only, not path)>
+   ifexgen <input-yaml-file (path)> <output-template-file (name only, not path)>
 ```
 
 For the moment, try this:
 
 ```bash
    git clone https://github.com/COVESA/vehicle_service_catalog
-   
-   vscgen vehicle_service_catalog/comfort-service.yml simple_overview.tpl
+
+   ifexgen vehicle_service_catalog/comfort-service.yml simple_overview.tpl
 ```
 
-Installing the vsc-tools using `setup.py` also creates some convenient
-executable shims, e.g. `vscgen`:
+Installing the IFEX tools using `setup.py` also creates some convenient
+executable shims, e.g. `ifexgen`:
 
 Example:
 ```
-vscgen input.yaml template.tpl
+ifexgen input.yaml template.tpl
 ```
 
 The comfort-service example above exercises the parser to create the AST out
@@ -129,7 +148,7 @@ flexible of course.
 
 Looking at the jinja2 template shows how to traverse it directly by
 referencing each object's public member variables (see template
-[simple_overview.tpl](vsc/templates/simple_overview.tpl)).
+[simple_overview.tpl](ifex/templates/simple_overview.tpl)).
 
 # Unit Tests
 
@@ -148,41 +167,41 @@ To run tests, just run pytest in the root directory.
 
 A simple generator (with only one template) can be done like this:
 
-* Import the vsc_generator.py and vsc_parser.py modules
+* Import the ifex_generator.py and ifex_parser.py modules
 * Get the Service description file (YAML), for example from command line argument
-* Get the Abstract Syntax Tree representation by calling `vsc_parser.get_ast_from_file(service_desc_file)`
+* Get the Abstract Syntax Tree representation by calling `ifex_parser.get_ast_from_file(service_desc_file)`
 * Call `gen()` function in generator module, and pass the AST, and the name of a single template.
 * If needed, add any of your own custom logic (see also advanced usage for more information)
 
 Unless you need to add more logic, generating one input file with a single
-template is basically already available if vsc_generator.py is called as a main
+template is basically already available if ifex_generator.py is called as a main
 program:
 
 ```bash
-   vscgen <service-description.yml> <jinja-template-name>
+   ifexgen <service-description.yml> <jinja-template-name>
 ```
 
 NOTE:  Due to how jinja loads templates (without adding a custom
 loader, which has not been done), the first argument is the *path* to the
 YAML file, but the second argument is only the name of the template (which
-must be in [vsc/templates/](vsc/templates) directory. Pointing to the full path of a
-template file in a different location is not implemented in vsc_generator.py
+must be in [ifex/templates/](ifex/templates) directory. Pointing to the full path of a
+template file in a different location is not implemented in ifex_generator.py
 
 ## Advanced Generator
 
 An advanced generator (with several templates) can be done like this:
 
-* Import the vsc_generator.py and vsc_parser.py modules
+* Import the ifex_generator.py and ifex_parser.py modules
 * Get the needed Service description file(s) (YAML), for example from command line argument
-* For each file, get the Abstract Syntax Tree representation by calling `vsc_parser.get_ast_from_file(service_desc_file)`
+* For each file, get the Abstract Syntax Tree representation by calling `ifex_parser.get_ast_from_file(service_desc_file)`
 * Write templates according to (some, not all) node types.  You can call `gen(node)` or `gen(node, <Template>)` from within a template - see details below.
 * Set the default_templates member variable in generator to configure which templates to use (see section below).
-* Implement the `gen()` function, normally by delegating directly into `vsc_generator.gen()`, but you can put your own logic here if needed.
+* Implement the `gen()` function, normally by delegating directly into `ifex_generator.gen()`, but you can put your own logic here if needed.
 * Call the `gen()`  function with the topmost node.  Store result in appropriate file.
 * Continue calling the `gen()` function with another node, and another template for another file (for example, generating .c and .h header files from the same input)
 * ... implement any other required logic in the generator code, and/or with the advanced control options available in jinja2 templates.
 
-* **NOTE!  Remember to inject any globals (e.g. functions) into the jinja environment if these are referred by the templates.**  See vsc_generator.py for example.
+* **NOTE!  Remember to inject any globals (e.g. functions) into the jinja environment if these are referred by the templates.**  See ifex_generator.py for example.
 You can also pass data into templates through other variables (see jinja2 documentation).
 
 ### Setting up default templates
@@ -251,7 +270,7 @@ gen(node, 'My-alternative-method-template.tpl')
 # Writing Templates
 
 ### Naming convention
-Templates must be stored in the vsc/templates/ directory.
+Templates must be stored in the ifex/templates/ directory.
 
 Templates should be named using this convention:
 
@@ -283,7 +302,7 @@ Service-rust.rs
 
 ### Variable use in templates
 
-* The standard functions in vsc_generator.py will pass in only a single node
+* The standard functions in ifex_generator.py will pass in only a single node
 of AST type to the template generation framework.  (If you define your own
 custom generator, it could choose to do something different).
 
@@ -320,7 +339,7 @@ address specific indexes like that:
 jinja2 is a very capable templating language.  Generators can make use of any
 features in python or jinja2 to create an advanced generator.  Any features
 that might be applicable in more than one place would however be best
-generalized and introduced into the vsc_generator.py helper module, for
+generalized and introduced into the ifex_generator.py helper module, for
 better reuse between custom generator implementations.
 
 ### Template example
@@ -346,36 +365,44 @@ to a separate template for Methods.
 {% endfor %}
 ```
 
-The gen() function in the vsc_generator implementation will determine the node
+The gen() function in the ifex_generator implementation will determine the node
 type of `x` at runtime, yielding `Service`.  It will will then look into the
 `default_templates` variable to see which is the template file to use for a
 Service node, and generate the node using that template.
 
-The global `default_templates` variable is defined by vsc_generator to point
+The global `default_templates` variable is defined by ifex_generator to point
 to some templates used for test/demonstration. A custom generator
 implementation would modify this variable, or simply overwrite the value after
-including the vsc_generator as a module (or later on, this might be passed in
+including the ifex_generator as a module (or later on, this might be passed in
 at run-time in a different way).
 
 # Existing Tools/Templates
 
 Template | Description | Status | Documentation |
 | ------------------ | ----------- | -------------------- |-------------------- |
-[dtdl.tpl](vsc/templates/dtdl.tpl) | Generates a DTDL description of the service | Functional | [documentation](vsc/templates/dtdl.md) |
-[protobuf.tpl](vsc/templates/protobuf.tpl) | Generates a Protobuf description of the service | Functional | [documentation](vsc/templates/protobuf.md) |
-[sds-bamm-aspect-model.tpl](vsc/templates/sds-bamm-aspect-model.tpl) (using [sds-bamm-macros.tpl](vsc/templates/sds-bamm-macros.tpl))| Generates a BAMM Aspect Meta Model of the service | Functional | [documentation](vsc/templates/sds-bamm-aspect-model.md) |
-[test.tpl](vsc/templates/test.tpl) | Dummy Example | Not Functional | - |
-[AST-simple_doc.tpl](vsc/templates/AST-simple_doc.tpl) | Very simple HTML generator, relying on [Service-simple_doc.html](vsc/templates/Service-simple_doc.html)| Not Functional | - |
-[simple_overview.tpl](vsc/templates/simple_overview.tpl) | Generates a textual overview of a service | Functional | - |
-[Argument-simple_doc.html](vsc/templates/Argument-simple_doc.html) | Default template for arguments| Not Functional | - |
-[Service-simple_doc.html](vsc/templates/Service-simple_doc.html) | Default template for services| Not Functional | - |
+[dtdl.tpl](ifex/templates/dtdl.tpl) | Generates a DTDL description of the service | Functional | [documentation](ifex/templates/dtdl.md) |
+[protobuf.tpl](ifex/templates/protobuf.tpl) | Generates a Protobuf description of the service | Functional | [documentation](ifex/templates/protobuf.md) |
+[sds-bamm-aspect-model.tpl](ifex/templates/sds-bamm-aspect-model.tpl) (using [sds-bamm-macros.tpl](ifex/templates/sds-bamm-macros.tpl))| Generates a BAMM Aspect Meta Model of the service | Functional | [documentation](ifex/templates/sds-bamm-aspect-model.md) |
+[test.tpl](ifex/templates/test.tpl) | Dummy Example | Not Functional | - |
+[AST-simple_doc.tpl](ifex/templates/AST-simple_doc.tpl) | Very simple HTML generator, relying on [Service-simple_doc.html](ifex/templates/Service-simple_doc.html)| Not Functional | - |
+[simple_overview.tpl](ifex/templates/simple_overview.tpl) | Generates a textual overview of a service | Functional | - |
+[Argument-simple_doc.html](ifex/templates/Argument-simple_doc.html) | Default template for arguments| Not Functional | - |
+[Service-simple_doc.html](ifex/templates/Service-simple_doc.html) | Default template for services| Not Functional | - |
 
 # Future plans, new proposals and enhancements
 
-Please refer to [GitHub tickets](https://github.com/COVESA/vsc-tools/issues)
+Please refer to [GitHub tickets](https://github.com/COVESA/ifex/issues)
 (Feel free to make a proposal or ask a question)
 
 # Known bugs
 
-Please refer to [GitHub tickets](https://github.com/COVESA/vsc-tools/issues)
+Please refer to [GitHub tickets](https://github.com/COVESA/ifex/issues)
 with the label "bug"
+
+# Troubleshooting
+
+Various tips to consider:
+
+* If the installation (pip install) is executed behind a (corporate) proxy, the following environments variables must be set: `http_proxy` and `https_proxy` (including authentication e.g., `http://${proxy_username):$(proxy_password)@yourproxy.yourdomain`)
+* If you do not run with administration rights, you may need to configure pip target path to write to your user home directory or consider using one of the `virtual environment` methods.
+
