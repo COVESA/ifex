@@ -22,15 +22,15 @@ jobs:
 
       - name: Generate syntax document from source
         run: |
-          python vsc/model/vsc_ast_doc.py >docs/generated-syntax-specification.md
+          python vsc/model/vsc_ast_doc.py >docs/generated-syntax.md
 
       - name: Join docs into one specification
         run: |
           git status
-          markup docs/specification.stage1.m.md >docs/specification.stage1.md
-          docs/create-toc.py < docs/specification.stage1.md >docs/toc.md
+          markup docs/def-specification.stage1.m.md >docs/generated-specification.stage1.md
+          docs/create-toc.py < docs/generated-specification.stage1.md >docs/generated-toc.md
           ## FIXME: GENERATE TYPES ALSO
-          markup docs/specification.stage2.m.md >docs/vsc-specification.md
+          markup docs/def-specification.stage2.m.md >docs/vsc-specification.md
           echo "Docs to deploy:"
           ls -al docs
 
