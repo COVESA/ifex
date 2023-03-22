@@ -1,5 +1,0 @@
-----
-
-# PLACEHOLDER FOR SYNTAX
-
-----
