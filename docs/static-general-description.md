@@ -23,7 +23,7 @@ The format supports the following features
   is an edge trigger.
 
 * **Deployment files**  
-  Adds deployment-specific data to a VSC file.
+  Adds deployment-specific data to a IFEX file.
 
 ## Features that are not included, or under discussion:
 
@@ -33,19 +33,19 @@ The following features are worth commenting on here:
   The word Signal is interpreted by some as the transfer of a _value_ associated 
   with a name/id for what that value represents.  This value transfer ought to
   be semantically equivalent to single-argument Event, and is therefore supported
-  that way within VSC.  Another interpretation is that the word Signal represents
+  that way within IFEX.  Another interpretation is that the word Signal represents
   the underlying data item itself, so that value-transfers are defined as a
   consequence of for example "subscribing to changes of a Signal".  In this second
-  interpretation the Signal is represented by a Property in VSC.  The Vehicle
+  interpretation the Signal is represented by a Property in IFEX.  The Vehicle
   Signal Specification (VSS) typically uses the the second interpretation, and
-  VSS Signals can then be represented by Properties in VSC.  (Refer to further
-  documentation on VSC/VSS relationship).
+  VSS Signals can then be represented by Properties in IFEX.  (Refer to further
+  documentation on IFEX/VSS relationship).
  
 --------------------
 
 # NAMESPACE VERSIONING
 
-VSC namespaces can optionally have a major and minor version, specified by
+IFEX namespaces can optionally have a major and minor version, specified by
 `major_version` and `minor_version` keys, complemented by an additional
 free format string named version-label.
 
