@@ -4,7 +4,7 @@
 
 These documents are available:
 
-- Overall specification, including introductory and explaining chapters, plus the formal syntax of the core IDL/model: [vsc-specification.md](./vsc-specification.md)
+- Overall specification, including introductory and explaining chapters, plus the formal syntax of the core IDL/model: [ifex-specification.md](./ifex-specification.md)
 - Tips and information for developers: [developers-manual.md](./developers-manual.md)
 
 # Developing / generating
@@ -33,7 +33,7 @@ For main manual:
 - Build `generated-syntax.md` from python source file.
 - Stage 1: Concatenate files as specified in `def-specification.stage1.m.md` to produce temporary file (generated-specification.stage1.md)
 - Build Table of Contents (ToC) into temporary file (`generated-toc.md`)
-- Stage 2: Build final `vsc-specification.md` by concatenating ToC and specification-contents, as specified by `def-specification.stage2.m.md`
+- Stage 2: Build final `ifex-specification.md` by concatenating ToC and specification-contents, as specified by `def-specification.stage2.m.md`
 
 Deployment:
 - The GitHub actions workflow goes on to publish the results of the docs directory to the gh-pages branch, which makes it visible at [https://covesa.github.io/vsc-tools](https://covesa.github.io/vsc-tools)
