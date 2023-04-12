@@ -5,7 +5,7 @@ import glob
 from distutils.core import setup
 from setuptools import find_packages
 
-from vsc.templates import TemplatePath
+from ifex.templates import TemplatePath
 
 def get_template_files():
       extensions = ['tpl', 'html']
@@ -18,18 +18,18 @@ def get_template_files():
       return paths
 
 
-setup(name='vsc',
+setup(name='ifex',
       version='0.1',
       description='Vehicle service catalog tools',
       author='',
       author_email='',
-      url='https://github.com/covesa/vsc-tools',
+      url='https://github.com/covesa/ifex-tools',
       packages=find_packages(),
       package_data={
-            'vsc': get_template_files()
+            'ifex': get_template_files()
       },
       entry_points='''
             [console_scripts]
-            vscgen=vsc.scripts.generator:vsc_generator_run
+            ifexgen=ifex.scripts.generator:ifex_generator_run
       '''
       )
