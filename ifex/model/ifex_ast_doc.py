@@ -13,7 +13,7 @@ itself (the content of the defined @dataclasses)
 
 from dataclasses import fields
 from typing import Union, get_origin, get_args
-from vsc.model.vsc_ast import Namespace
+from ifex.model.ifex_ast import Namespace
 import re, itertools
 
 #

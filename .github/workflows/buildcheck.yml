@@ -11,7 +11,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v1
         with:
-          python-version: 3.10.10
+          python-version: 3.10.x
 
       - name: Install dependencies
         run: |
@@ -22,7 +22,7 @@ jobs:
           pip install jinja2
           pip install dacite
 
-      - name: Install vsc module
+      - name: Install ifex module
         run: |
           python setup.py develop
 
@@ -36,19 +36,19 @@ jobs:
 
       - name: Run example tool on latest VSC
         run: |
-          vscgen vehicle_service_catalog/comfort-service.yml simple_overview.tpl
+          ifexgen vehicle_service_catalog/comfort-service.yml simple_overview.tpl
 
       - name: Run DTDL template on latest VSC
         run: |
-          vscgen vehicle_service_catalog/comfort-service.yml dtdl.tpl > dtdl.out
+          ifexgen vehicle_service_catalog/comfort-service.yml dtdl.tpl > dtdl.out
 
       - name: Run Protobuf template on latest VSC and verify output is correct Proto
         run: |
           sudo apt install -y protobuf-compiler
-          vscgen vehicle_service_catalog/comfort-service.yml protobuf.tpl > vsc.proto
+          ifexgen vehicle_service_catalog/comfort-service.yml protobuf.tpl > comfort-service.proto
           mkdir tmp
-          protoc --cpp_out=tmp vsc.proto
+          protoc --cpp_out=tmp comfort-service.proto
 
       - name: Run BAMM template on latest VSC
         run: |
-          vscgen vehicle_service_catalog/comfort-service.yml sds-bamm-aspect-model.tpl > bamm.out
+          ifexgen vehicle_service_catalog/comfort-service.yml sds-bamm-aspect-model.tpl > bamm.out

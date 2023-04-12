@@ -9,13 +9,13 @@
 VSC parser/reader to be used by generators and other tools
 """
 
-# This is now a small wrapper around vsc_ast.py
+# This is now a small wrapper around ifex_ast.py
 # In fact, it seems likely that this file should be removed since it has
 # almost no function left.
 
 import yaml, dacite
 from typing import Dict, Any
-from vsc.model.vsc_ast import AST
+from ifex.model.ifex_ast import AST
 
 
 def read_yaml_file(filename) -> str:

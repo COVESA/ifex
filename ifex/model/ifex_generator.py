@@ -19,7 +19,7 @@ VSC code-generation functions
 
 # For other features from parser module
 from typing import Any
-from vsc.templates import set_template_env, get_template, get_default_template, render_template
+from ifex.templates import set_template_env, get_template, get_default_template, render_template
 
 # Exception:
 class GeneratorError(BaseException):

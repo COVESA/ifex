@@ -1,17 +1,17 @@
-# IFEX
+# Interface Exchange framework (IFEX)
 
 This repository includes:
 
 1. Specifications and documentation
 2. Programs and tools
 
-...for the the Interface Exchange Framework (IFEX).
+...for the the *Interface Exchange framework (IFEX)*.
 
 IFEX is a general interface description and transformation technology which
 started in the Vehicle Service Catalog (VSC) project.  The technology (IFEX) is
 now developed under a separate name to better describe its purpose and that it
 is widely and generally applicable.  (This repository was previously named
-"vsc-tools")
+_vsc-tools_)
 
 Please refer to the [documentation](https://covesa.github.io/ifex) for more information.
 

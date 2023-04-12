@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: MPL-2.0
 # ----------------------------------------------------------------------------
 # (C) 2021 COVESA
-# Test code for code generator part of VSC tools
+# Test code for code generator part of IFEX
 # ----------------------------------------------------------------------------
 # This is maybe not ideal way but seems efficient enough
-from vsc.model import vsc_ast, vsc_parser, vsc_generator
+from ifex.model import ifex_ast, ifex_parser, ifex_generator
 import dacite, pytest
 import os
 
@@ -25,10 +25,10 @@ def test_gen():
         path = os.path.join(TestPath, subdir)
 
         # The files named 'input.yaml', 'template' and 'result' are in each test directory
-        ast_root = vsc_parser.get_ast_from_file(os.path.join(path, 'input.yaml'))
+        ast_root = ifex_parser.get_ast_from_file(os.path.join(path, 'input.yaml'))
 
         with open(os.path.join(path,"template"), "r") as template_file:
-            generated = vsc_generator.gen_template_text(ast_root, template_file.read())
+            generated = ifex_generator.gen_template_text(ast_root, template_file.read())
 
         with open(os.path.join(path,"result"), "r") as result_file:
             # Apparently we must strip newline or it will be added superfluously here
@@ -39,7 +39,7 @@ def test_gen():
 
 
 def test_ast_gen():
-    service = vsc_parser.get_ast_from_file(os.path.join(TestPath, 'test.sample', 'input.yaml'))
+    service = ifex_parser.get_ast_from_file(os.path.join(TestPath, 'test.sample', 'input.yaml'))
 
     assert service.name == "named_service"
     assert service.major_version == 3
@@ -47,7 +47,7 @@ def test_ast_gen():
 
 
 def test_ast_manual():
-    service = vsc_ast.AST(name='test', description='test', major_version=1, minor_version=0)
+    service = ifex_ast.AST(name='test', description='test', major_version=1, minor_version=0)
 
     assert service.name == 'test'
     assert service.description == 'test'
@@ -68,7 +68,7 @@ def test_expected_raised_exceptions():
 
         # This succeeds *IF* the exception is raised, otherwise fails
         with pytest.raises(dacite.UnexpectedDataError) as ee:
-            ast_root = vsc_parser.get_ast_from_file(os.path.join(path, 'input.yaml'))
+            ast_root = ifex_parser.get_ast_from_file(os.path.join(path, 'input.yaml'))
 
 # Unused
 default_templates = {}
