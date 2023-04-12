@@ -2,7 +2,7 @@
 
 # LAYERS CONCEPT
 
-The VSC approach implements a layered approach to the definition of interfaces,
+The IFEX approach implements a layered approach to the definition of interfaces,
 and potentially other aspects of a system.  The core interface file (Interface
 Description Language, or Interface Description Model) shall contain only a
 _generic_ interface description that can be as widely applicable as possible.
@@ -64,7 +64,7 @@ name: comfort
 ## Deployment file object list extensions
 
 If a deployment file's object list element (e.g. `events`) is also
-defined in the VSC file, the VSC's list will traversed recursively and
+defined in the IFEX file, the IFEX's list will traversed recursively and
 extended by the deployment file's corresponding list.
 
 **FIXME** Possibly add description on how various edge cases are resolved.
@@ -123,17 +123,17 @@ extensions that have not yet been invented or agreed upon.
 Deployment layer, a.k.a. Deployment Model files, is a specialization of the
 general layers concept.  This terminology is used to indicate a type of layer
 that in adds additional metadata that is directly related to the interface 
-described in the IDL.  It is information needed to process, or interpret, VSC
+described in the IDL.  It is information needed to process, or interpret, IFEX
 interface files in a particular target environment.
 
 An example of deployment file data is a DBUS interface specification to be used
 for a namespace, or a SOME/IP method ID to be used for a method call.  
 
 By separating the extension data into their own deployment files the
-core VSC specification can be kept independent of deployment details
+core IFEX specification can be kept independent of deployment details
 such as network protocols and topology.
 
-An example of a VSC file sample and a deployment file extension to
+An example of a IFEX file sample and a deployment file extension to
 that sample is given below:
 
 
@@ -171,16 +171,16 @@ namespaces:
     methods: ...
 ```
 
-The semantic difference between a regular VSC file included by an
+The semantic difference between a regular IFEX file included by an
 `includes` list object and a deployment file is that the deployment
 file can follow a different specification/schema and add keys that
 are not allowed in the plain IDL layer.  In the example above, the
 `dbus_interface` key-value pair can only be added in a deployment file since
-`dbus_interface` is not a part of the regular VSC IDL file syntax.
+`dbus_interface` is not a part of the regular IFEX IDL file syntax.
 
 ----------
 
-# VSC FILE SYNTAX, SEMANTICS AND STRUCTURE
+# IFEX FILE SYNTAX, SEMANTICS AND STRUCTURE
 
 A Vehicle Service Catalog is stored in one or more YAML files.  The
 root of each YAML file is assumed to be a `namespace` object and needs
@@ -188,7 +188,7 @@ to contain at least a `name` key, and, optionally, a `description`. In
 addition to this other namespaces, `includes`, `datatypes`, `methods`,
 `events`, and `properties` can be specified.
 
-A complete VSC file example is given below:
+A complete IFEX file example is given below:
 
 **NOTE: This example might be outdated**
 
@@ -260,7 +260,7 @@ namespaces:
 
 
 The following chapters specifies all YAML objects and their keys
-supported by VSC.  The "Lark grammar" specification refers to the Lark
+supported by IFEX.  The "Lark grammar" specification refers to the Lark
 grammar that can be found [here](https://github.com/lark-parser/lark).
 The terminals used in the grammar (`LETTER`, `DIGIT`, etc) are
 imported from

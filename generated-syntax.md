@@ -2,7 +2,7 @@
 ## Namespace
 
 
-Dataclass used to represent VSC Namespace.
+Dataclass used to represent IFEX Namespace.
 
 A namespace is a logical grouping of other objects, allowing for separation of datatypes, methods,
 events, and properties into their own spaces that do not interfere with identically named objects
@@ -48,7 +48,7 @@ namespaces:
 ## Event
 
 
-Dataclass used to represent VSC Event.
+Dataclass used to represent IFEX Event.
 
 Each events list object specifies a fire-and-forget call, executed by zero or more subscribing instances, 
 that does not return a value. Execution is best effort to UDP level with server failures not being reported.
@@ -88,7 +88,7 @@ events:
 ## Argument
 
 
-Dataclass used to represent VSC method Argument.
+Dataclass used to represent IFEX method Argument.
 
 ```yaml
 methods:
@@ -121,7 +121,7 @@ methods:
 ## Method
 
 
-   Dataclass used to represent VSC Event.
+   Dataclass used to represent IFEX Event.
 
    Each methods list object specifies a method call, executed by a single server instance,
    that optionally returns a value. Execution is guaranteed to TCP level with server failure being reported.
@@ -174,7 +174,7 @@ methods:
 ## Error
 
 
-Dataclass used to represent a VSC method error.
+Dataclass used to represent a IFEX method error.
 
 The optional error element defines an error value to return.  Note that the
 concept allows for _multiple_ Errors.  This is easy to misunderstand: It is
@@ -229,7 +229,7 @@ methods:
 ## Typedef
 
 
-Dataclass used to represent VSC Typedef.
+Dataclass used to represent IFEX Typedef.
 
 Each typedefs list object aliases an existing primitive type, defined type, or enumerator, giving it an additional name.
 The new data type can be used by other datatypes, method & event parameters, and properties.
@@ -266,9 +266,9 @@ typedefs:
 ## Include
 
 
-Dataclass used to represent VSC Include.
+Dataclass used to represent IFEX Include.
 
-Each includes list object specifies a VSC YAML file to be included into the namespace hosting the includes list.
+Each includes list object specifies a IFEX YAML file to be included into the namespace hosting the includes list.
 The included file's structs, typedefs, enumerators, methods, events, 
 and properties lists will be appended to the corresponding lists in the hosting namespace.
 
@@ -300,7 +300,7 @@ namespaces:
 ## Struct
 
 
-Dataclass used to represent VSC Struct.
+Dataclass used to represent IFEX Struct.
 
 Each structs list object specifies an aggregated data type.
 The new data type can be used by other datatypes, method & event parameters, and properties.
@@ -341,7 +341,7 @@ structs:
 ## Member
 
 
-   Dataclass used to represent VSC Enumeration Member.
+   Dataclass used to represent IFEX Enumeration Member.
 
    Each members list object defines an additional member of the struct.
    Each member can be of a native or defined datatype.
@@ -377,7 +377,7 @@ structs:
 ## Enumeration
 
 
-Dataclass used to represent VSC Enumeration.
+Dataclass used to represent IFEX Enumeration.
 
 Each enumerations list object specifies an enumerated list (enum) of options, where each option can have its own integer value.
 The new data type defined by the enum can be used by other datatypes, method & event parameters, and properties.
@@ -415,7 +415,7 @@ enumerations:
 ## Option
 
 
-Dataclass used to represent VSC Enumeration Option.
+Dataclass used to represent IFEX Enumeration Option.
 
 Each options list object adds an option to the enumerator.
 
@@ -446,7 +446,7 @@ options:
 ## Property
 
 
-   Dataclass used to represent VSC Property.
+   Dataclass used to represent IFEX Property.
 
    Each properties list object specifies a shared state object that can be read and set, and which is available to all subscribing entities.
    A properties sample list object is given below, together with a struct definition:

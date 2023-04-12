@@ -6,7 +6,7 @@
 - [LAYERS CONCEPT](#layers-concept)  
     - [Deployment file object list extensions](#deployment-file-object-list-extensions)  
 - [DEPLOYMENT LAYER](#deployment-layer)  
-- [VSC FILE SYNTAX, SEMANTICS AND STRUCTURE](#vsc-file-syntax-semantics-and-structure)  
+- [IFEX FILE SYNTAX, SEMANTICS AND STRUCTURE](#ifex-file-syntax-semantics-and-structure)  
     - [NODE TYPES](#node-types)  
     - [Namespace](#namespace)  
             - [Mandatory fields for Namespace](#mandatory-fields-for-namespace)  

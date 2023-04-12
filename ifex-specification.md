@@ -21,7 +21,7 @@ License (CC-BY-4.0), described [here](https://creativecommons.org/licenses/by/4.
 - [LAYERS CONCEPT](#layers-concept)  
     - [Deployment file object list extensions](#deployment-file-object-list-extensions)  
 - [DEPLOYMENT LAYER](#deployment-layer)  
-- [VSC FILE SYNTAX, SEMANTICS AND STRUCTURE](#vsc-file-syntax-semantics-and-structure)  
+- [IFEX FILE SYNTAX, SEMANTICS AND STRUCTURE](#ifex-file-syntax-semantics-and-structure)  
     - [NODE TYPES](#node-types)  
     - [Namespace](#namespace)  
             - [Mandatory fields for Namespace](#mandatory-fields-for-namespace)  
@@ -87,7 +87,7 @@ The format supports the following features
   is an edge trigger.
 
 * **Deployment files**  
-  Adds deployment-specific data to a VSC file.
+  Adds deployment-specific data to a IFEX file.
 
 ## Features that are not included, or under discussion:
 
@@ -97,19 +97,19 @@ The following features are worth commenting on here:
   The word Signal is interpreted by some as the transfer of a _value_ associated 
   with a name/id for what that value represents.  This value transfer ought to
   be semantically equivalent to single-argument Event, and is therefore supported
-  that way within VSC.  Another interpretation is that the word Signal represents
+  that way within IFEX.  Another interpretation is that the word Signal represents
   the underlying data item itself, so that value-transfers are defined as a
   consequence of for example "subscribing to changes of a Signal".  In this second
-  interpretation the Signal is represented by a Property in VSC.  The Vehicle
+  interpretation the Signal is represented by a Property in IFEX.  The Vehicle
   Signal Specification (VSS) typically uses the the second interpretation, and
-  VSS Signals can then be represented by Properties in VSC.  (Refer to further
-  documentation on VSC/VSS relationship).
+  VSS Signals can then be represented by Properties in IFEX.  (Refer to further
+  documentation on IFEX/VSS relationship).
  
 --------------------
 
 # NAMESPACE VERSIONING
 
-VSC namespaces can optionally have a major and minor version, specified by
+IFEX namespaces can optionally have a major and minor version, specified by
 `major_version` and `minor_version` keys, complemented by an additional
 free format string named version-label.
 
@@ -152,12 +152,12 @@ compatible if its parent namespace have changed in an incompatible way).
 
 ----
 
-<!-- Layers concept, VSC File Syntax, semantics and structure -->
+<!-- Layers concept, IFEX File Syntax, semantics and structure -->
 -----------------------
 
 # LAYERS CONCEPT
 
-The VSC approach implements a layered approach to the definition of interfaces,
+The IFEX approach implements a layered approach to the definition of interfaces,
 and potentially other aspects of a system.  The core interface file (Interface
 Description Language, or Interface Description Model) shall contain only a
 _generic_ interface description that can be as widely applicable as possible.
@@ -219,7 +219,7 @@ name: comfort
 ## Deployment file object list extensions
 
 If a deployment file's object list element (e.g. `events`) is also
-defined in the VSC file, the VSC's list will traversed recursively and
+defined in the IFEX file, the IFEX's list will traversed recursively and
 extended by the deployment file's corresponding list.
 
 **FIXME** Possibly add description on how various edge cases are resolved.
@@ -278,17 +278,17 @@ extensions that have not yet been invented or agreed upon.
 Deployment layer, a.k.a. Deployment Model files, is a specialization of the
 general layers concept.  This terminology is used to indicate a type of layer
 that in adds additional metadata that is directly related to the interface 
-described in the IDL.  It is information needed to process, or interpret, VSC
+described in the IDL.  It is information needed to process, or interpret, IFEX
 interface files in a particular target environment.
 
 An example of deployment file data is a DBUS interface specification to be used
 for a namespace, or a SOME/IP method ID to be used for a method call.  
 
 By separating the extension data into their own deployment files the
-core VSC specification can be kept independent of deployment details
+core IFEX specification can be kept independent of deployment details
 such as network protocols and topology.
 
-An example of a VSC file sample and a deployment file extension to
+An example of a IFEX file sample and a deployment file extension to
 that sample is given below:
 
 
@@ -326,16 +326,16 @@ namespaces:
     methods: ...
 ```
 
-The semantic difference between a regular VSC file included by an
+The semantic difference between a regular IFEX file included by an
 `includes` list object and a deployment file is that the deployment
 file can follow a different specification/schema and add keys that
 are not allowed in the plain IDL layer.  In the example above, the
 `dbus_interface` key-value pair can only be added in a deployment file since
-`dbus_interface` is not a part of the regular VSC IDL file syntax.
+`dbus_interface` is not a part of the regular IFEX IDL file syntax.
 
 ----------
 
-# VSC FILE SYNTAX, SEMANTICS AND STRUCTURE
+# IFEX FILE SYNTAX, SEMANTICS AND STRUCTURE
 
 A Vehicle Service Catalog is stored in one or more YAML files.  The
 root of each YAML file is assumed to be a `namespace` object and needs
@@ -343,7 +343,7 @@ to contain at least a `name` key, and, optionally, a `description`. In
 addition to this other namespaces, `includes`, `datatypes`, `methods`,
 `events`, and `properties` can be specified.
 
-A complete VSC file example is given below:
+A complete IFEX file example is given below:
 
 **NOTE: This example might be outdated**
 
@@ -415,7 +415,7 @@ namespaces:
 
 
 The following chapters specifies all YAML objects and their keys
-supported by VSC.  The "Lark grammar" specification refers to the Lark
+supported by IFEX.  The "Lark grammar" specification refers to the Lark
 grammar that can be found [here](https://github.com/lark-parser/lark).
 The terminals used in the grammar (`LETTER`, `DIGIT`, etc) are
 imported from
@@ -425,14 +425,14 @@ imported from
 
 ## NODE TYPES
 
-The chapters that follow this one specify the node types for the core interface language/model.  They are generated from a "source of truth" which is the actual python source code of `vsc_ast.py`.  This means that while the examples are free-text and may need manual updating, the list of fields and optionality should always match the behavior of the tool(s).  => Always trust the tables over the examples, and report any discrepancies.
+The chapters that follow this one specify the node types for the core interface language/model.  They are generated from a "source of truth" which is the actual python source code of `ifex_ast.py`.  This means that while the examples are free-text and may need manual updating, the list of fields and optionality should always match the behavior of the tool(s).  => Always trust the tables over the examples, and report any discrepancies.
 
 <!-- Syntax specification (generated from source) -->
 ----
 ## Namespace
 
 
-Dataclass used to represent VSC Namespace.
+Dataclass used to represent IFEX Namespace.
 
 A namespace is a logical grouping of other objects, allowing for separation of datatypes, methods,
 events, and properties into their own spaces that do not interfere with identically named objects
@@ -478,7 +478,7 @@ namespaces:
 ## Event
 
 
-Dataclass used to represent VSC Event.
+Dataclass used to represent IFEX Event.
 
 Each events list object specifies a fire-and-forget call, executed by zero or more subscribing instances, 
 that does not return a value. Execution is best effort to UDP level with server failures not being reported.
@@ -518,7 +518,7 @@ events:
 ## Argument
 
 
-Dataclass used to represent VSC method Argument.
+Dataclass used to represent IFEX method Argument.
 
 ```yaml
 methods:
@@ -551,7 +551,7 @@ methods:
 ## Method
 
 
-   Dataclass used to represent VSC Event.
+   Dataclass used to represent IFEX Event.
 
    Each methods list object specifies a method call, executed by a single server instance,
    that optionally returns a value. Execution is guaranteed to TCP level with server failure being reported.
@@ -604,7 +604,7 @@ methods:
 ## Error
 
 
-Dataclass used to represent a VSC method error.
+Dataclass used to represent a IFEX method error.
 
 The optional error element defines an error value to return.  Note that the
 concept allows for _multiple_ Errors.  This is easy to misunderstand: It is
@@ -659,7 +659,7 @@ methods:
 ## Typedef
 
 
-Dataclass used to represent VSC Typedef.
+Dataclass used to represent IFEX Typedef.
 
 Each typedefs list object aliases an existing primitive type, defined type, or enumerator, giving it an additional name.
 The new data type can be used by other datatypes, method & event parameters, and properties.
@@ -696,9 +696,9 @@ typedefs:
 ## Include
 
 
-Dataclass used to represent VSC Include.
+Dataclass used to represent IFEX Include.
 
-Each includes list object specifies a VSC YAML file to be included into the namespace hosting the includes list.
+Each includes list object specifies a IFEX YAML file to be included into the namespace hosting the includes list.
 The included file's structs, typedefs, enumerators, methods, events, 
 and properties lists will be appended to the corresponding lists in the hosting namespace.
 
@@ -730,7 +730,7 @@ namespaces:
 ## Struct
 
 
-Dataclass used to represent VSC Struct.
+Dataclass used to represent IFEX Struct.
 
 Each structs list object specifies an aggregated data type.
 The new data type can be used by other datatypes, method & event parameters, and properties.
@@ -771,7 +771,7 @@ structs:
 ## Member
 
 
-   Dataclass used to represent VSC Enumeration Member.
+   Dataclass used to represent IFEX Enumeration Member.
 
    Each members list object defines an additional member of the struct.
    Each member can be of a native or defined datatype.
@@ -807,7 +807,7 @@ structs:
 ## Enumeration
 
 
-Dataclass used to represent VSC Enumeration.
+Dataclass used to represent IFEX Enumeration.
 
 Each enumerations list object specifies an enumerated list (enum) of options, where each option can have its own integer value.
 The new data type defined by the enum can be used by other datatypes, method & event parameters, and properties.
@@ -845,7 +845,7 @@ enumerations:
 ## Option
 
 
-Dataclass used to represent VSC Enumeration Option.
+Dataclass used to represent IFEX Enumeration Option.
 
 Each options list object adds an option to the enumerator.
 
@@ -876,7 +876,7 @@ options:
 ## Property
 
 
-   Dataclass used to represent VSC Property.
+   Dataclass used to represent IFEX Property.
 
    Each properties list object specifies a shared state object that can be read and set, and which is available to all subscribing entities.
    A properties sample list object is given below, together with a struct definition:
