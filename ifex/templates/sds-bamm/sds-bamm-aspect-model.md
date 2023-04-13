@@ -4,9 +4,9 @@
 
 ## Introduction
 
-The BAMM Aspect Model Generator converts VSC services to a valid BAMM Aspect Model according to the [BAMM Aspect Meta Model](https://github.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model), 
-keeping as much as possible of the information from the VSC definition.  It consists of a template ([sds-bamm-aspect-model](sds-bamm-aspect-model.tpl) and [sds-bamm-macros](sds-bamm-macros.tpl)) 
-using the template framework of the vsc-tools project to parse and transform VSC services.
+The BAMM Aspect Model Generator converts VSC (IFEX format) services to a valid BAMM Aspect Model according to the [BAMM Aspect Meta Model](https://github.com/OpenManufacturingPlatform/sds-bamm-aspect-meta-model), 
+keeping as much as possible of the information from the IFEX definition.  It consists of a template ([sds-bamm-aspect-model](sds-bamm-aspect-model.tpl) and [sds-bamm-macros](sds-bamm-macros.tpl)) 
+using the template framework of the IFEX project to parse and transform services.
 
 ## BAMM Aspect Meta Model
 The BAMM Aspect Meta Model (BAMM) allows the creation of models to describe the semantics of digital twins by defining
@@ -24,9 +24,9 @@ Known limitations of the implementation:
 * Handling of whitespaces between the model elements are not optimal
 * No support for namespaces of arbitrary depth. Currently, everything expected to be within the same namespace.
 * No support for including other files or referencing types in other namespaces
-* No support for deployment files defined in VSC.
+* No support for deployment files defined in IFEX.
 
-In general all data in the example VSC service can be converted.
+In general all data in the example service can be converted.
 
 ## Using the BAMM Aspect Model Generator
 
@@ -35,19 +35,19 @@ In general all data in the example VSC service can be converted.
 The tool can be used like below:
 
 ```
-# go to vsc-tools if not already there
-cd vsc-tools
-# make sure that vsc has been cloned
+# go to ifex tools if not already there
+cd ifex
+# make sure that VSC has been cloned
 git clone https://github.com/COVESA/vehicle_service_catalog/
-vscgen vehicle_service_catalog/comfort-service.yml sds-bamm-aspect-model.tpl > comfort/2.0.1/seat.ttl
+ifexgen vehicle_service_catalog/comfort-service.yml sds-bamm-aspect-model.tpl > comfort/2.0.1/seat.ttl
 ```
 
 ### Mapping of the different concepts
-* [VSC Structs](https://github.com/COVESA/vehicle_service_catalog#namespace-list-object-structs) is represented as [Entity](https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/snapshot/entities.html).
-* [VSC Typedefs](https://github.com/COVESA/vehicle_service_catalog#namespace-list-object-typedefs) is represented as [Characteristic](https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/snapshot/characteristics.html).
-* [VSC Enumerations](https://github.com/COVESA/vehicle_service_catalog#namespace-list-object-enumerations) is represented as [Characteristic](https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/snapshot/characteristics.html).
-* [VSC Methods](https://github.com/COVESA/vehicle_service_catalog#namespace-list-object-methods) is represented as [Operation](https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/v1.0.0/meta-model-elements.html).
-* [VSC Events](https://github.com/COVESA/vehicle_service_catalog#namespace-list-object-events) is represented as [Event](https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/v1.0.0/meta-model-elements.html).
+* [IFEX Structs](https://github.com/COVESA/vehicle_service_catalog#namespace-list-object-structs) is represented as [Entity](https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/snapshot/entities.html).
+* [IFEX Typedefs](https://github.com/COVESA/vehicle_service_catalog#namespace-list-object-typedefs) is represented as [Characteristic](https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/snapshot/characteristics.html).
+* [IFEX Enumerations](https://github.com/COVESA/vehicle_service_catalog#namespace-list-object-enumerations) is represented as [Characteristic](https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/snapshot/characteristics.html).
+* [IFEX Methods](https://github.com/COVESA/vehicle_service_catalog#namespace-list-object-methods) is represented as [Operation](https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/v1.0.0/meta-model-elements.html).
+* [IFEX Events](https://github.com/COVESA/vehicle_service_catalog#namespace-list-object-events) is represented as [Event](https://openmanufacturingplatform.github.io/sds-documentation/bamm-specification/v1.0.0/meta-model-elements.html).
 
 ### Validating the generated Aspect Model
 
