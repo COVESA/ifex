@@ -4,13 +4,13 @@
 
 ## Introduction
 
-The Protobuf Generator converts VSC services to a [Google Protocol Buffer](https://developers.google.com/protocol-buffers/) definition.
+The Protobuf Generator converts VSC (IFEX format) services to a [Google Protocol Buffer](https://developers.google.com/protocol-buffers/) definition.
 
 ## Known Limitations
 
 *The Protobuf Generator has been developed as proof-of-concept and does not currently have product quality!*
 
-The general tooling framework provided by VSC is currently not that advanced, partially depending on that VSC as language not yet is that stable.
+The general tooling framework provided by IFEX is currently not that advanced, partially depending on that IFEX as language not yet is that stable.
 The open source tooling perform syntactic checks, but it does not perform semantic checks, e.g. verifying that a referenced datatype actually exists.
 
 Known limitations of the current implementation:
@@ -20,12 +20,12 @@ Known limitations of the current implementation:
 
 ## Conversion Concept
 
-* VSC typedefs are not represented in protobuf, instead the base type is used.
-* VSC Structs are represented in protobuf.
-* VSC methods are represented as rpc in protobuf.
-* VSC events are represented as messages in protobuf.
-* VSC properties are represented as a read rpc and a write rpc in Protobuf.
-* VSC Error Messages are currently not imported.
+* IFEX typedefs are not represented in protobuf, instead the base type is used.
+* IFEX Structs are represented in protobuf.
+* IFEX methods are represented as rpc in protobuf.
+* IFEX events are represented as messages in protobuf.
+* IFEX properties are represented as a read rpc and a write rpc in Protobuf.
+* IFEX Error Messages are currently not imported.
 
 ## Using the Protobuf Generator
 
@@ -43,12 +43,12 @@ apt install -y protobuf-compiler
 The code below runs the prototype protobuf generator and verifies that the generated code is syntactically correct.
 
 ```
-# go to vsc-tools if not already there
-cd vsc-tools
-# make sure that vsc has been cloned
+# go to ifex tools if not already there
+cd ifex
+# make sure that VSC has been cloned
 git clone https://github.com/COVESA/vehicle_service_catalog/
 # Run the generator
-vscgen vehicle_service_catalog/comfort-service.yml protobuf.tpl > vsc.proto
+ifexgen vehicle_service_catalog/comfort-service.yml protobuf.tpl > comfort-service.proto
 ```
 
 ### Validating generated Protobuf files
@@ -57,6 +57,6 @@ Generated Protobuf files can be validated/compiled using `protoc`.
 
 ```
 mkdir tmp
-protoc --cpp_out=tmp vsc.proto
+protoc --cpp_out=tmp comfort-service.proto
 ```
 
