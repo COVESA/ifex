@@ -31,7 +31,7 @@
 {%- endmacro %}
 
 {# Define Types #}
-{# Not all vsc types can be represented in dtdl  #}
+{# Not all ifex types can be represented in dtdl  #}
 {# Add all type conversion  #}
 {{ save_type("uint16", "integer") }}
 {{ save_type("int16", "integer") }}
