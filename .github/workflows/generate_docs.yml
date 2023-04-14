@@ -11,7 +11,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v1
         with:
-          python-version: 3.10.10
+          python-version: 3.10.x
 
       - name: Install tools
         run: |
@@ -34,12 +34,25 @@ jobs:
           echo "Docs to deploy:"
           ls -al docs
 
-      - name: Deploy docs
+      - name: Deploy master docs
         # Only deploy docs if this was a push to master
-        #if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: gh-pages # The branch the action should deploy to.
           folder: docs     # The folder the action should deploy.
           commit-message: Auto-deploy docs built from commit ${{ github.sha }}
+
+      - name: Deploy branched docs
+        if: ${{ github.event_name == 'push' && github.ref != 'refs/heads/master' &&
+            contains(github.event.head_commit.message, 'deploy-docs') }}
+        # Use modified deployment if this was NOT a push to master
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages # The branch the action should deploy to.
+          folder: docs     # The folder the action should deploy.
+          target-folder: branch/${{github.ref_name}} 
+          commit-message: Auto-deploy docs built from commit ${{ github.sha }}
+
