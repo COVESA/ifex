@@ -17,18 +17,20 @@ but is often provided as a "YAML schema" type of file, that can be used to
 programatically validate layer input against formal rules.
 
 Layers do not always need to add new _types_ of information.  It is possible to
-'overlay' files that are of the same core interface (IDL) schema as an original
-file, for the purpose of adding details that were not defined, removing nodes,
-or even redefining/changing the definition of some things defined in the
-original file.
+'overlay' files that use the same schema as an original file (such as the
+ifex-idl), for the purpose of adding some details that were not yet defined,
+removing nodes, or even redefining/changing the definition of some things
+defined in the original file.
 
-In other words, tools are expected to process multiple IDL files and to merge
-their contents according to predefined rules.  Conflicting information could,
-for example be handled by writing a warning, or to let the last provided layer
-file to take precedence over previous definitions.  (Refer to detailed
-documentation for each tool).
+In other words, tools are expected to be able to process the layer types that
+are relevant for the task at hand, but furthermore, some tools are expected to
+process multiple files of the same type and to merge their contents according
+to predefined rules.  Conflicting information could for example be handled by
+writing a warning, or the tool may stipulate that the last provided layer file
+to takes precedence over previous definitions.  (Refer to detailed documentation
+for each tool).
 
-Example:
+An example of this:
 
 **File: `comfort-service.yml`**  
 ```YAML
@@ -49,13 +51,15 @@ name: comfort
       datatype: int8 # Replaces int16 of the original type
 ```
 
-The combined YAML structure to be processed will look like this:
+Tools that combine this information will end up processing a combined YAML
+structure that looks like this, in this case following the principle that the
+last-definition takes precedence.
 
 ```YAML
 name: comfort
   typedefs:
     - name: movement_t
-      datatype: int8 # Replaced datatype
+      datatype: int8 # (Replaced datatype)
       min: -1000
       max: 1000
       description: The movement of a seat component
@@ -112,10 +116,11 @@ events:
 ```
 
 
-
-There is not a fixed list of layer types - some may be standardized and
-defined, and therefore documented, but the design is there to allow many
-extensions that have not yet been invented or agreed upon.
+Note: There is not a fixed list of layer types -- while some might be agreed
+upon in a community and documented within the IFEX project, the capability is
+also there to allow extensions that have not yet been envisioned.  Some aspects
+of API and system design might be unique to one company's way of working, and
+therefore defined and used only there.
 
 
 # DEPLOYMENT LAYER
@@ -126,7 +131,7 @@ that in adds additional metadata that is directly related to the interface
 described in the IDL.  It is information needed to process, or interpret, IFEX
 interface files in a particular target environment.
 
-An example of deployment file data is a DBUS interface specification to be used
+An example of deployment file data is a D-Bus interface specification to be used
 for a namespace, or a SOME/IP method ID to be used for a method call.  
 
 By separating the extension data into their own deployment files the
