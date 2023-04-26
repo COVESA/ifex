@@ -464,6 +464,10 @@ class Include:
     description: Optional[str] = str()
     """ Specifies description of the include directive. """
 
+class Namespace:
+    pass
+
+
 
 @dataclass
 class Namespace:
@@ -515,6 +519,9 @@ class Namespace:
     includes: Optional[List[Include]] = field(default_factory=EmptyList)
     """ Contains a list of the includes in a given namespace """
 
+    interface: Optional[Interface] = None
+    """ Optional Interface node.  (!) Can only be used once per Namespace, and its children cannot contain another Interface. """
+
     structs: Optional[List[Struct]] = field(default_factory=EmptyList)
     """ Contains a list of the structs in a given namespace """
 
@@ -527,6 +534,14 @@ class Namespace:
     namespaces: Optional[List['Namespace']] = field(default_factory=EmptyList)
     """ Contains a list of sub namespaces in a given namespace """
 
+@dataclass
+class Interface(Namespace):
+# We inherited Namespace out of efficiency, because Interface can contain the same children
+# The only exception is that multiple Interfaces are not allowed.  That needs to be checked separately.
+    """
+    An Interface is a container of other items in a similar way as a Namespace, but it does not introduce a new namespace level, and its purpose is explicitly to define what shall be considered part of the exposed interface.  Note that as with all IFEX concepts, the way it is translated into target code could be slightly varying, and controlled by the target mapping and deployment information, but all mappings shall _strive_ to stay close to the IFEX expected behavior.  The expectation is that the Interface concept is used to contain such items that shall be exposed as a "public API" in the output.  Thus, the Interface section would omit for example internal helper-methods and type definitions that are only used internally, while those definitions might still need to be in the associated Namespace for the code generation to work.
+
+An Interface can contain all the same child node types as Namespace can, except for additional (nested) Interfaces.   Note however, that the Interface is different from a nested Namespace in that does NOT introduce an additional namespace level regarding the visibility/reacahbility of the items.  Its contents is not hidden from other Namespace or Interface definitions within the same namespace.  To put it another way, from visibility/reachability point of view all the content inside an interface container is part of the "parent" Namespace that the Interface object is placed in.  Of course, if additional nested namespaces are placed _below_ the Interface node, those Namespaces introduce new namespace levels, as usual."""
 
 @dataclass
 class AST(Namespace):
