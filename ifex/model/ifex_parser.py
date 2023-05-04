@@ -38,7 +38,7 @@ def parse_yaml_file(yaml_string: str) -> Dict[Any, Any]:
     return yaml.safe_load(yaml_string)
 
 
-def read_ast_from_yaml_file(filename: str) -> AST:
+def get_ast_from_yaml_file(filename: str) -> AST:
     """
     Reads a yaml file and returns AST
     :param filename: path to a yaml file
@@ -56,6 +56,3 @@ def read_ast_from_yaml_file(filename: str) -> AST:
     except dacite.UnexpectedDataError as e:
         print(f"ERROR: Read error resulting from {filename}: {e}")
         raise e
-
-def get_ast_from_file(filepath : str):
-    return read_ast_from_yaml_file(filepath)

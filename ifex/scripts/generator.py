@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 from ifex.model.ifex_generator import gen
-from ifex.model.ifex_parser import get_ast_from_file
+from ifex.model.ifex_parser import get_ast_from_yaml_file
 import argparse, dacite
 
 def ifex_generator_run():
@@ -16,7 +16,7 @@ def ifex_generator_run():
     except dacite.UnexpectedDataError as e:
         print(f"ERROR: Read error resulting from {filename}: {e}")
 
-    ast = get_ast_from_file(args.input)
+    ast = get_ast_from_yaml_file(args.input)
 
     templatename = args.template
 
