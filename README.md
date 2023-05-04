@@ -169,7 +169,7 @@ A simple generator (with only one template) can be done like this:
 
 * Import the ifex_generator.py and ifex_parser.py modules
 * Get the Service description file (YAML), for example from command line argument
-* Get the Abstract Syntax Tree representation by calling `ifex_parser.get_ast_from_file(service_desc_file)`
+* Get the Abstract Syntax Tree representation by calling `ifex_parser.get_ast_from_yaml_file(service_desc_file)`
 * Call `gen()` function in generator module, and pass the AST, and the name of a single template.
 * If needed, add any of your own custom logic (see also advanced usage for more information)
 
@@ -193,7 +193,7 @@ An advanced generator (with several templates) can be done like this:
 
 * Import the ifex_generator.py and ifex_parser.py modules
 * Get the needed Service description file(s) (YAML), for example from command line argument
-* For each file, get the Abstract Syntax Tree representation by calling `ifex_parser.get_ast_from_file(service_desc_file)`
+* For each file, get the Abstract Syntax Tree representation by calling `ifex_parser.get_ast_from_yaml_file(service_desc_file)`
 * Write templates according to (some, not all) node types.  You can call `gen(node)` or `gen(node, <Template>)` from within a template - see details below.
 * Set the default_templates member variable in generator to configure which templates to use (see section below).
 * Implement the `gen()` function, normally by delegating directly into `ifex_generator.gen()`, but you can put your own logic here if needed.

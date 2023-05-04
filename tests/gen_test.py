@@ -25,7 +25,7 @@ def test_gen():
         path = os.path.join(TestPath, subdir)
 
         # The files named 'input.yaml', 'template' and 'result' are in each test directory
-        ast_root = ifex_parser.get_ast_from_file(os.path.join(path, 'input.yaml'))
+        ast_root = ifex_parser.get_ast_from_yaml_file(os.path.join(path, 'input.yaml'))
 
         with open(os.path.join(path,"template"), "r") as template_file:
             generated = ifex_generator.gen_template_text(ast_root, template_file.read())
@@ -39,7 +39,7 @@ def test_gen():
 
 
 def test_ast_gen():
-    service = ifex_parser.get_ast_from_file(os.path.join(TestPath, 'test.sample', 'input.yaml'))
+    service = ifex_parser.get_ast_from_yaml_file(os.path.join(TestPath, 'test.sample', 'input.yaml'))
 
     assert service.name == "named_service"
     assert service.major_version == 3
@@ -68,7 +68,7 @@ def test_expected_raised_exceptions():
 
         # This succeeds *IF* the exception is raised, otherwise fails
         with pytest.raises(dacite.UnexpectedDataError) as ee:
-            ast_root = ifex_parser.get_ast_from_file(os.path.join(path, 'input.yaml'))
+            ast_root = ifex_parser.get_ast_from_yaml_file(os.path.join(path, 'input.yaml'))
 
 # Unused
 default_templates = {}
