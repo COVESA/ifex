@@ -1,0 +1,9 @@
+# Ignore everything
+*
+
+# Except this...
+!ifex
+!scripts
+!setup.py
+!tests
+!.python-version
