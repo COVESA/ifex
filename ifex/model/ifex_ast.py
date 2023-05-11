@@ -163,13 +163,13 @@ class Method:
     """ Specifies a description of the method. """
 
     errors: Optional[List[Error]] = field(default_factory=EmptyList)
-    """ Containts a list of errors the method can return. """
+    """ Contains a list of errors the method can return. """
 
     input: Optional[List[Argument]] = field(default_factory=EmptyList)
-    """ Containts a list of the method input arguments. """
+    """ Contains a list of the method input arguments. """
 
     output: Optional[List[Argument]] = field(default_factory=EmptyList)
-    """ Containts a list of the method output arguments. """
+    """ Contains a list of the method output arguments. """
 
 
 @dataclass
