@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: Copyright (c) 2023 Novaspring AB
+# SPDX-License-Identifier: MPL-2.0
+#
+# This file is part of IFEX project
+# ---------------------------------------------------------------------------
+
+# Official python image has an alpine-based version.  It's easiest to
+# use it directly instead of building from source with pyenv.
+FROM python:3.11-alpine
+
+# Install extras
+RUN apk add sudo bash
+
+# Prepare user
+RUN addgroup ifex
+RUN adduser -D -G ifex ifex
+RUN adduser ifex wheel
+
+# Prepare directories
+RUN mkdir /ifex
+RUN chown ifex:ifex /ifex /home/ifex
+
+# Python packages are installed in virtual environment under /ifex
+USER ifex
+WORKDIR /ifex
+COPY . /ifex/
+RUN python -m venv venv
+RUN . venv/bin/activate && pip install -r requirements.txt
+RUN . venv/bin/activate && python setup.py develop && ifexgen -h
+
+# Make sure venv is enabled when starting interactive bash
+COPY scripts/bashrc.venv /home/ifex/.bashrc
+
+# /work should be bind-mounted when container is started
+WORKDIR /work 

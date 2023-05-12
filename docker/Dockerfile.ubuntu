@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: Copyright (c) 2023 Novaspring AB
+# SPDX-License-Identifier: MPL-2.0
+#
+# This file is part of IFEX project
+# ---------------------------------------------------------------------------
+
+FROM ubuntu:23.04
+
+# Install what's needed to compile python from source using pyenv
+RUN apt-get update && apt-get install -y python3 curl bash git build-essential libssl-dev libffi-dev libbz2-dev libsqlite3-dev lzma-dev ncurses-dev libreadline-dev liblzma-dev sudo
+
+# Prepare directories
+RUN mkdir /ifex /work
+RUN chown -R ubuntu:ubuntu /ifex
+
+# Python packages are installed in virtual environment under /ifex
+USER ubuntu
+COPY . /ifex/
+WORKDIR /ifex
+RUN ./scripts/install_pyenv.sh
+RUN ./scripts/install_python_version_in_pyenv.sh
+ENV PATH "/home/ubuntu/.pyenv/bin:/usr/bin:/bin"
+RUN pyenv global $(cat .default-python-version)
+COPY ./scripts/.bashrc /home/ubuntu
+RUN . /home/ubuntu/.bashrc && python3 -m pip install -r requirements.txt
+RUN . /home/ubuntu/.bashrc && python3 setup.py develop
+USER root
+RUN chown -R ubuntu:ubuntu /ifex /home/ifex
+USER ubuntu
+
+# /work should be bind-mounted when container is started
+WORKDIR /work 
