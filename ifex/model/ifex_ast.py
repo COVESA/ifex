@@ -389,10 +389,6 @@ class Struct:
     description: Optional[str] = str()
     """ Specifies the description of the struct. """
 
-    # TODO: do we need type field in a struct?
-    type: Optional[str] = None
-    """ Specifies the type of the struct. """
-
     members: Optional[List[Member]] = field(default_factory=EmptyList)
     """ Contains a list of members of a given struct. """
 
