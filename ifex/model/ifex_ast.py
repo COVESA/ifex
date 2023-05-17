@@ -171,6 +171,9 @@ class Method:
     output: Optional[List[Argument]] = field(default_factory=EmptyList)
     """ Contains a list of the method output arguments. """
 
+    returns: Optional[List[Argument]] = field(default_factory=EmptyList)
+    """ Contains a list of the method return arguments. """
+
 
 @dataclass
 class Event:
