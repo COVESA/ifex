@@ -105,3 +105,16 @@ def gen_dict_with_template_file(variables : dict, templatefile):
 # Export the gen() function and classes into jinja template land
 # so that they can be referred to inside templates.
 jinja_env.set_template_env(gen=gen)
+
+# ----------------------------------------------------------------
+# MAIN = Standalone test Code only, not normal use.
+import sys
+from ifex.model.ifex_parser import get_ast_from_yaml_file
+if __name__ == '__main__':
+    yaml_file = sys.argv[1]
+    template_dir = sys.argv[2]
+    ast = get_ast_from_yaml_file(yaml_file)
+    # re-initialize jinja environment with the given template dir
+    jinja_env.__init__(template_dir)
+    jinja_env.set_template_env(gen=gen)
+    print(gen(ast))
