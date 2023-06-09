@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------
 
 """
-VSC code-generation functions
+IFEX code-generation functions
 """
 
 # This performs the following related functions:
@@ -19,7 +19,11 @@ VSC code-generation functions
 
 # For other features from parser module
 from typing import Any
-from ifex.templates import set_template_env, get_template, get_default_template, render_template
+from ifex.templates import JinjaTemplateEnv
+
+# Module global - probably soon to be modified to run-time instantiation of a
+# JinjaTemplateEnv instance instead.
+jinja_env = JinjaTemplateEnv.JinjaTemplateEnv("simple")
 
 # Exception:
 class GeneratorError(BaseException):
@@ -45,7 +49,7 @@ def gen(node : Any, template_file = None):
         if template_file is None:
             return _gen_with_default_template(node)
         elif type(template_file) == str:   # Explicit template file -> use it
-            return get_template(template_file).render({'item' : node})
+            return jinja_env.get_template(template_file).render({'item' : node})
         else:
             print(f'node is of type {type(node)}, second arg is of type {type(template_file)}  ({type(template_file).__class__}, {type(template_file).__class__.__name__})')
             raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {template_file.__name__})')
@@ -72,11 +76,11 @@ def _gen_with_default_template(node : Any):
         return node
 
     # Complex types -> use the corresponding template for the type
-    tpl = get_default_template(nodetype)
+    tpl = jinja_env.get_default_template_file(nodetype)
     if tpl is None:
         raise GeneratorError(f"gen() function called with node of type '{nodetype}' but no default template is defined for this type.")
     else:
-        return get_template(tpl).render({'item' : node})
+        return jinja_env.get_template(tpl).render({'item' : node})
 
 #  Alternative functions, for unit testing
 
@@ -89,7 +93,7 @@ def gen_template_text(node: Any, template_text: str):
    if template_text is None:
        raise GeneratorError(f'gen_template_text called without template')
    elif type(template_text) == str:
-       return render_template(template_text,{'item' : node})
+       return jinja_env.render_template(template_text,{'item' : node})
    else:
        print(f'node is of type {type(node)}, second arg is of type {type(template_text)}  ({type(template_text).__class__}, {type(template_text).__class__.__name__})')
        raise GeneratorError(f'Wrong use of gen() function! Usage: pass the node as first argument (you passed a {type(node)}), and optionally template name (str) as second argument. (You passed a {template_text.__name__})')
@@ -100,4 +104,4 @@ def gen_dict_with_template_file(variables : dict, templatefile):
 
 # Export the gen() function and classes into jinja template land
 # so that they can be referred to inside templates.
-set_template_env(gen=gen)
+jinja_env.set_template_env(gen=gen)
