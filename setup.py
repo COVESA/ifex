@@ -5,14 +5,11 @@ import glob
 from distutils.core import setup
 from setuptools import find_packages
 
-from ifex.templates import TemplatePath
+from ifex.templates import TemplateDir
 
 def get_template_files():
       paths = []
-      paths.extend(glob.glob(f"{TemplatePath}/*/*", recursive=False))   
-                  
-      print(f"{paths}")
-
+      paths.extend(glob.glob(f"{TemplateDir.TemplatePath}/*/*", recursive=False))   
       return paths
 
 
