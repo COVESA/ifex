@@ -8,10 +8,8 @@ from setuptools import find_packages
 from ifex.templates import TemplatePath
 
 def get_template_files():
-      extensions = ['tpl', 'html']
       paths = []
-      for ext in extensions:
-            paths.extend(glob.glob(f"{TemplatePath}/**/*.{ext}", recursive=True))   
+      paths.extend(glob.glob(f"{TemplatePath}/*/*", recursive=False))   
                   
       print(f"{paths}")
 
