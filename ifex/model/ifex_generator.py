@@ -68,7 +68,7 @@ def _gen_with_default_template(node : Any):
     # (misspelling, etc.)
     nodetype=type(node).__name__
     if nodetype == 'StrictUndefined':
-        raise GeneratorError(f'The template seems to call gen() with an unknown field name. Please check!')
+        raise GeneratorError(f'The template seems to call gen() with an unknown field name: node {node} is of type StrictUndefined. Please check!')
         return ""
 
     # Plain types -> print as-is
