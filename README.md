@@ -17,9 +17,9 @@ Please refer to the [documentation](https://covesa.github.io/ifex) for more info
 
 ## IFEX software tools
 
-Some of the programs generate the IFEX interface model/language-specification
-and other documentation.  Other programs implement the tools for
-reading/writing/translating interface descriptions and code-generation.
+Some of the programs implement the tools for reading/writing/translating
+interface descriptions and code-generation.  Other programs generate the IFEX
+interface model/language-specification and other documentation.
 
 The implementations are primarily written in python and using some preferred
 technologies, such as the [Jinja2 templating language](https://jinja.palletsprojects.com) 
@@ -100,14 +100,6 @@ Install this project and its dependencies in the local `.venv` folder in this pr
    pipenv shell         # starts a shell configured to use the virtual environment
 ```
 
-### Setup using plain `pip install`
-
-Run from the vss-tools project root directory
-
-```bash
-   pip install -r requirements.txt
-```  
-
 ### Setup without virtual environment (not recommended)
 
 To install to your system environment:
@@ -117,10 +109,19 @@ python setup.py develop
 ```
 
 ## Trying it out
-Work in progress!  This is the usage pattern:
 
+Installing the IFEX tools using `setup.py` also creates some convenient
+executable shims, e.g. `ifexgen`:
+
+To run this generic code generator and specify an output template:
+
+```
+usage: ifexgen [-h] -d templates-dir-name ifex-input-file [root-template]
+```
+
+Example:
 ```bash
-   ifexgen <input-yaml-file (path)> <output-template-file (name only, not path)>
+   ifexgen comfort-service.yml -d d-bus
 ```
 
 For the moment, try this:
@@ -128,27 +129,12 @@ For the moment, try this:
 ```bash
    git clone https://github.com/COVESA/vehicle_service_catalog
 
-   ifexgen vehicle_service_catalog/comfort-service.yml simple_overview.tpl
-```
-
-Installing the IFEX tools using `setup.py` also creates some convenient
-executable shims, e.g. `ifexgen`:
-
-Example:
-```
-ifexgen input.yaml template.tpl
+   ifexgen vehicle_service_catalog/comfort-service.yml -d simple 
 ```
 
 The comfort-service example above exercises the parser to create the AST out
 of a YAML file from the Vehicle Service Catalog definition, and then prints
 out an overview using the template.
-
-^^^ Edit the code if you want to try out other things.  This will soon be more
-flexible of course.
-
-Looking at the jinja2 template shows how to traverse it directly by
-referencing each object's public member variables (see template
-[simple_overview.tpl](ifex/templates/simple_overview.tpl)).
 
 # Unit Tests
 
@@ -161,9 +147,15 @@ To run tests, just run pytest in the root directory.
    pytest -v
 ```
 
-# Writing a generator
+# Development
 
-## Simple Generator
+Looking at other jinja2 templates shows how to traverse it directly by
+referencing each object's public member variables (see template
+[simple_overview.tpl](ifex/templates/simple_overview.tpl)).
+
+## Writing a generator
+
+### Simple Generator
 
 A simple generator (with only one template) can be done like this:
 
@@ -187,7 +179,7 @@ YAML file, but the second argument is only the name of the template (which
 must be in [ifex/templates/](ifex/templates) directory. Pointing to the full path of a
 template file in a different location is not implemented in ifex_generator.py
 
-## Advanced Generator
+### Advanced Generator
 
 An advanced generator (with several templates) can be done like this:
 
@@ -204,25 +196,41 @@ An advanced generator (with several templates) can be done like this:
 * **NOTE!  Remember to inject any globals (e.g. functions) into the jinja environment if these are referred by the templates.**  See ifex_generator.py for example.
 You can also pass data into templates through other variables (see jinja2 documentation).
 
-### Setting up default templates
+## Setting up default templates
 
-This setting is a dictionary mapping the AST node types to the default
-template to use for that node type.  It can be overridden in a call to
-gen() but for a particular code generation purpose it is better to set this
-up.
+**THIS SECTION SHOULD MOVE TO DEVELOPMENT DOCUMENTATION**
+
+The generic generation always passes the top-level node to the top-level template.
+The template(s) can, if needed, call the gen() function on lower level nodes.
+
+Unless a specific template is specified, the gen() function will use a predefined
+table of templates and call the one that matches the node type that was passed.
+
+For example:
 
 ```python
-generator.default_templates = {
+default_templates = {
    'AST' : 'AST-mystuff-toplevel.txt',
-   'Service' : 'Service-mystuff.c',
+   'Interface' : 'Interface-mystuff.c',
    'Type' :    'Type-mystuff-smart_type_mapper.c',
    'Method' :  'Method-mystuff.c'
 }
 ```
 
+The table of default templates is now defined automatically through a naming convention.  All node templates must be inside a single directory (specified with the `-d` flag when calling `ifexgen`.   The templates also need to follow a naming convention.  The template file name must **start** with the node type name\*.
+
+e.g.
+```
+- AST.suffix
+- Method-.something
+- Interface-arbitrary_comments_can_be_written_here.html
+```
+
+\* If more than one template matches the node name (don't do that, unsupported) then the last found template will be used.
+
 **NOTE:** It is not required to specify a separate template for every type.
 Very often, nodes can be generated directly from the parent template type.
-For simple cases, a single top-level template might suffice for the whole
+For simple cases, a single top-level template might even suffice for the whole
 generation.
 
 ## The gen() function
@@ -251,11 +259,10 @@ gen(node)
 ```
 
 This variant will dynamically determine the node type (a subclass of AST)
-and generate using the predetermined template for that node type.  (See
-`default_templates` variable).
+and generate using the predetermined template for that node type.
 
-2. Providing the node and a specific template.  The specified template is
-   used regardless of the node type:
+2. Alternate use is to specify the node _and_ a specific template.  The
+   specified template is then used regardless of the node type:
 
 ```python
 def gen(node : AST, templatename : str)
@@ -270,9 +277,15 @@ gen(node, 'My-alternative-method-template.tpl')
 # Writing Templates
 
 ### Naming convention
-Templates must be stored in the ifex/templates/ directory.
+The only strict requirements
 
-Templates should be named using this convention:
+Templates can be stored in the sub-directories of the ifex/templates/ directory, (but alternatively an absolute path can be given to the `ifexgen` tool).
+
+The intended target format (output format) is normally clear from the naming of the subdirectory.  E.g. "protobuf", or "D-Bus" or "ARXML" or other output format.
+
+Templates are only required to be named by using the node type name at the start of the file name.
+
+Here is however a more detailed _proposed_ naming convention:
 
 `<node-type>-<target-format>-<variant>.<suffix>`
 
@@ -283,22 +296,12 @@ would use the node type AST.
 * **variant** is optional and just to indicate there might be multiple ways to generate the
 same thing for the same target.  Basically, use your own judgement to name the
 template with useful information here.
-* **suffix** should try to mimic the normal suffix for the file format that is
+* **suffix** shall mimic the normal suffix for the file format that is
 being generated.  For example, if the templates aims to generate a HTML
-document, name the template with .html.  If it is generating a programming
-language, use an appropriate suffix for the file, etc.  If there is no obvious
-type, we use ".tpl".
+document, then name the template with `.html`.  If it is generating a
+programming language, use an appropriate suffix for that language.
 
-Examples:
-
-```yaml
-Datatypes-my_docs-simple.html
-Datatypes-my_docs-advanced.html
-Method-c++-without-comments.cpp
-Method-c++-with-comments.cpp
-Service-nodejs.js
-Service-rust.rs
-```
+If there is no obvious type, we can use ".tpl".
 
 ### Variable use in templates
 
@@ -345,16 +348,16 @@ better reuse between custom generator implementations.
 ### Template example
 
 This template expects that the "item" passed in is a Service object.
-It calls the gen() function from within the template to delegate work
-to a separate template for Methods.
+It calls the gen() function from within the template, for each of the
+method objects.  This delegates the work to to a separate template for Methods.
 
-**Service-mygen.c**
+**Namespace-mygen.c**
 
 ```python
 // General file header information
 // ...
 
-// Service name: {{ item.name }}
+// Service interface name: {{ item.name }}
 
 {% for i in s.namespaces %}
 // namespace: {{ i.name }}
@@ -366,27 +369,26 @@ to a separate template for Methods.
 ```
 
 The gen() function in the ifex_generator implementation will determine the node
-type of `x` at runtime, yielding `Service`.  It will will then look into the
+type of `x` at runtime, yielding `Namespace`.  It will will then look into the
 `default_templates` variable to see which is the template file to use for a
 Service node, and generate the node using that template.
 
-The global `default_templates` variable is defined by ifex_generator to point
-to some templates used for test/demonstration. A custom generator
-implementation would modify this variable, or simply overwrite the value after
-including the ifex_generator as a module (or later on, this might be passed in
-at run-time in a different way).
+The `default_templates` are defined when instantiating the JinjaTemplateEnv
+class with a given template directory.  A search will happen to find the
+matching templates in that directory.
+
+A custom generator implementation might modify this variable to achieve
+other effects, or instantiate more than one JinjaTemplateEnv.
 
 # Existing Tools/Templates
 
-Template | Description | Status | Documentation |
-| ------------------ | ----------- | -------------------- |-------------------- |
-[dtdl.tpl](ifex/templates/dtdl.tpl) | Generates a DTDL description of the service | Functional | [documentation](ifex/templates/dtdl.md) |
-[protobuf.tpl](ifex/templates/protobuf.tpl) | Generates a Protobuf description of the service | Functional | [documentation](ifex/templates/protobuf.md) |
-[sds-bamm-aspect-model.tpl](ifex/templates/sds-bamm-aspect-model.tpl) (using [sds-bamm-macros.tpl](ifex/templates/sds-bamm-macros.tpl))| Generates a BAMM Aspect Meta Model of the service | Functional | [documentation](ifex/templates/sds-bamm-aspect-model.md) |
-[AST-simple_doc.tpl](ifex/templates/AST-simple_doc.tpl) | Very simple HTML generator, relying on [Service-simple_doc.html](ifex/templates/Service-simple_doc.html)| Not Functional | - |
-[simple_overview.tpl](ifex/templates/simple_overview.tpl) | Generates a textual overview of a service | Functional | - |
-[Argument-simple_doc.html](ifex/templates/Argument-simple_doc.html) | Default template for arguments| Not Functional | - |
-[Service-simple_doc.html](ifex/templates/Service-simple_doc.html) | Default template for services| Not Functional | - |
+Try the directory names of dtdl, protobuf, sds-bamm, simple etc.  (see [templates dir](https://github.com/COVESA/ifex/tree/master/ifex/templates) for more)
+
+- dtdl: Generates a Protobuf description of the service: [documentation](ifex/templates/protobuf.md)
+- sds-bamm:  Generates a BAMM Aspect Meta Model of the service: [documentation](ifex/templates/sds-bamm-aspect-model.md)
+- simple: Just outputs some simple overview (incomplete) in HTML format.  For simple testing.
+- protobuf: Generate protobuf(gRPC) description language, including the "rpc" feature.
+- d-bus: Linux D-Bus introspection XML format (pending)
 
 # Future plans, new proposals and enhancements
 
