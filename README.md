@@ -383,7 +383,6 @@ Template | Description | Status | Documentation |
 [dtdl.tpl](ifex/templates/dtdl.tpl) | Generates a DTDL description of the service | Functional | [documentation](ifex/templates/dtdl.md) |
 [protobuf.tpl](ifex/templates/protobuf.tpl) | Generates a Protobuf description of the service | Functional | [documentation](ifex/templates/protobuf.md) |
 [sds-bamm-aspect-model.tpl](ifex/templates/sds-bamm-aspect-model.tpl) (using [sds-bamm-macros.tpl](ifex/templates/sds-bamm-macros.tpl))| Generates a BAMM Aspect Meta Model of the service | Functional | [documentation](ifex/templates/sds-bamm-aspect-model.md) |
-[test.tpl](ifex/templates/test.tpl) | Dummy Example | Not Functional | - |
 [AST-simple_doc.tpl](ifex/templates/AST-simple_doc.tpl) | Very simple HTML generator, relying on [Service-simple_doc.html](ifex/templates/Service-simple_doc.html)| Not Functional | - |
 [simple_overview.tpl](ifex/templates/simple_overview.tpl) | Generates a textual overview of a service | Functional | - |
 [Argument-simple_doc.html](ifex/templates/Argument-simple_doc.html) | Default template for arguments| Not Functional | - |
