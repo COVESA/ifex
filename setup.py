@@ -15,7 +15,7 @@ def get_template_files():
 
 setup(name='ifex',
       version='0.1',
-      description='Vehicle service catalog tools',
+      description='Interface Exchange Framework (IFEX) tools',
       author='',
       author_email='',
       url='https://github.com/covesa/ifex-tools',
