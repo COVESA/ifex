@@ -7,13 +7,13 @@ from ifex.model.ifex_parser import get_ast_from_yaml_file
 import argparse, dacite
 
 def ifex_generator_run():
-    parser = argparse.ArgumentParser(description='Runs IFEX code generator.')
-    parser.add_argument('input', metavar='input', type=str,
-                        help='input.yaml-file (path)')
-    parser.add_argument('templatedir', metavar='template-dir', type=str, nargs='?',
-                        help='output type defined by the name of the template (sub)directory')
-    parser.add_argument('template', metavar='template', type=str, nargs='?',
-                        help='output-template-file (name only, not path)')
+    parser = argparse.ArgumentParser(description='Runs generic IFEX code generator with given template(s).')
+    parser.add_argument('input', metavar='ifex-input-file', type=str, help='path to input IFEX (YAML) file')
+    parser.add_argument('-d','--template-directory', dest='templatedir', metavar='templates-dir-name', type=str, required=True,
+                        help='choose output type by stating the template directory, as an absolute path or a sub-directory of templates/')
+    parser.add_argument('template', metavar='root-template', type=str, nargs='?',
+                        help='Top-level template file name (default : first file starting with AST_....)')
+
     try:
         args = parser.parse_args()
     except dacite.UnexpectedDataError as e:
