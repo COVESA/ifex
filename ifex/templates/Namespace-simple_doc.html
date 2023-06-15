@@ -17,7 +17,7 @@
          ) returns (
          )
          ) error (
-            {{ gen(x.error)|join('\n\n') }}
+            {{ gen(x.errors)|join('\n\n') }}
             </p><p>
       {% endfor %}
       <h2>Version</h2>
