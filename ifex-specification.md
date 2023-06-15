@@ -464,6 +464,7 @@ namespaces:
 | description | A single **str** |
 | major_version | A single **int** |
 | minor_version | A single **int** |
+| version_label | A single **str** |
 | events | A list of **Event**_s_ |
 | methods | A list of **Method**_s_ |
 | typedefs | A list of **Typedef**_s_ |
