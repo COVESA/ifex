@@ -922,7 +922,6 @@ structs:
 |Field Name|Required contents|
 |-----|-----------|
 | description | A single **str** |
-| type | A single **str** |
 | members | A list of **Member**_s_ |
 
 
