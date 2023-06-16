@@ -169,6 +169,7 @@ methods:
 | errors | A list of **Error**_s_ |
 | input | A list of **Argument**_s_ |
 | output | A list of **Argument**_s_ |
+| returns | A list of **Argument**_s_ |
 
 
 ----
