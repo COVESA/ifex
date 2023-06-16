@@ -30,6 +30,7 @@ jobs:
           docs/create-toc.py < docs/generated-specification.stage1.md >docs/generated-toc.md
           ## FIXME: GENERATE TYPES ALSO
           markup docs/def-specification.stage2.m.md >docs/ifex-specification.md
+          markup docs/def-developers-manual.m.md >docs/developers-manual.md
           echo "Docs to deploy:"
           ls -al docs
 
