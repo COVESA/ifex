@@ -1,0 +1,41 @@
+#!/bin/sh -e
+
+# SPDX-FileCopyrightText: Copyright (c) 2023 Novaspring AB
+# SPDX-License-Identifier: MPL-2.0
+#
+# This file is part of IFEX project
+# ---------------------------------------------------------------------------
+
+IMAGE_NAME=ifex_local/ifex_alpine
+CTR_NAME=ifex-docker
+
+# Normalize directory location
+cd "$(dirname "$0")"  # (the directory this script is in)
+cd ..
+
+command="$(basename "$0")"
+case $command in
+  docker_ifexgen)
+     runcmd=ifexgen ;;
+  docker_ifexgen_dbus)
+     runcmd=ifexgen_dbus ;;
+  *)
+     echo FAIL && exit 1 ;;
+esac
+
+if ! docker images | grep -F -q "$IMAGE_NAME"; then
+  echo Image never built from Dockerfile -- building...
+  cd docker && make build
+fi
+
+if docker ps -a | grep -F -q "$CTR_NAME"; then
+  echo Removing old container $CTR_NAME
+  docker rm "$CTR_NAME"
+fi
+
+# SELINUX required flag
+fgrep -Fq redhat /etc/os-release && ZFLAG=:z || ZFLAG=
+
+set -x
+docker run --rm -ti -v $PWD:/work${ZFLAG} --name "$CTR_NAME" "$IMAGE_NAME" /ifex/venv/bin/$runcmd "$@"
+
