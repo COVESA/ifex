@@ -1,69 +1,80 @@
+# Change to for example podman if desired.
+CTR_TOOL ?= docker
+
 IMAGE_NAME_A ?= ifex_local/ifex_alpine
 IMAGE_NAME_U ?= ifex_local/ifex_ubuntu
 
 # WARNING: Container name is common for the two variants, which has some consequences...
-# Use only one variant at a time to be certain.  If it matters, this can be fixed later.
+# Use only one variant at a time to be certain, or change this if it matters.
 CONTAINER_NAME ?= ifex_run
 CONTAINER_HOSTNAME ?= ifex_run
 
-.PHONY: _reset build build_alpine build_ubuntu rebuild buildnew run run_alpine clean logs shell stop kill rm rmi
+.PHONY: _reset build build_alpine build_ubuntu build_generic rebuild buildnew run run_ubuntu run_alpine clean logs shell stop kill rm rmi
 
 default:
-	@echo "make [build|buildnew|run|clean|logs|shell|stop|kill|rm|rmi]"
+	@echo 'This subproject creates containers with IFEX environment installed and ready.'
+	@echo 'Usage:  make [build_<distro>|run_<distro>|run_<distro>_test|clean|logs|shell|stop|kill|rm|rmi]'
+	@echo '        ...where <distro> is replaced by ubuntu or alpine.'
+	@echo 'Example: $ make run_ubuntu'
+	@echo 'run_<distro> opens an interactive bash shell.'
+	@echo 'run_<distro>_test runs the project unit tests inside the container and then exits.'
 
-build: build_alpine
+build: build_ubuntu
 
 build_alpine:
-	cd .. && docker build --tag=${IMAGE_NAME_A}:latest -f docker/Dockerfile.alpine .
+	@DOCKERFILE=docker/Dockerfile.alpine TAG=${IMAGE_NAME_A} make build_generic
 
 build_ubuntu:
-	cd .. && docker build --tag=${IMAGE_NAME_U}:latest -f docker/Dockerfile.ubuntu .
+	@DOCKERFILE=docker/Dockerfile.ubuntu TAG=${IMAGE_NAME_U} make build_generic
 
-# Modify build marker, this will invalidate any cached steps after its use
-_reset:
-	date >rebuild_marker
+build_generic:
+	cd .. && ${CTR_TOOL} build --tag=${TAG}:latest -f ${DOCKERFILE} .
 
-# Build container from the point of rebuild_marker (if used)
-rebuild: _reset build
-
-# Build container fully from scratch, without reusing cached steps
-buildnew:
-	cd .. && docker build --no-cache --tag=${IMAGE_NAME_A}:latest -f docker/Dockerfile.alpine .
-
-# Run container (detached)
+# Targets to run containers
 run: run_alpine
 
+# Ensure workdir is writable on an SELINUX system.  (example - adjust as needed)
 run_selinux:
 	ZFLAG=:z make run_alpine
 
 run_alpine:
-	docker rm -f ${CONTAINER_NAME}
-	docker run -ti -h "${CONTAINER_HOSTNAME}" -v ${PWD}/..:/work${ZFLAG} --name=${CONTAINER_NAME} ${IMAGE_NAME_A}:latest /bin/bash
+	@IMAGE_NAME=${IMAGE_NAME_A} BINARY=/bin/bash make run_interactive
 
 run_ubuntu:
-	docker rm -f ${CONTAINER_NAME}
-	docker run -ti -h "${CONTAINER_HOSTNAME}" -v ${PWD}/..:/work:z --name=${CONTAINER_NAME} ${IMAGE_NAME_U}:latest /bin/bash
+	@IMAGE_NAME=${IMAGE_NAME_U} BINARY=/bin/bash make run_interactive
+
+run_alpine_test:
+	${CTR_TOOL} rm -f ${CONTAINER_NAME}
+	${CTR_TOOL} run -t -h "${CONTAINER_HOSTNAME}" -v ${PWD}/..:/work${ZFLAG} --name=${CONTAINER_NAME} ${IMAGE_NAME_A}:latest /ifex/venv/bin/pytest /work/tests
+
+run_ubuntu_test:
+	${CTR_TOOL} rm -f ${CONTAINER_NAME}
+	${CTR_TOOL} run -t -h "${CONTAINER_HOSTNAME}" -v ${PWD}/..:/work${ZFLAG} --name=${CONTAINER_NAME} ${IMAGE_NAME_U}:latest /home/ubuntu/.pyenv/shims/pytest /ifex/tests
+
+run_interactive:
+	${CTR_TOOL} rm -f ${CONTAINER_NAME}
+	${CTR_TOOL} run -ti -h "${CONTAINER_HOSTNAME}" -v ${PWD}/..:/work${ZFLAG} --name=${CONTAINER_NAME} ${IMAGE_NAME}:latest ${BINARY}
 
 # Force remove container and image
 clean:  kill rm rmi
 
+# Various helper targets
 logs:
-	docker logs -f ${CONTAINER_NAME}
+	${CTR_TOOL} logs -f ${CONTAINER_NAME}
 
 shell:
-	docker exec -it ${CONTAINER_NAME} /bin/bash
+	${CTR_TOOL} exec -it ${CONTAINER_NAME} /bin/bash
 
 stop:
-	docker stop ${CONTAINER_NAME} || true
+	${CTR_TOOL} stop ${CONTAINER_NAME} || true
 
-# Force stop and remove container
 kill:
-	docker kill ${CONTAINER_NAME} || echo "Cannot kill - probably not running"
-	docker rm ${CONTAINER_NAME} || echo "Container removed already"
+	${CTR_TOOL} kill ${CONTAINER_NAME} || echo "Cannot kill - probably not running"
+	${CTR_TOOL} rm ${CONTAINER_NAME} || echo "Container removed already"
 
 rm:
-	docker kill ${CONTAINER_NAME} 2>/dev/null && echo killed || echo "Container seems stopped already"
-	docker rm ${CONTAINER_NAME} || echo "Container seems removed already"
+	${CTR_TOOL} kill ${CONTAINER_NAME} 2>/dev/null && echo killed || echo "Container seems stopped already"
+	${CTR_TOOL} rm ${CONTAINER_NAME} || echo "Container seems removed already"
 
 rmi:
-	@docker rmi ${IMAGE_NAME}:latest 2>/dev/null && echo removed image || echo "Image seems removed already"
+	@${CTR_TOOL} rmi ${IMAGE_NAME}:latest 2>/dev/null && echo removed image || echo "Image seems removed already"

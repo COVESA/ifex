@@ -1,0 +1,4 @@
+alias ll='ls -alF'
+
+# Activate venv
+. /ifex/venv/bin/activate

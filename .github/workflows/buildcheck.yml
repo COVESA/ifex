@@ -28,7 +28,7 @@ jobs:
 
       - name: Run unit tests
         run: |
-          pytest -v
+          pytest -v tests
 
       - name: Clone VSC repository
         run: |
