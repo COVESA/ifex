@@ -6,20 +6,23 @@
 # This file is part of IFEX project
 # ---------------------------------------------------------------------------
 
-# This is local to this file, and basically the setup is buggy if this needs to be used.
-FALLBACK_VERSION=3.10.10
-
+# Go to project directory
 cd "$(dirname "$0")"
 cd ..
 
-# pyenv writes a local .python-version file to remember which is the currently
-# enabled version in the environment. We store .default-python-version in the
-# repository to define the default version used for testing.
+if [ -z "$1" ] ; then
+   echo "usage: $0 <python-version-to-install>"
+   exit 1
+fi
 
-# Get python version from stored .python-version file
-# In case the file does not exist, assign a default version
-DEFAULT_PYTHON_VERSION=$(cat .default-python-version)
-VERSION=${DEFAULT_PYTHON_VERSION:-$FALLBACK_VERSION}
+# Fallback version is local to this file, and basically the setup is buggy if it needs to be used.
+FALLBACK_VERSION=3.10.10
+VERSION=${1:-$FALLBACK_VERSION}
+
+# initialize standard pyenv environment
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
 
 # Install the required version using pyenv.
 pyenv install --skip-existing $VERSION
