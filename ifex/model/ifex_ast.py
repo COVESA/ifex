@@ -644,3 +644,29 @@ class AST():
     minor_version: Optional[int] = None      # ------ " ------
     includes: Optional[List[Include]] = field(default_factory=EmptyList)
     namespaces: Optional[List[Namespace]] = field(default_factory=EmptyList)
+
+class FundamentalTypes:
+    # Fundamental types are the same as for VSS (Vehicle Signal Specification)
+    # This table copied from VSS documentation:
+    ptypes = [
+            # name, description, min value, max value
+            ["uint8", "unsigned 8-bit integer", 0, 255],
+            ["int8", "signed 8-bit integer", -128, 127],
+            ["uint16", "unsigned 16-bit integer", 0, 65535],
+            ["int16", "signed 16-bit integer", -32768, 32767],
+            ["uint32", "unsigned 32-bit integer", 0, 4294967295],
+            ["int32", "signed 32-bit integer", -2147483648, 2147483647],
+            ["uint64", "unsigned 64-bit integer", 0, "2^64 - 1"],
+            ["int64", "signed 64-bit integer", "-2^63", "2^63 - 1"],
+            ["boolean", "boolean value", False, True],
+            ["float", "floating point number", "-3.4e -38", "3.4e 38"],
+            ["double", "double precision floating point number", "-1.7e -300", "1.7e 300"],
+            ["string", "character string", "N/A","N/A"]
+            ]
+
+    ctypes = [
+            # name, description, min value, max value
+            ["set", "A set of fundamental unsigned 8-bit integer", "N/A", "N/A"],
+            ["map", "A key-value mapping type", "N/A", "N/A"],
+            ["opaque", "Indicates a complex type which is not explicitly defined in this context.", "N/A","N/A"]
+            ]

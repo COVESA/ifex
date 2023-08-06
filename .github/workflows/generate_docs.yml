@@ -28,6 +28,7 @@ jobs:
       - name: Join docs into one specification
         run: |
           git status
+          docs/generate-types-doc.py >docs/generated-types.md
           markup docs/def-specification.stage1.m.md >docs/generated-specification.stage1.md
           docs/create-toc.py < docs/generated-specification.stage1.md >docs/generated-toc.md
           markup docs/def-specification.stage2.m.md >docs/ifex-specification.md
