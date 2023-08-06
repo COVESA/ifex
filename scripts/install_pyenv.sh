@@ -15,3 +15,14 @@
 # first, or take other measures to install the required tools!
 
 curl https://pyenv.run | sh
+
+grep -Fq PYENV_ROOT "$HOME/.bashrc" || {
+   echo 'NOTE!  Adding PYENV setup to $HOME/.bashrc!'
+  touch "$HOME/.bashrc"
+  cat <<"EOT" >>"$HOME/.bashrc"
+# pyenv environment
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+EOT
+}
