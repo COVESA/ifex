@@ -1,5 +1,4 @@
-name: Generated documentation
-
+name: GenerateDocs
 on: [push, pull_request]
 
 jobs:
@@ -55,4 +54,3 @@ jobs:
           folder: docs     # The folder the action should deploy.
           target-folder: branch/${{github.ref_name}} 
           commit-message: Auto-deploy docs built from commit ${{ github.sha }}
-

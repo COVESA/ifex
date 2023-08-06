@@ -17,15 +17,15 @@ RUN adduser -D -G ifex ifex
 RUN adduser ifex wheel
 
 # Prepare directories
-RUN mkdir /ifex
-RUN chown ifex:ifex /ifex /home/ifex
+RUN mkdir /ifex /work
 
 # Python packages are installed in virtual environment under /ifex
-USER ifex
+COPY . /ifex
 WORKDIR /ifex
-COPY . /ifex/
 RUN python -m venv venv
-RUN . venv/bin/activate && pip install -r requirements.txt
+RUN chown -R ifex:ifex /ifex /home/ifex
+USER ifex
+RUN . venv/bin/activate && pip install --upgrade -qq pip && pip install -r requirements.txt
 RUN . venv/bin/activate && python setup.py develop && ifexgen -h
 
 # Make sure venv is enabled when starting interactive bash
