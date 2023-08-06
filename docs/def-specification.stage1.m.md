@@ -2,7 +2,13 @@
 !INCLUDE "static-general-description.md"
 
 <!-- Types, constraints/ranges, type resolution in namespaces. -->
-!INCLUDE "static-types.md"
+----
+
+# FUNDAMENTAL TYPES
+
+These are the supported fundamental (primitive) types, as generated from the source code model.  These primitive types are identical to the types used in the VSS (Vehicle Signal Specification) model, and of course they should easily match typical datatypes in other interface description systems.
+
+!INCLUDE "generated-types.md"
 
 <!-- Layers concept, IFEX File Syntax, semantics and structure -->
 !INCLUDE "static-files-and-layers.md"
