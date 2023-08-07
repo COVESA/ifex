@@ -1,5 +1,4 @@
-name: ContainersTest
-
+name: Container Tests
 on: [push]
 
 jobs:
