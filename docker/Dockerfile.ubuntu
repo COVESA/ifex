@@ -7,7 +7,7 @@
 FROM ubuntu:23.04
 
 # Install what's needed to compile python from source using pyenv
-RUN apt-get update && apt-get install -y python3 curl bash git build-essential libssl-dev libffi-dev libbz2-dev libsqlite3-dev lzma-dev ncurses-dev libreadline-dev liblzma-dev sudo
+RUN apt-get update && apt-get install -y bash build-essential curl git libbz2-dev libffi-dev liblzma-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libssl-dev llvm lzma-dev make ncurses-dev python3-openssl python3 sudo tk-dev wget xz-utils zlib1g-dev
 
 # Prepare directories
 RUN mkdir /ifex /work
