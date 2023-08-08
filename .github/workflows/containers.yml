@@ -1,5 +1,5 @@
 name: Container Tests
-on: [push]
+on: [pull_request]
 
 jobs:
   build_and_test_containers:
@@ -13,12 +13,19 @@ jobs:
           make build_alpine
           make build_ubuntu
 
-      - name: Run tests in Ubuntu container
+      - name: Test Interactive Commands
+        run: |
+          cd docker
+          variant=alpine make run_interactivity_test
+          variant=ubuntu make run_interactivity_test_pyenv
+
+      - name: Run unit tests in Ubuntu container
         run: |
           cd docker
           make run_ubuntu_test
 
-      - name: Run tests in Alpine container
+      - name: Run unit tests in Alpine container
         run: |
           cd docker
           make run_alpine_test
+

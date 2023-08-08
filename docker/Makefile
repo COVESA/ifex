@@ -51,9 +51,26 @@ run_ubuntu_test:
 	${CTR_TOOL} rm -f ${CONTAINER_NAME}
 	${CTR_TOOL} run -t -h "${CONTAINER_HOSTNAME}" -v ${PWD}/..:/work${ZFLAG} --name=${CONTAINER_NAME} ${IMAGE_NAME_U}:latest /home/ubuntu/.pyenv/shims/pytest /ifex/tests
 
+# For container variants that set up using bashrc
+# Must be run by setting $variant!
+# example:  variant=alpine make run_interactivity_test
+run_interactivity_test:
+	@BASHCMD='. ~/.bashrc && ifexgen -h' make run_bash_cmd
+
+# For container variants that have installed with pyenv
+# Must be run by setting $variant!
+# example:  variant=ubuntu make run_interactivity_test
+run_interactivity_test_pyenv:
+	@BASHCMD='eval "$$$$(pyenv init -)" && ifexgen -h' make run_bash_cmd
+
+# Helpers (code factored out of other targets)
 run_interactive:
 	${CTR_TOOL} rm -f ${CONTAINER_NAME}
 	${CTR_TOOL} run -ti -h "${CONTAINER_HOSTNAME}" -v ${PWD}/..:/work${ZFLAG} --name=${CONTAINER_NAME} ${IMAGE_NAME}:latest ${BINARY}
+
+run_bash_cmd:
+	${CTR_TOOL} rm -f ${CONTAINER_NAME}
+	${CTR_TOOL} run -t -h "${CONTAINER_HOSTNAME}" --name=${CONTAINER_NAME} ifex_local/ifex_${variant}:latest bash -c '${BASHCMD}'
 
 # Force remove container and image
 clean:  kill rm rmi
