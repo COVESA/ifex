@@ -4,7 +4,7 @@
 (C) 2022 - COVESA  
 (C) 2021 - Magnus Feuer  
 
-This document contains an introduction to the the Interface Exchange (IFEX)
+This document contains an introduction to the Interface Exchange (IFEX)
 framework and specification of the core Interface Description Language/Model
 (also known as ifex-idl and ifex-core).  IFEX is the name for the _technology_
 (language, tools, etc.) behind the Vehicle Service Catalog (VSC) project.
