@@ -171,41 +171,41 @@ def walk_type_tree(node, process, seen={}):
     hints from typing module.
 
     Performs a depth-first traversal.  Parent node is processed first, then its
-    children, going as deep as possible before backtracking. Node names that have
-    already been seen before are identical so recursion is cut off there. 
-    The given hook function "process" is called for every unique node.
+    children, going as deep as possible before backtracking. Type names that have
+    already been seen before are identical so recursion is cut off there.
+    The given hook function "process" is called for every unique type.
 
     Arguments: node = a @dataclass class
                process = function to call for each node"""
-
-    if node in [str, int]: # (No need to document, or recurse on these)
-        return
 
     # Skip duplicates (like Namespace, it appears more than once in AST model)
     name = type_name(node)
     if seen.get(name):
         return
 
+    # (No need to document, or recurse on the following types):
+    if node in [str, int, typing.Any]:
+        return
+
+    # Process this node
     process(node)
     seen[name] = True
 
+    # ForwardRef will fail if we try to recurse its children.
+    # However, the types that are handled with ForwardRef (Namespace)
+    # ought to appear anyhow somewhere in the recursion.
+    if is_forwardref(node):
+        return
+
     # Next, recurse on each AST type used in child fields (stripping
     # away 'List' and 'Optional' to get to the interesting class)
-
-    if is_forwardref(node):
-        # WARNING: ForwardRef only gives us the class name, instead of the
-        # actual class object.  For the purpose of listing all node types
-        # there "should" be no problem to skip over this one, because it
-        # should appear elsewhere in the tree, but this limitation should be known.
-        pass
-    else:
-        for n in fields(node):
-            if is_list(n):
-                # Document Node types that are found inside Lists
-                walk_type_tree(list_member_type(n), process, seen)
-            else:
-                # Document Node types found directly
-                walk_type_tree(actual_type(n), process, seen)
+    for n in fields(node):
+        if is_list(n):
+            # Document Node types that are found inside Lists
+            walk_type_tree(list_member_type(n), process, seen)
+        else:
+            # Document Node types found directly
+            walk_type_tree(actual_type(n), process, seen)
 
 
 if __name__ == "__main__":

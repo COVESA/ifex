@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List, Optional, Any
 
 # shortcut to reduce code duplication for default_factory 
 # parameter in field()
@@ -312,7 +312,7 @@ class Option:
     name: str
     """ Specifies the name of the enum option. """
 
-    value: int
+    value: Any
     """ Specifies the value of the enum option. """
 
     description: Optional[str] = None
