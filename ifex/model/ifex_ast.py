@@ -36,7 +36,7 @@ class Argument:
 
     datatype: str 
     """ 
-    Specifies the data type of the argument, The type can be either a native or defined type.
+    Specifies the data type of the argument, The type can be either a fundamental or defined type.
     If `datatype` refers to a defined type, this type can be a local, nested, or externally defined reference.
     If the type is an array (ending with `[]`), the arraysize key can optionally be provided to specify the number of elements in the array.
     If arraysize is not specified for an array type, the member array can contain an arbitrary number of elements.
@@ -94,7 +94,7 @@ class Error:
     """
     datatype: str
     """ 
-    Specifies the data type of the returned error value, The type can be either a native or defined type.
+    Specifies the data type of the returned error value, The type can be either a fundamental or defined type.
     If datatype refers to a defined type, this type can be a local, nested, or externally defined reference.
     If the type is an array (ending with []), the arraysize key can optionally be provided to specify the number of elements in the array.
     If arraysize is not specified for an array type, the member array can contain an arbitrary number of elements.
@@ -235,7 +235,7 @@ class Property:
     datatype: str
     """  
     Specifies the data type of the property,
-    The type can be either a native or defined type.
+    The type can be either a fundamental or defined type.
     If datatype refers to a defined type, this type can be a local, nested, or externally defined reference.
     If the type is an array (ending with []), the arraysize key can optionally be provided to specify the number of elements in the array.
     If arraysize is not specified for an array type, the member array can contain an arbitrary number of elements.
@@ -254,10 +254,10 @@ class Property:
 @dataclass
 class Member:
     """ 
-    Dataclass used to represent IFEX Enumeration Member.
+    Dataclass used to represent IFEX Struct Member.
 
     Each members list object defines an additional member of the struct.
-    Each member can be of a native or defined datatype.
+    Each member can be of a fundamental or defined/complex datatype.
 
     Please see the struct sample code above for an example of how members list objects are used.
 
@@ -278,7 +278,7 @@ class Member:
     datatype: str
     """
     Specifies the data type of the struct member.
-    The type can be either a native or defined type.
+    The type can be either a fundamental or defined type.
     If datatype refers to a defined type, this type can be a local, nested, or externally defined reference.
     If the type is an array (ending with []), the arraysize key can optionally be provided to specify the number of elements in the array.
     If arraysize is not specified for an array type, the member array can contain an arbitrary number of elements.
@@ -347,7 +347,7 @@ class Enumeration:
     datatype: str
     """
     Specifies the data type that should be used to host this enum.
-    The type can be either a native or defined type, but must resolve to a native integer type.
+    The type can be either a fundamental or defined type, but must resolve to a primitive type.
     If datatype refers to a defined type, this type can be a local, nested, or externally defined reference.
     """
 
@@ -401,7 +401,7 @@ class Typedef:
     """
     Dataclass used to represent IFEX Typedef.
 
-    Each typedefs list object aliases an existing primitive type, defined type, or enumerator, giving it an additional name.
+    Each typedef is an alias to an existing fundamental type, defined type, or enumerator, giving it an additional name.
     The new data type can be used by other datatypes, method & event parameters, and properties.
 
     A typedefs list object example is given below:    
