@@ -1,0 +1,38 @@
+#!/bin/sh
+
+# Wrapper to call "dockerized" sdbus-c++-xml2cpp tool
+
+# Settings:
+# docker, podman, ...
+CTR_TOOL=docker
+CTR_NAME=ifex_local/sdbus-xml2cpp
+BINARY=/sdbus-cpp/build/tools/sdbus-c++-xml2cpp
+
+# The tool can't seem to write to stdout :(
+# So... we'll have to pass in both input and output file names
+
+if [ $# -lt 1 ] ; then
+   echo "IFEX: Docker wrapper for sdbus-c++-xml2cpp tool."
+   echo "This generates both proxy and adapter/stub for the input D-Bus XML instrospection formatted file."
+   echo "It is required to generate both outputs -- if one output is not needed, throw it away..."
+   echo "If any output file is not specified, its file name will be generated."
+   echo "Since it bind-maps a directory into a container, all files must be local filenames in the *current directory* only!"
+   echo "Usage: $0 <input-xml-file> <output-proxy-header> <output-adapter-header>"
+   exit 1
+fi
+
+# Drop suffix if any
+xmlfile="$1" ; shift
+filebase=${xmlfile%.xml}
+proxyfile="$1" ; shift 2>/dev/null
+if [ -z "$proxyfile" ] ; then
+  proxyfile="$filebase.proxy.h"
+  echo "Proxy file will be written to $proxyfile"
+fi
+adapterfile="$1" ; shift 2>/dev/null
+if [ -z "$adapterfile" ] ; then
+  adapterfile="$filebase.adapter.h"
+  echo "Adapter file will be written to $adapterfile"
+fi
+
+$CTR_TOOL run -t --rm --volume $PWD:/work ${CTR_NAME} ${BINARY} --proxy="$proxyfile" --adapter="$adapterfile" "$xmlfile" "$@"

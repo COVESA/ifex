@@ -1,0 +1,3 @@
+# bashrc to make interactive use in container feasible
+alias ls -alF
+export PATH="/sdbus-cpp/build/tools/:$PATH"
