@@ -4,16 +4,20 @@
 from dataclasses import dataclass, field
 from typing import List, Optional, Any
 
-# shortcut to reduce code duplication for default_factory 
-# parameter in field()
-EmptyList = lambda: []
 
-# Module contains Vehicle Service Catalog abstract syntax tree 
+# shortcut to reduce code duplication for default_factory
+# parameter in field()
+def EmptyList():
+    return []
+
+
+# Module contains Vehicle Service Catalog abstract syntax tree
 # implemented using python dataclasses.
 #
-# The specification can be found here, but the rules will be generated from 
+# The specification can be found here, but the rules will be generated from
 # this file.  This file is the formal definition of the language.
 # https://github.com/COVESA/vehicle_service_catalog/blob/master/syntax.md
+
 
 @dataclass
 class Argument:
@@ -31,22 +35,22 @@ class Argument:
 
     ```
     """
+
     name: str
     """ Specifies the name of the argument """
 
-    datatype: str 
-    """ 
-    Specifies the data type of the argument, The type can be either a fundamental or defined type.
-    If `datatype` refers to a defined type, this type can be a local, nested, or externally defined reference.
-    If the type is an array (ending with `[]`), the arraysize key can optionally be provided to specify the number of elements in the array.
-    If arraysize is not specified for an array type, the member array can contain an arbitrary number of elements.
+    datatype: str
     """
+    Specifies the data type of the argument, The type can be either a fundamental or defined type.  If `datatype` refers
+    to a defined type, this type can be a local, nested, or externally defined reference.  If the type is an array
+    (ending with `[]`), the arraysize key can optionally be provided to specify the number of elements in the array.  If
+    arraysize is not specified for an array type, the member array can contain an arbitrary number of elements.  """
 
     description: Optional[str] = str()
     """ Contains a description of the argument. """
 
     arraysize: Optional[int] = None
-    """ 
+    """
     Specifies the number of elements in the argument array.
     This key is only allowed if the datatype element specifies an array (ending with []).
     """
@@ -76,8 +80,8 @@ class Error:
 
     Error elements are returned in addition to any out elements specified for the method call.
 
-    Please see the methods sample code above for an example of how error parameter lists are used
-    If no error element is specified, no specific error code is returned. Results may still be returned as an out parameter`
+    Please see the methods sample code above for an example of how error parameter lists are used If no error element is
+    specified, no specific error code is returned. Results may still be returned as an out parameter`
 
     ```yaml
     methods:
@@ -87,18 +91,19 @@ class Error:
         errors:
           - name: "progress"
             datatype: .stdvsc.error_t
-            range: $ in_set("ok", "in_progress", "permission_denied")        
+            range: $ in_set("ok", "in_progress", "permission_denied")
           - <possibly additional error definition>
 
     ```
     """
+
     datatype: str
-    """ 
-    Specifies the data type of the returned error value, The type can be either a fundamental or defined type.
-    If datatype refers to a defined type, this type can be a local, nested, or externally defined reference.
-    If the type is an array (ending with []), the arraysize key can optionally be provided to specify the number of elements in the array.
-    If arraysize is not specified for an array type, the member array can contain an arbitrary number of elements.
     """
+    Specifies the data type of the returned error value, The type can be either a fundamental or defined type.  If
+    datatype refers to a defined type, this type can be a local, nested, or externally defined reference.  If the type
+    is an array (ending with []), the arraysize key can optionally be provided to specify the number of elements in the
+    array.  If arraysize is not specified for an array type, the member array can contain an arbitrary number of
+    elements.  """
 
     name: Optional[str] = None
     """ Name is required only if multiple Errors are defined, to differentiate between them. """
@@ -107,21 +112,21 @@ class Error:
     """ Specifies a description of how the errors shall be used. """
 
     arraysize: Optional[str] = None
-    """  
+    """
     Specifies the number of elements in the input parameter array.
     This key is only allowed if the datatype element specifies an array (ending with []).
     """
 
     range: Optional[str] = None
-    """ 
-    Specifies the legal range for the value. 
+    """
+    Specifies the legal range for the value.
     https://github.com/COVESA/vehicle_service_catalog/blob/master/syntax.md#value-range-specification
     """
 
 
 @dataclass
 class Method:
-    """ 
+    """
     Dataclass used to represent IFEX Event.
 
     Each methods list object specifies a method call, executed by a single server instance,
@@ -152,7 +157,7 @@ class Method:
 
         errors:
           - datatype: .stdvsc.error_t
-            range: $ in_set("ok", "in_progress", "permission_denied")    
+            range: $ in_set("ok", "in_progress", "permission_denied")
     ```
     """
 
@@ -180,7 +185,7 @@ class Event:
     """
     Dataclass used to represent IFEX Event.
 
-    Each events list object specifies a fire-and-forget call, executed by zero or more subscribing instances, 
+    Each events list object specifies a fire-and-forget call, executed by zero or more subscribing instances,
     that does not return a value. Execution is best effort to UDP level with server failures not being reported.
 
     A events sample list object is given below:
@@ -198,28 +203,31 @@ class Event:
           - name: row
             description: The row of the seat
             datatype: uint8
-    ```    
+    ```
     """
 
     name: str
     """ Specifies the name of the event. """
 
-    description: Optional[str] = str()    
+    description: Optional[str] = str()
     """ Specifies a description of the event. """
 
     input: Optional[List[Argument]] = field(default_factory=EmptyList)
-    """ 
-    Each `input` list object defines an input parameter to the event
-    Please see the events sample code above for an example of how in parameter lists are use. 
     """
+    Each `input` list object defines an input parameter to the event
+    Please see the events sample code above for an example of how in parameter lists are use.
+    """
+
 
 @dataclass
 class Property:
-    """ 
+    """
     Dataclass used to represent IFEX Property.
 
-    Each properties list object specifies a shared state object that can be read and set, and which is available to all subscribing entities.
-    A properties sample list object is given below, together with a struct definition:
+    Each properties list object specifies a shared state object that can be
+    read and set, and which is available to all subscribing entities.  A
+    properties sample list object is given below, together with a struct
+    definition:
 
     ```yaml
     properties:
@@ -229,23 +237,25 @@ class Property:
 
     ```
     """
+
     name: str
     """ Specifies the name of the property. """
 
     datatype: str
-    """  
+    """
     Specifies the data type of the property,
     The type can be either a fundamental or defined type.
-    If datatype refers to a defined type, this type can be a local, nested, or externally defined reference.
-    If the type is an array (ending with []), the arraysize key can optionally be provided to specify the number of elements in the array.
-    If arraysize is not specified for an array type, the member array can contain an arbitrary number of elements.
+    - If datatype refers to a defined type, this type can be a local, nested, or externally defined reference.
+    - If the type is an array (ending with []), the arraysize key can optionally be provided to specify the number of
+      elements in the array.
+    - If arraysize is not specified for an array type, the member array can contain an arbitrary number of elements.
     """
 
     description: Optional[str] = str()
     """ Specifies a description of the property. """
 
     arraysize: Optional[int] = None
-    """ 
+    """
     Specifies the number of elements in the input parameter array.
     This key is only allowed if the datatype element specifies an array (ending with []).
     """
@@ -253,7 +263,7 @@ class Property:
 
 @dataclass
 class Member:
-    """ 
+    """
     Dataclass used to represent IFEX Struct Member.
 
     Each members list object defines an additional member of the struct.
@@ -279,19 +289,21 @@ class Member:
     """
     Specifies the data type of the struct member.
     The type can be either a fundamental or defined type.
-    If datatype refers to a defined type, this type can be a local, nested, or externally defined reference.
-    If the type is an array (ending with []), the arraysize key can optionally be provided to specify the number of elements in the array.
-    If arraysize is not specified for an array type, the member array can contain an arbitrary number of elements.
+    - If datatype refers to a defined type, this type can be a local, nested, or externally defined reference.
+    - If the type is an array (ending with []), the arraysize key can optionally be provided to specify the number of
+      elements in the array.
+    - If arraysize is not specified for an array type, the member array can contain an arbitrary number of elements.
     """
 
     description: Optional[str] = str()
     """ Contains a description of the struct member. """
 
     arraysize: Optional[int] = None
-    """ 
+    """
     Specifies the number of elements in the struct member array.
     This key is only allowed if the datatype element specifies an array (ending with []).
     """
+
 
 @dataclass
 class Option:
@@ -309,6 +321,7 @@ class Option:
         description: description of the option value
     ```
     """
+
     name: str
     """ Specifies the name of the enum option. """
 
@@ -324,23 +337,25 @@ class Enumeration:
     """
     Dataclass used to represent IFEX Enumeration.
 
-    Each enumerations list object specifies an enumerated list (enum) of options, where each option can have its own integer value.
-    The new data type defined by the enum can be used by other datatypes, method & event parameters, and properties.
+    Each enumerations list object specifies an enumerated list (enum) of options, where each option can have its own
+    integer value.  The new data type defined by the enum can be used by other datatypes, method & event parameters, and
+    properties.
 
     A enumerations example list object is given below:
 
-    ```yaml    
+    ```yaml
     enumerations:
       - name: seat_component_t
-        datatype: uint8 
+        datatype: uint8
         options:
           - name: base
             value: 0
 
           - name: cushion
             value: 1
-    ```    
+    ```
     """
+
     name: str
     """ Defines the name of the enum. """
 
@@ -371,7 +386,7 @@ class Struct:
 
     A structs list object example is shown below:
 
-    ```yaml    
+    ```yaml
     structs:
       - name: position_t
           description: The complete position of a seat
@@ -386,6 +401,7 @@ class Struct:
     ```
 
     """
+
     name: str
     """ Specifies the name of the struct. """
 
@@ -404,17 +420,18 @@ class Typedef:
     Each typedef is an alias to an existing fundamental type, defined type, or enumerator, giving it an additional name.
     The new data type can be used by other datatypes, method & event parameters, and properties.
 
-    A typedefs list object example is given below:    
+    A typedefs list object example is given below:
 
     ```yaml
     typedefs:
       - name: movement_t
         datatype: int16
-        min: -1000 
+        min: -1000
         max: 1000
-        description: The movement of a seat component    
+        description: The movement of a seat component
     ```
     """
+
     name: str
     """ Specifies the name of the typedef. """
 
@@ -425,8 +442,8 @@ class Typedef:
     """ Specifies the description of the typedef. """
 
     arraysize: Optional[int] = None
-    """ 
-    Specifies the number of elements in the array. 
+    """
+    Specifies the number of elements in the array.
     This key is only allowed if the datatype element specifies an array (ending with `[]`).
     """
 
@@ -444,10 +461,10 @@ class Include:
     Dataclass used to represent IFEX Include.
 
     Each includes list object specifies a IFEX YAML file to be included into the namespace hosting the includes list.
-    The included file's structs, typedefs, enumerators, methods, events, 
+    The included file's structs, typedefs, enumerators, methods, events,
     and properties lists will be appended to the corresponding lists in the hosting namespace.
 
-    A includes sample list object is given below:    
+    A includes sample list object is given below:
 
     ```yaml
     namespaces:
@@ -458,15 +475,94 @@ class Include:
     ```
 
     """
+
     file: str
     """ Specifies the path to the file to include. """
 
     description: Optional[str] = str()
     """ Specifies description of the include directive. """
 
-class Namespace:
-    pass
 
+@dataclass
+class Interface:
+    """
+    Dataclass used to represent IFEX Interface
+
+    An Interface is a container of other items in a similar way as a Namespace, but it does not introduce a new
+    namespace level. Its purpose is to explicitly define what shall be considered part of the exposed as a "public
+    API" in the output.
+
+    Note that as with all IFEX concepts, the way it is translated into target code could be slightly varying, and
+    controlled by the target mapping and deployment information, but all mappings shall _strive_ to stay close to the
+    IFEX expected behavior.  Thus, the Interface section would omit for example internal helper-methods and type
+    definitions that are only used internally, while those definitions might still need to be in the parent Namespace
+    for the code generation to work.
+
+    An Interface can contain all the same child node types as Namespace can, except for additional (nested) Interfaces.
+    As mentioned, it does NOT introduce an additional namespace level regarding the visibility/reacahbility of the
+    items.  Its contents is not hidden from other Namespace or Interface definitions within the same Namespace.  To put
+    it another way, from visibility/reachability point of view all the content inside an interface container is part of
+    the "parent" Namespace that the Interface object is placed in.  Of course, if additional nested namespaces are
+    placed _below_ the Interface node, those Namespaces introduce new namespace levels, as usual.
+
+    Only one Interface can be defined per Namespace, and it cannot include other Interfaces
+
+    An Interface example is given below.
+
+    ```yaml
+    namespaces:
+      - name: seats
+        major_version: 1
+        minor_version: 3
+        description: Seat interface and datatypes.
+        interface:
+          typedefs:
+            - ...
+          methods:
+            - ...
+          properties:
+            - ...
+    ```
+    """
+
+    name: str
+    """ Specifies the name of the interface. """
+
+    description: Optional[str] = str()
+    """ Specifies description of the interface. """
+
+    major_version: Optional[int] = None
+    """ Provides the major version of the interface. """
+
+    minor_version: Optional[int] = None
+    """ Provides the minor version of the interface. """
+
+    version_label: Optional[str] = str()
+    """ A free-form string that contains any additional information about the content/version """
+
+    events: Optional[List[Event]] = field(default_factory=EmptyList)
+    """ Contains a list of the events in a given interface """
+
+    methods: Optional[List[Method]] = field(default_factory=EmptyList)
+    """ Contains a list of the methods in a given interface """
+
+    typedefs: Optional[List[Typedef]] = field(default_factory=EmptyList)
+    """ Contains a list of the typedefs in a given interface """
+
+    includes: Optional[List[Include]] = field(default_factory=EmptyList)
+    """ Contains a list of the includes in a given interface """
+
+    structs: Optional[List[Struct]] = field(default_factory=EmptyList)
+    """ Contains a list of the structs in a given interface """
+
+    enumerations: Optional[List[Enumeration]] = field(default_factory=EmptyList)
+    """ Contains a list of the enumerations in a given interface """
+
+    properties: Optional[List[Property]] = field(default_factory=EmptyList)
+    """ Contains a list of the properties in a given interface """
+
+    namespaces: Optional[List["Namespace"]] = field(default_factory=EmptyList)
+    """ Contains a list of the properties in a given interface """
 
 
 @dataclass
@@ -519,9 +615,6 @@ class Namespace:
     includes: Optional[List[Include]] = field(default_factory=EmptyList)
     """ Contains a list of the includes in a given namespace """
 
-    interface: Optional[Interface] = None
-    """ Optional Interface node.  (!) Can only be used once per Namespace, and its children cannot contain another Interface. """
-
     structs: Optional[List[Struct]] = field(default_factory=EmptyList)
     """ Contains a list of the structs in a given namespace """
 
@@ -531,23 +624,19 @@ class Namespace:
     properties: Optional[List[Property]] = field(default_factory=EmptyList)
     """ Contains a list of the properties in a given namespace """
 
-    namespaces: Optional[List['Namespace']] = field(default_factory=EmptyList)
+    namespaces: Optional[List["Namespace"]] = field(default_factory=EmptyList)
     """ Contains a list of sub namespaces in a given namespace """
 
-@dataclass
-class Interface(Namespace):
-# We inherited Namespace out of efficiency, because Interface can contain the same children
-# The only exception is that multiple Interfaces are not allowed.  That needs to be checked separately.
-    """
-    An Interface is a container of other items in a similar way as a Namespace, but it does not introduce a new namespace level, and its purpose is explicitly to define what shall be considered part of the exposed interface.  Note that as with all IFEX concepts, the way it is translated into target code could be slightly varying, and controlled by the target mapping and deployment information, but all mappings shall _strive_ to stay close to the IFEX expected behavior.  The expectation is that the Interface concept is used to contain such items that shall be exposed as a "public API" in the output.  Thus, the Interface section would omit for example internal helper-methods and type definitions that are only used internally, while those definitions might still need to be in the associated Namespace for the code generation to work.
+    interface: Optional[Interface] = None
+    """ Optional Interface node.  (!) Can only be used once per Namespace, and its children cannot contain another
+    Interface. """
 
-An Interface can contain all the same child node types as Namespace can, except for additional (nested) Interfaces.   Note however, that the Interface is different from a nested Namespace in that does NOT introduce an additional namespace level regarding the visibility/reacahbility of the items.  Its contents is not hidden from other Namespace or Interface definitions within the same namespace.  To put it another way, from visibility/reachability point of view all the content inside an interface container is part of the "parent" Namespace that the Interface object is placed in.  Of course, if additional nested namespaces are placed _below_ the Interface node, those Namespaces introduce new namespace levels, as usual."""
 
 @dataclass
 class AST(Namespace):
     """
-    Dataclass used to represent root element in a IFEX AST. 
-
+    Dataclass used to represent root element in a IFEX AST.
     Behaviour is inherited from Namespace class.
     """
+
     pass
