@@ -32,5 +32,8 @@ for line in lines:
 
 headings = [h for h in nocode_lines if re.search('^#', h)]
 
+import subprocess
+print(f"Documentation generated from: {subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('utf-8')}")
+
 for tocline in [h_to_link(h, n) for h in headings for n in range(1,5) if h_to_link(h, n)]:
 	print(tocline)
