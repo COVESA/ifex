@@ -1,5 +1,7 @@
-name: Docs
+name: Generated documentation
 on: [push, pull_request]
+permissions:
+  contents: write
 
 jobs:
   build-docs:
