@@ -175,7 +175,12 @@ def main():
 
     print("TEST EXECUTABLE FOR D-BUS TYPE DEFINITIONS")
     for n in tree.namespaces:
-        for x in n.structs + n.typedefs + n.enumerations:
+        if n.interface is not None:
+            i=n.interface
+            interface_items = i.structs + i.typedefs + i.enumerations
+        else:
+            interface_items = []
+        for x in n.structs + n.typedefs + n.enumerations + interface_items:
             print(
                 "--------------------------------------------------------------------"
             )
