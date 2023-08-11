@@ -56,8 +56,6 @@ ifex_to_dbus_types = {
     "double": "d",
     "string": "s",
     "boolean": "b",
-    "byteBuffer": "ay",
-
     # TODO: map/dict, set, variant
 }
 # PRELIMINARY:

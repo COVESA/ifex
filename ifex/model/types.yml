@@ -33,7 +33,6 @@ primitive_types:
   - float
   - double
   - string
-  - byteBuffer
   - set
   - map
   - opaque
