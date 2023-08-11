@@ -12,5 +12,9 @@ Individual documents describe particular target (or source) standards.
 
 - [D-Bus](./static-mapping-dbus.md)
 
+!INCLUDE "static-developer-generators.md"
+
+______________________________________________________________________
+
 !INCLUDE "static-ifex-type-howto.md"
 !INCLUDE "static-footer.md"
