@@ -168,8 +168,6 @@ a bamm-c:RangeConstraint ;
     xsd:double
 {%- elif type == 'string' -%}
     xsd:string
-{%- elif type == 'byteBuffer' -%}
-    xsd:base64Binary
 {%- else -%}
     {{ type }}
 {%- endif -%}    
