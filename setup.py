@@ -26,5 +26,6 @@ setup(name='ifex',
       entry_points='''
             [console_scripts]
             ifexgen=ifex.scripts.generator:ifex_generator_run
+            ifexgen_dbus=ifex.scripts.generator_dbus:ifex_dbus_generator_run
       '''
       )
