@@ -7,7 +7,7 @@
 
 from ifex.model.ifex_generator import jinja_env, gen
 from ifex.model.ifex_parser import get_ast_from_yaml_file
-import dbus_types
+from ifex.generators.DBus import dbus_types
 import lxml.etree as etree
 import sys
 
@@ -44,10 +44,7 @@ def gen_error_name(err):
         return err.name
 
 
-# ----------------------------------------------------------------
-# MAIN = Standalone test Code only, not normal use.
-if __name__ == "__main__":
-    yaml_file = sys.argv[1]
+def main_generate(yaml_file):
     template_dir = "D-Bus"
     ast = get_ast_from_yaml_file(yaml_file)
     # re-initialize jinja environment with the given template dir
@@ -67,3 +64,8 @@ if __name__ == "__main__":
     # they are significant (like in HTML) and will not reindent the XML.
     parser = etree.XMLParser(remove_blank_text=True)
     print(etree.tostring(etree.fromstring(raw_xml, parser), pretty_print=True).decode("utf-8"))
+
+# ----------------------------------------------------------------
+# MAIN = Standalone test Code only, not normal use.
+if __name__ == "__main__":
+    main_generate(sys.argv[1])
