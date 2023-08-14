@@ -18,7 +18,7 @@ setup(name='ifex',
       description='Interface Exchange Framework (IFEX) tools',
       author='',
       author_email='',
-      url='https://github.com/covesa/ifex-tools',
+      url='https://github.com/COVESA/ifex',
       packages=find_packages(),
       package_data={
             'ifex': get_template_files()
