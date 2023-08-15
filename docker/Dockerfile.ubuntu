@@ -24,7 +24,10 @@ RUN pyenv global 3.11
 RUN eval "$(pyenv init -)" && pip install --upgrade pip
 RUN eval "$(pyenv init -)" && pip install -r requirements.txt
 RUN eval "$(pyenv init -)" && python setup.py develop
-RUN eval "$(pyenv init -)" && ifexgen -h
+
+# Test that binaries can be found
+RUN eval "$(pyenv init -)" && ifexgen -h >/dev/null && echo "Quick test: ifexgen launches OK!"
+RUN eval "$(pyenv init -)" && ifexgen_dbus -h >/dev/null && echo "Quick test: ifexgen_dbus launches OK!"
 
 # /work should be bind-mounted when container is started
 WORKDIR /work 
