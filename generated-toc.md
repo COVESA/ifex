@@ -1,4 +1,4 @@
-Documentation generated from: 13e7fdfc317166e7e8793e51c7a97cdec128db2d
+Documentation generated from: 6593efe3beaf5b51d96e1411ea4e9790c2655d57
 
 - [FEATURES](#features)  
     - [Features that are not included _in the core IDL_, but worth describing](#features-that-are-not-included-in-the-core-idl-but-worth-describing)  
@@ -59,3 +59,6 @@ Documentation generated from: 13e7fdfc317166e7e8793e51c7a97cdec128db2d
     - [Property](#property)  
             - [Mandatory fields for Property](#mandatory-fields-for-property)  
             - [Optional fields for Property](#optional-fields-for-property)  
+    - [Interface](#interface)  
+            - [Mandatory fields for Interface](#mandatory-fields-for-interface)  
+            - [Optional fields for Interface](#optional-fields-for-interface)  

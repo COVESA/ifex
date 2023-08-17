@@ -637,6 +637,7 @@ namespaces:
 | enumerations | A list of **Enumeration**_s_ |
 | properties | A list of **Property**_s_ |
 | namespaces | A list of **Namespace**_s_ |
+| interface | A single **Interface** |
 
 
 ----
@@ -645,7 +646,7 @@ namespaces:
 
 Dataclass used to represent IFEX Event.
 
-Each events list object specifies a fire-and-forget call, executed by zero or more subscribing instances, 
+Each events list object specifies a fire-and-forget call, executed by zero or more subscribing instances,
 that does not return a value. Execution is best effort to UDP level with server failures not being reported.
 
 A events sample list object is given below:
@@ -663,7 +664,7 @@ events:
       - name: row
         description: The row of the seat
         datatype: uint8
-```    
+```
 
 #### Mandatory fields for Event:
 
@@ -716,39 +717,39 @@ methods:
 ## Method
 
 
-   Dataclass used to represent IFEX Event.
+Dataclass used to represent IFEX Event.
 
-   Each methods list object specifies a method call, executed by a single server instance,
-   that optionally returns a value. Execution is guaranteed to TCP level with server failure being reported.
+Each methods list object specifies a method call, executed by a single server instance,
+that optionally returns a value. Execution is guaranteed to TCP level with server failure being reported.
 
-   A methods sample list object is given below:
+A methods sample list object is given below:
 
-   ```yaml
-   methods:
-     - name: current_position
-       description: Get the current position of a seat
+```yaml
+methods:
+  - name: current_position
+    description: Get the current position of a seat
 
-       input:
-         - name: row
-           description: The desired seat to row query
-           datatype: uint8
-           range: $ < 10 and $ > 2
+    input:
+      - name: row
+        description: The desired seat to row query
+        datatype: uint8
+        range: $ < 10 and $ > 2
 
-         - name: index
-           description: The desired seat index to query
-           datatype: uint8
-           range: $ in_interval(1,4)
+      - name: index
+        description: The desired seat index to query
+        datatype: uint8
+        range: $ in_interval(1,4)
 
-       output:
-         - name: seat
-           description: The state of the requested seat
-           datatype: seat_t
+    output:
+      - name: seat
+        description: The state of the requested seat
+        datatype: seat_t
 
-       errors:
-         - datatype: .stdvsc.error_t
-           range: $ in_set("ok", "in_progress", "permission_denied")    
-   ```
-   
+    errors:
+      - datatype: .stdvsc.error_t
+        range: $ in_set("ok", "in_progress", "permission_denied")
+```
+
 #### Mandatory fields for Method:
 
 |Field Name|Required contents|
@@ -789,8 +790,8 @@ name and a different type (enumeration or otherwise).
 
 Error elements are returned in addition to any out elements specified for the method call.
 
-Please see the methods sample code above for an example of how error parameter lists are used
-If no error element is specified, no specific error code is returned. Results may still be returned as an out parameter`
+Please see the methods sample code above for an example of how error parameter lists are used If no error element is
+specified, no specific error code is returned. Results may still be returned as an out parameter`
 
 ```yaml
 methods:
@@ -800,7 +801,7 @@ methods:
     errors:
       - name: "progress"
         datatype: .stdvsc.error_t
-        range: $ in_set("ok", "in_progress", "permission_denied")        
+        range: $ in_set("ok", "in_progress", "permission_denied")
       - <possibly additional error definition>
 
 ```
@@ -827,18 +828,18 @@ methods:
 
 Dataclass used to represent IFEX Typedef.
 
-Each typedefs list object aliases an existing primitive type, defined type, or enumerator, giving it an additional name.
+Each typedef is an alias to an existing fundamental type, defined type, or enumerator, giving it an additional name.
 The new data type can be used by other datatypes, method & event parameters, and properties.
 
-A typedefs list object example is given below:    
+A typedefs list object example is given below:
 
 ```yaml
 typedefs:
   - name: movement_t
     datatype: int16
-    min: -1000 
+    min: -1000
     max: 1000
-    description: The movement of a seat component    
+    description: The movement of a seat component
 ```
 
 #### Mandatory fields for Typedef:
@@ -865,10 +866,10 @@ typedefs:
 Dataclass used to represent IFEX Include.
 
 Each includes list object specifies a IFEX YAML file to be included into the namespace hosting the includes list.
-The included file's structs, typedefs, enumerators, methods, events, 
+The included file's structs, typedefs, enumerators, methods, events,
 and properties lists will be appended to the corresponding lists in the hosting namespace.
 
-A includes sample list object is given below:    
+A includes sample list object is given below:
 
 ```yaml
 namespaces:
@@ -903,7 +904,7 @@ The new data type can be used by other datatypes, method & event parameters, and
 
 A structs list object example is shown below:
 
-```yaml    
+```yaml
 structs:
   - name: position_t
       description: The complete position of a seat
@@ -936,23 +937,23 @@ structs:
 ## Member
 
 
-   Dataclass used to represent IFEX Enumeration Member.
+Dataclass used to represent IFEX Struct Member.
 
-   Each members list object defines an additional member of the struct.
-   Each member can be of a native or defined datatype.
+Each members list object defines an additional member of the struct.
+Each member can be of a fundamental or defined/complex datatype.
 
-   Please see the struct sample code above for an example of how members list objects are used.
+Please see the struct sample code above for an example of how members list objects are used.
 
-   ```yaml
-   structs:
-     - name: position_t
-       description: The complete position of a seat
-       members:
-         - name: base
-           datatype: movement_t
-           description: The position of the base 0 front, 1000 back
-   ```
-   
+```yaml
+structs:
+  - name: position_t
+    description: The complete position of a seat
+    members:
+      - name: base
+        datatype: movement_t
+        description: The position of the base 0 front, 1000 back
+```
+
 #### Mandatory fields for Member:
 
 |Field Name|Required contents|
@@ -974,22 +975,23 @@ structs:
 
 Dataclass used to represent IFEX Enumeration.
 
-Each enumerations list object specifies an enumerated list (enum) of options, where each option can have its own integer value.
-The new data type defined by the enum can be used by other datatypes, method & event parameters, and properties.
+Each enumerations list object specifies an enumerated list (enum) of options, where each option can have its own
+integer value.  The new data type defined by the enum can be used by other datatypes, method & event parameters, and
+properties.
 
 A enumerations example list object is given below:
 
-```yaml    
+```yaml
 enumerations:
   - name: seat_component_t
-    datatype: uint8 
+    datatype: uint8
     options:
       - name: base
         value: 0
 
       - name: cushion
         value: 1
-```    
+```
 
 #### Mandatory fields for Enumeration:
 
@@ -1028,7 +1030,7 @@ options:
 |Field Name|Required contents|
 |-----|-----------|
 | name | A single **str** |
-| value | A single **int** |
+| value | A single **Any** |
 
 #### Optional fields for Option:
 
@@ -1041,19 +1043,21 @@ options:
 ## Property
 
 
-   Dataclass used to represent IFEX Property.
+Dataclass used to represent IFEX Property.
 
-   Each properties list object specifies a shared state object that can be read and set, and which is available to all subscribing entities.
-   A properties sample list object is given below, together with a struct definition:
+Each properties list object specifies a shared state object that can be
+read and set, and which is available to all subscribing entities.  A
+properties sample list object is given below, together with a struct
+definition:
 
-   ```yaml
-   properties:
-     - name: dome_light_status
-       description: The dome light status
-       datatype: dome_light_status_t
+```yaml
+properties:
+  - name: dome_light_status
+    description: The dome light status
+    datatype: dome_light_status_t
 
-   ```
-   
+```
+
 #### Mandatory fields for Property:
 
 |Field Name|Required contents|
@@ -1067,6 +1071,72 @@ options:
 |-----|-----------|
 | description | A single **str** |
 | arraysize | A single **int** |
+
+
+----
+## Interface
+
+
+Dataclass used to represent IFEX Interface
+
+An Interface is a container of other items in a similar way as a Namespace, but it does not introduce a new
+namespace level. Its purpose is to explicitly define what shall be considered part of the exposed as a "public
+API" in the output.
+
+Note that as with all IFEX concepts, the way it is translated into target code could be slightly varying, and
+controlled by the target mapping and deployment information, but all mappings shall _strive_ to stay close to the
+IFEX expected behavior.  Thus, the Interface section would omit for example internal helper-methods and type
+definitions that are only used internally, while those definitions might still need to be in the parent Namespace
+for the code generation to work.
+
+An Interface can contain all the same child node types as Namespace can, except for additional (nested) Interfaces.
+As mentioned, it does NOT introduce an additional namespace level regarding the visibility/reacahbility of the
+items.  Its contents is not hidden from other Namespace or Interface definitions within the same Namespace.  To put
+it another way, from visibility/reachability point of view all the content inside an interface container is part of
+the "parent" Namespace that the Interface object is placed in.  Of course, if additional nested namespaces are
+placed _below_ the Interface node, those Namespaces introduce new namespace levels, as usual.
+
+Only one Interface can be defined per Namespace, and it cannot include other Interfaces
+
+An Interface example is given below.
+
+```yaml
+namespaces:
+  - name: seats
+    major_version: 1
+    minor_version: 3
+    description: Seat interface and datatypes.
+    interface:
+      typedefs:
+        - ...
+      methods:
+        - ...
+      properties:
+        - ...
+```
+
+#### Mandatory fields for Interface:
+
+|Field Name|Required contents|
+|-----|-----------|
+| name | A single **str** |
+
+#### Optional fields for Interface:
+
+|Field Name|Required contents|
+|-----|-----------|
+| description | A single **str** |
+| major_version | A single **int** |
+| minor_version | A single **int** |
+| version_label | A single **str** |
+| events | A list of **Event**_s_ |
+| methods | A list of **Method**_s_ |
+| typedefs | A list of **Typedef**_s_ |
+| includes | A list of **Include**_s_ |
+| structs | A list of **Struct**_s_ |
+| enumerations | A list of **Enumeration**_s_ |
+| properties | A list of **Property**_s_ |
+| namespaces | A list of **Namespace**_s_ |
 
 
 
