@@ -51,3 +51,9 @@ jobs:
       - name: Run BAMM template
         run: |
           ifexgen vehicle_service_catalog/comfort-service.yml -d sds-bamm > bamm.out
+
+      - name: Run D-Bus generator
+        run: |
+          ifexgen_dbus vehicle_service_catalog/comfort-service.yml >d-bus.out
+          cat d-bus.out
+
