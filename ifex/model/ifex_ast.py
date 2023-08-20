@@ -633,10 +633,13 @@ class Namespace:
 
 
 @dataclass
-class AST(Namespace):
+class AST():
     """
     Dataclass used to represent root element in a IFEX AST.
-    Behaviour is inherited from Namespace class.
     """
-
-    pass
+    name: Optional[str] = str()              # Represents name of file.  Usually better to name the Namespaces and Interfaces
+    description: Optional[str] = str()
+    major_version: Optional[int] = None      # Version of file.  Usually better to version Interfaces, and Namespaces!
+    minor_version: Optional[int] = None      # ------ " ------
+    includes: Optional[List[Include]] = field(default_factory=EmptyList)
+    namespaces: Optional[List[Namespace]] = field(default_factory=EmptyList)
