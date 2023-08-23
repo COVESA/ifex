@@ -15,11 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -V
-          pip install pyyaml
-          pip install pytest
-          pip install anytree
-          pip install jinja2
-          pip install dacite
+          pip install -r requirements.txt
 
       - name: Install ifex module
         run: |
