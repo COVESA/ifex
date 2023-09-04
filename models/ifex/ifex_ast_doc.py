@@ -15,10 +15,10 @@ from dataclasses import fields
 from models.ifex.ifex_ast import Namespace
 from models.ifex.ifex_ast_introspect import walk_type_tree, field_is_list, is_optional, type_name, field_actual_type, field_inner_type
 import re,itertools
-
 #
 # Document generation functions
 #
+
 
 def markdown_heading(n: int, s: str):
     for _ in range(n):
@@ -39,7 +39,6 @@ def markdown_table_row(field):
     print(docstring(field), end='')
     print(" |")
 
-
 def determine_indentation(s):
     count = 0
     # groupby() will collect up repeating characters (like space) so we can
@@ -58,7 +57,6 @@ def determine_indentation(s):
         if char == ' ':
             break
     return count
-
 
 def docstring(item):
 
@@ -80,13 +78,11 @@ def docstring(item):
     else:
         return ""
 
-
 def markdown_table(fields):
    print(f"|Field Name|Contents|")
    print(f"|-----|-----------|")
    for f in fields:
        markdown_table_row(f)
-
 
 def document_fields(node):
     name = type_name(node)
@@ -106,4 +102,5 @@ def document_fields(node):
 
 if __name__ == "__main__":
     walk_type_tree(Namespace, document_fields)
+
 
