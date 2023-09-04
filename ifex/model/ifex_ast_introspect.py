@@ -11,9 +11,8 @@
 Provide helper functions to inspect the IFEX Core IDL language definition,
 as it is defined by the class tree/hierarchy (not an inheritance hierarchy)
 in the `ifex_ast` python file.  These function can be used by any other code
-that needs to process the and ensures the fundamental language is defined in a
-single file.
-"""
+that needs to process this underlying meta-model. It helps to ensure that the
+fundamental language is defined in a single file.  """
 
 from ifex.model import ifex_ast
 from dataclasses import is_dataclass, fields
@@ -27,10 +26,10 @@ import typing
 # The following functions come in two flavors each.  Functions like: is_xxx()
 # take an object, which is an instance of typing.<some class> which is
 # essentially an object that indicates the "type hint" using concepts from
-# the typing module such as Optional, List, Union, Any, etc.
-# We here call variables that reference such a typing.Something object a type_indicator.
-# It corresponds to the type information on the right side of the colon : in an
-# expression like this:
+# the 'typing' python module. Examples are: Optional, List, Union, Any, etc.
+# We here call variables that reference such a typing.Something object a
+# type_indicator.  It corresponds to the type hint information on the right
+# side of the colon : in an expression like this:
 #
 #    namespaces:  Optional[List[Namespace]]
 #
@@ -39,18 +38,24 @@ import typing
 # Note that instead of being a dataclass like ifex_ast.Namespace, the inner
 # type can of course be a built-in simple type like str.  e.g. typing.List[str]
 #
-# Next, in the dataclasses module we find the function fields().
+# Next, in the 'dataclasses' python module we find the function fields().
 # It returns a list that represents the fields (members) of the dataclass.
 # Each field is represented by an object (an instance of the dataclasses.Field
 # class).  We name variables that refer to such Field() instances as `field`.
-# A field object contains several informations such as the name of the field
-# (field.name), and the `.type` member, which gives us the type_indicator as
-# described above.
+# A field thus represents a member variable in the python (data)class.
+# A field object contains several informations such as the name of the member
+# variable (field.name), and the `.type` member, which gives us the
+# type_indicator as described above.
 #
 # For each is_xxx() function, there is a convenience function named field_is_xxx()
 # which takes an instance of the field itself, instead of the field's type.
 # As you can see, most of those functions simply reference the field.type
 # member to get the type_indicator, and then pass it the is_xxx() function.
+#
+# NOTE: Here in the descriptions we might refer to an object's "type" when we
+# strictly mean its Type Indicator.  Since typing in python is dynamic,
+# the actual type of an object could be different (and can be somewhat fungible
+# too in theory, but generally not in this code).
 
 def is_dataclass_type(cls):
     """Check if a class is a dataclass."""
@@ -79,16 +84,19 @@ def field_is_list(field):
     return is_list(field.type)
 
 def inner_type(type_indicator):
-    """Return the type of objects in the List *if* given a type indicator that is List"""
+    """Return the type of objects in the List *if* given a type indicator that is List.
+    (Failure if type is not a List)"""
     if is_list(type_indicator):
         return get_args(actual_type(type_indicator))[0]
 
 def field_inner_type(field):
-    """Return the type of objects inside the List *if* given a *field* of type List"""
+    """Return the type of objects inside the List *if* given a *field* of type List.
+    (Failure if type is not a List)"""
     return inner_type(field.type)
 
 def actual_type(type_indicator):
-    """Return the type X for a type indicator that is Optional[X]."""
+    """Return the type X for a type indicator that is Optional[X].
+    (Returns the type X also if input was non-optional)"""
     if type_indicator in [str, int]:
         return type_indicator
     if is_optional(type_indicator):
@@ -97,7 +105,8 @@ def actual_type(type_indicator):
         return type_indicator
 
 def field_actual_type(field):
-    """Return the type X for a field that was defined as Optional[X]."""
+    """Return the type X for a field that was defined as Optional[X]
+    (Returns the type X also if input was non-optional)"""
     return actual_type(field.type)
 
 def is_forwardref(type_indicator):
@@ -105,13 +114,14 @@ def is_forwardref(type_indicator):
     return type(type_indicator) is ForwardRef
 
 def field_is_forwardref(field):
-    """Check if the typing hint of a member field indicates that it is a ForwardRef"""
+    """Check if type indicator for a fieldo indicates that it is a ForwardRef"""
     return is_forwardref(field.type)
 
 # This takes care about the fact that ForwardRef does not have a member
 # __name__ (because it's not actually a type, as such). Instead it has
 # __forward_arg__ which is a *string* containing the referenced type name.
 def type_name(type_indicator):
+    """Return the type name of the given type indicator, also supporting if it is a ForwardRef"""
     if is_forwardref(type_indicator):
         return type_indicator.__forward_arg__
     else:
@@ -121,6 +131,7 @@ def type_name(type_indicator):
 # from typing import get_type_hints
 # print(get_type_hints(ifex_ast.Namespace)['interface'])
 
+# Tree processing function:
 def walk_type_tree(node, process, seen={}):
     """Walk the AST class hierarchy as defined by @dataclasses with type
     hints from typing module.
@@ -131,7 +142,7 @@ def walk_type_tree(node, process, seen={}):
     The given hook function "process" is called for every unique type.
 
     Arguments: node = a @dataclass class
-               process = function to call for each node"""
+               process = a "callback" function to call for each node"""
 
     # Skip duplicates (like Namespace, it appears more than once in AST model)
     name = type_name(node)
@@ -150,7 +161,8 @@ def walk_type_tree(node, process, seen={}):
 
     # ForwardRef will fail if we try to recurse over its children.
     # However, the types that are handled with ForwardRef (Namespace)
-    # ought to appear anyhow somewhere else 0in the recursion.
+    # ought to appear anyhow somewhere else in the recursion, so we
+    # skip them.
     if is_forwardref(node):
         return
 
@@ -164,11 +176,18 @@ def walk_type_tree(node, process, seen={}):
             # Document Node types found directly
             walk_type_tree(field_actual_type(f), process, seen)
 
+
+# Test code:
+
+# Comment: Here's one way to get the typing hints of a member of a
+# dataclass from typing import: get_type_hints
+# print(get_type_hints(ifex_ast.Namespace)['interface'])
+
 # Simple processor function for testing - just print the text representation of the node
 def simple_process(arg):
     print(arg)
 
+# Run module as a program - for testing/development only:
 if __name__ == "__main__":
-    walk_type_tree(ifex_ast.Namespace, simple_process)
-
-
+    print("TEST: Note that already seen types are skipped, and this is a depth-first search =>  The structure of the tree is not easily seen from this output.")
+    walk_type_tree(ifex_ast.Namespace, _simple_process)
