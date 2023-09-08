@@ -1,0 +1,60 @@
+name: Regression Diff Test
+on: [push]
+
+jobs:
+  regression_diff_test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.10.x
+
+      - name: Install dependencies
+        run: |
+          python -V
+          pip install -r requirements.txt
+
+      - name: Install ifex module and prepare
+        run: |
+          python setup.py develop
+          mkdir difftest
+          # We have to copy the script because
+          # 1. It might not even exist in the compared version
+          # 2. If it exists, we want to run the same version on both
+          cp .github/workflows/regression_diff_test.sh ./script_to_run.sh
+
+      - name: Run generation steps on new code
+        run: |
+          ./script_to_run.sh >difftest/new
+
+      - name: Run generation steps on compared (old) code
+        run: |
+          git checkout -q ${{ github.event.before }} && git rev-parse HEAD >difftest/previous && ./script_to_run.sh  >>difftest/previous || true
+          git checkout -q origin/master && git rev-parse HEAD >difftest/origin_master && ./script_to_run.sh  >difftest/origin_master || true
+
+      - name: Diff against HEAD~1
+        run: |
+          cd difftest
+          diff previous new || true
+
+      - name: Diff against origin/master
+        run: |
+          cd difftest
+          diff origin_master new || true
+
+      - name: Include full GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT" >difftest/github_context.json
+
+      - name: Upload files
+        uses: actions/upload-artifact@v3
+        with:
+          name: difftest
+          path: difftest
+
