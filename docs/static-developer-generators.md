@@ -95,9 +95,7 @@ e.g.
 
 \* If more than one template matches the node name (don't do that, unsupported) then the last found template will be used.
 
-**NOTE:** It is not required to specify a separate template for every type.
-
-For simple cases, a single top-level AST template might even suffice for the whole generation (see further description under **Variable use in templates**).
+**NOTE:** It is not required to specify a separate template for every type as long as one of the upper level templates handle all necessary cases.  For simple cases, a single top-level AST template could even suffice for the whole generation and there are some such examples in the templates directory. (Also see further description under **Variable use in templates**).
 
 ## The gen() function
 
