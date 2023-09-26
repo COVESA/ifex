@@ -28,9 +28,11 @@ jobs:
           git status
           markup docs/def-specification.stage1.m.md >docs/generated-specification.stage1.md
           docs/create-toc.py < docs/generated-specification.stage1.md >docs/generated-toc.md
-          ## FIXME: GENERATE TYPES ALSO
           markup docs/def-specification.stage2.m.md >docs/ifex-specification.md
-          markup docs/def-developers-manual.m.md >docs/developers-manual.md
+          ## FIXME: GENERATE TYPES ALSO
+          markup docs/def-developers-manual.stage1.m.md >docs/generated-developers-manual-content.md
+          docs/create-toc.py <docs/generated-developers-manual-content.md >docs/generated-developers-toc.md
+          markup docs/def-developers-manual.stage2.m.md >docs/developers-manual.md
           echo "Docs to deploy:"
           ls -al docs
 
