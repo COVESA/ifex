@@ -127,9 +127,7 @@ def type_name(type_indicator):
     else:
         return type_indicator.__name__
 
-# Here's one way to get the typing hints of all the members of a dataclass
-# from typing import get_type_hints
-# print(get_type_hints(ifex_ast.Namespace)['interface'])
+VERBOSE = False
 
 # Tree processing function:
 def walk_type_tree(node, process, seen={}):
@@ -144,17 +142,19 @@ def walk_type_tree(node, process, seen={}):
     Arguments: node = a @dataclass class
                process = a "callback" function to call for each node"""
 
-    # Skip duplicates (like Namespace, it appears more than once in AST model)
+    # (No need to document, or recurse on the following types):
+    # FIXME: this is correct for our documentation generation but maybe not for all cases
+    if node in [str, int, typing.Any]:
+        return
+
+    # Skip duplicates (like Namespace, it appears more than once in the AST model)
     name = type_name(node)
     if seen.get(name):
+        if VERBOSE:
+            print(f"   note: a field of type {name} was skipped")
         return
 
     seen[name] = True
-
-    # (No need to document, or recurse on the following types):
-    # FIXME this is not true for other non-documentation cases!
-    if node in [str, int, typing.Any]:
-        return
 
     # Process this node
     process(node)
@@ -170,6 +170,8 @@ def walk_type_tree(node, process, seen={}):
     # away 'List' and 'Optional' to get to the interesting class)
     for f in fields(node):
         if field_is_list(f):
+            if VERBOSE:
+                print(f"   field: {f.name}")
             # Document Node types that are found inside Lists
             walk_type_tree(field_inner_type(f), process, seen)
         else:
@@ -184,7 +186,9 @@ def walk_type_tree(node, process, seen={}):
 # print(get_type_hints(ifex_ast.Namespace)['interface'])
 
 # Simple processor function for testing - just print the text representation of the node
-def simple_process(arg):
+def _simple_process(arg):
+    global VERBOSE
+    VERBOSE = True
     print(arg)
 
 # Run module as a program - for testing/development only:
