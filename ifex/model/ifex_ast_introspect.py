@@ -127,6 +127,13 @@ def type_name(type_indicator):
     else:
         return type_indicator.__name__
 
+def field_referenced_type(f):
+    """Return the type of the field, but if it's a list, return the type inside the list"""
+    if field_is_list(f):
+        return field_inner_type(f)
+    else:
+        return field_actual_type(f)
+
 VERBOSE = False
 
 # Tree processing function:
