@@ -1,8 +1,8 @@
 # IFEX Documentation Overview
 
-- Main specification with introduction, examples, and the syntax of the core IDL/model: [ifex-specification.md](./ifex-specification.md)
-- Tips and information for developers: [developers-manual.md](./developers-manual.md) (WIP)
-- There is also a [Frequently Asked Questions](FAQ.md) file
+- Main specification with introduction, examples, and the syntax of the core IDL/model: [ifex-specification.md](https://covesa.github.io/ifex/ifex-specification)
+- Tips and information for developers: [developers-manual.md](https://covesa.github.io/ifex/developers-manual) (WIP)
+- There is also a [Frequently Asked Questions](./FAQ.md) file
 
 ----
 #### Writing documentation
