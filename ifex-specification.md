@@ -13,7 +13,7 @@ License: Creative Commons Attribution 4.0 International
 License (CC-BY-4.0), described [here](https://creativecommons.org/licenses/by/4.0/)
 
 <!-- Heading and TOC -->
-Documentation generated from: 6ca60bb7f543bc76bd6a170e8d999a4c55dac946
+Documentation generated from: 01eae46c2c9134dd930d2efb496c876014d56e0f
 
 - [FEATURES](#features)  
     - [Features that are not included _in the core IDL_, but worth describing](#features-that-are-not-included-in-the-core-idl-but-worth-describing)  
@@ -698,13 +698,13 @@ namespaces:
 
 #### Mandatory fields for Namespace:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | name | A single **str** |
 
 #### Optional fields for Namespace:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | description | A single **str** |
 | major_version | A single **int** |
@@ -749,13 +749,13 @@ events:
 
 #### Mandatory fields for Event:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | name | A single **str** |
 
 #### Optional fields for Event:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | description | A single **str** |
 | input | A list of **Argument**_s_ |
@@ -780,14 +780,14 @@ methods:
 
 #### Mandatory fields for Argument:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | name | A single **str** |
 | datatype | A single **str** |
 
 #### Optional fields for Argument:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | description | A single **str** |
 | arraysize | A single **int** |
@@ -833,13 +833,13 @@ methods:
 
 #### Mandatory fields for Method:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | name | A single **str** |
 
 #### Optional fields for Method:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | description | A single **str** |
 | errors | A list of **Error**_s_ |
@@ -889,13 +889,13 @@ methods:
 
 #### Mandatory fields for Error:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | datatype | A single **str** |
 
 #### Optional fields for Error:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | name | A single **str** |
 | description | A single **str** |
@@ -925,14 +925,14 @@ typedefs:
 
 #### Mandatory fields for Typedef:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | name | A single **str** |
 | datatype | A single **str** |
 
 #### Optional fields for Typedef:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | description | A single **str** |
 | arraysize | A single **int** |
@@ -963,13 +963,13 @@ namespaces:
 
 #### Mandatory fields for Include:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | file | A single **str** |
 
 #### Optional fields for Include:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | description | A single **str** |
 
@@ -1002,13 +1002,13 @@ structs:
 
 #### Mandatory fields for Struct:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | name | A single **str** |
 
 #### Optional fields for Struct:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | description | A single **str** |
 | members | A list of **Member**_s_ |
@@ -1037,14 +1037,14 @@ structs:
 
 #### Mandatory fields for Member:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | name | A single **str** |
 | datatype | A single **str** |
 
 #### Optional fields for Member:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | description | A single **str** |
 | arraysize | A single **int** |
@@ -1076,7 +1076,7 @@ enumerations:
 
 #### Mandatory fields for Enumeration:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | name | A single **str** |
 | datatype | A single **str** |
@@ -1084,7 +1084,7 @@ enumerations:
 
 #### Optional fields for Enumeration:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | description | A single **str** |
 
@@ -1108,14 +1108,14 @@ options:
 
 #### Mandatory fields for Option:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | name | A single **str** |
 | value | A single **Any** |
 
 #### Optional fields for Option:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | description | A single **str** |
 
@@ -1141,14 +1141,14 @@ properties:
 
 #### Mandatory fields for Property:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | name | A single **str** |
 | datatype | A single **str** |
 
 #### Optional fields for Property:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | description | A single **str** |
 | arraysize | A single **int** |
@@ -1198,13 +1198,13 @@ namespaces:
 
 #### Mandatory fields for Interface:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | name | A single **str** |
 
 #### Optional fields for Interface:
 
-|Field Name|Required contents|
+|Field Name|Contents|
 |-----|-----------|
 | description | A single **str** |
 | major_version | A single **int** |

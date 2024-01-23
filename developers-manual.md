@@ -6,7 +6,7 @@
 
 ## Table of Contents
 
-Documentation generated from: 6ca60bb7f543bc76bd6a170e8d999a4c55dac946
+Documentation generated from: 01eae46c2c9134dd930d2efb496c876014d56e0f
 
 - [Mapping documents](#mapping-documents)  
 - [Datatype mapping](#datatype-mapping)  
