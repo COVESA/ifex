@@ -53,3 +53,7 @@ jobs:
           ifexgen_dbus vehicle_service_catalog/comfort-service.yml >d-bus.out
           cat d-bus.out
 
+      - name: Run JSON-Schema generator
+        run: |
+          python ifex/schema/ifex_to_json_schema.py >temp-schema
+          python ifex/schema/pretty_print_json.py temp-schema >ifex-core-idl-schema.json
