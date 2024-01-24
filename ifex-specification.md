@@ -13,7 +13,7 @@ License: Creative Commons Attribution 4.0 International
 License (CC-BY-4.0), described [here](https://creativecommons.org/licenses/by/4.0/)
 
 <!-- Heading and TOC -->
-Documentation generated from: 605c32fb90d9106261b1289a0dcd946ec9a5e899
+Documentation generated from: c1fdfc022492990f3a5356eec1f8f91d1a58656f
 
 - [FEATURES](#features)  
     - [Features that are not included _in the core IDL_, but worth describing](#features-that-are-not-included-in-the-core-idl-but-worth-describing)  
@@ -287,7 +287,7 @@ that have a name, a datatype, a unit and meaning but the transfer of data is
 defined by separate protocols built on top of VSS.  In other words, VSS
 typically uses the the second interpretation, and VSS Signals can then be
 represented by Properties in IFEX.  (Refer to the [separate
-analysis](static-vss_integration_proposal.md) of the IFEX/VSS relationship).
+analysis](static-vss_integration_proposal) of the IFEX/VSS relationship).
 
 --------------------
 

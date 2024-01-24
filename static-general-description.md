@@ -205,7 +205,7 @@ that have a name, a datatype, a unit and meaning but the transfer of data is
 defined by separate protocols built on top of VSS.  In other words, VSS
 typically uses the the second interpretation, and VSS Signals can then be
 represented by Properties in IFEX.  (Refer to the [separate
-analysis](static-vss_integration_proposal.md) of the IFEX/VSS relationship).
+analysis](static-vss_integration_proposal) of the IFEX/VSS relationship).
 
 --------------------
 
