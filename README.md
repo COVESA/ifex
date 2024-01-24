@@ -155,7 +155,7 @@ Please refer to the [developer documentation](https://covesa.github.io/ifex/deve
 
 Try the directory names of dtdl, protobuf, sds-bamm, simple etc.  (see [templates dir](https://github.com/COVESA/ifex/tree/master/ifex/templates) for more)
 
-- dtdl: Generates a Protobuf description of the service: [documentation](ifex/templates/protobuf.md)
+- dtdl: Generates a DTDL description of the service: [documentation](ifex/templates/dtdl/dtdl.md)
 - sds-bamm:  Generates a BAMM Aspect Meta Model of the service: [documentation](ifex/templates/sds-bamm-aspect-model.md)
 - simple: Just outputs some simple overview (incomplete) in HTML format.  For simple testing.
 - protobuf: Generate protobuf(gRPC) description language, including the "rpc" feature.
