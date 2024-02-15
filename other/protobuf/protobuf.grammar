@@ -1,0 +1,451 @@
+# ============================================================
+# PROTOBUF LARK GRAMMAR
+# ============================================================
+#
+# (C) Writers of Protobuf specification (original grammar spec)
+# (C) 2024 MBition GmbH (Lark format, and changed/added parts)
+#     Author: Gunnar Andersson
+#
+# Grammar for Lark parser, derived from protobuf specification at:
+# https://protobuf.dev/reference/protobuf/proto3-spec
+#
+# Design notes:
+# -------------
+# There seemed to be not a single official and canonical grammar
+# file, only the definitions provided in the protobuf3 specification.
+# 
+# There were also other parser examples mentioned/linked at protobuf.com:
+# https://github.com/bufbuild/protobuf.com/tree/main/examples 
+# Those grammars don't seem to use the exact same names as the ones in the
+# specification.  I did not find a Lark-based one to reuse.  The other grammars
+# could have been reused, with a different parser framework, and/or after rework.
+# In the end, taking grammar from the specification and writing it in a Lark
+# way felt like an equivalent or lower effort.
+#
+#
+# Grammar format:
+# ---------------
+# 
+# Here we rewrite each rule in Lark syntax.  It tries to follow the EBNF from
+# the specification closely, but with the following comments: 
+#
+#  - The original rule names use CamelCase but they have here been modified to
+#    fit common Lark naming conventions: 
+#    - Composite rules are here converted to _lowercase_ only!
+#    - Terminals (Tokens) are convertd to UPPERCASE only
+#  - Some composite rules in the original grammar can be simplified
+#  into a single regexp Terminal definition.  This is done in some
+#  areas to reduce the complexity and depth of the rule set.
+#  If the regexp replaces the original rule completely, then it has been named
+#  as the original rule but UPPERCASE (which is the lark convention for
+#  terminal/regexp definitons).
+#
+#  - Next, we have added ? questionmark to some rules. This is a Lark feature
+#  that "inlines" that rule/token - if it has only one value (which is very
+#  common for many rules)  so that we don't need to iterate over it 
+#
+#  - There can be a few additional minor tweaks/changes to better suit the Lark
+#  principlesl 
+#
+#
+# Added grammar rules for Lark
+# ----------------------------
+#
+#  The way Lark works is that only rules and terminal/tokens are kept in the
+#  resulting parse-tree.  If a statement matches an explicit string specified
+#  in a rule, those words are considered 'syntax' that was matched to identify
+#  the statement type.  Those words won't be stored in the resulting parse tree.
+# 
+#  Example for import:  A EBNF like this:
+#
+#  >  import: "import" ("weak" | "public")? strlit ";"
+#
+#  The word "import" is thrown away because the resulting statement type (the
+#  name import before the colon) will be stored.  That's expected, and we don't
+#  need the word "import" to also be remembered.
+#
+#  The strlit will be stored with the token, because it is the content that
+#  matches a separate rule.
+# 
+#  However, the rule will match if `weak` or `public` was mentioned but
+#  since those are explicit words, "syntax" it won't store which explicit word
+#  was used. `weak` and `public` would be matched and then thrown away.  Since
+#  weak/public are keywords with semantic meaning here so we need the information
+#  to be carried into the parsed result.
+#
+#  We need therefore to separately name a token or rule for the recognition of
+#  weak/public so that the information is stored in the parse tree.  (Lark also
+#  provides a mechanism called an "alias" to achieve the same -- see Lark
+#  documentation)
+#
+#  We use a name starting with `x_` or `X_` in cases where we added a
+#  new/additional rule to the grammar from the specification.
+#
+#
+# Grammar organization
+# --------------------
+#
+# For each item there is a line "from spec: " which is the exact EBNF
+# definition provided by the specification.  After that follows the Lark
+# grammar rule(s).  Sections (titles) of the specification have also been kept
+# for each area.
+
+# ------------------------------------------------------------
+# Reminder EBNF syntax:
+# |   alternation
+# ()  grouping
+# []  option (zero or one time)
+# {}  repetition (any number of times)
+#
+# Reminder Lark syntax:
+# See Lark documentation, but it is similar to regular expressions for
+# grouping `()`, alternation `|` option `?` and repetition `*` / `+`
+
+
+# ============================================================
+# Start of Grammar definition
+# ============================================================
+
+# from spec: letter = "A" ... "Z" | "a" ... "z"
+# (UNUSED) letter: /[A-Za-z0-9_]+/
+
+# from spec: decimalDigit = "0" ... "9"
+# (UNUSED) decimaldigit: /[0-9]/
+
+# from spec: octalDigit = "0" ... "7"
+OCTALDIGIT: /[0-7]/
+
+# from spec: hexDigit = "0" ... "9" | "A" ... "F" | "a" ... "f"
+HEXDIGIT: /[0-9A-Fa-f]/
+
+# Identifiers
+# -----------
+
+# from spec: ident = letter { letter | decimaldigit | "_" }
+# Lark: Simplified to a plain regexp
+IDENT: /[A-Za-z0-9_]+/
+
+# from spec: fullIdent = IDENT { "." IDENT }
+?fullident: IDENT ( "." IDENT )*
+# Lark: Also, a simpler version using a single regexp
+FULLIDENT: /[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)*/
+
+# from spec: messageName = IDENT
+?messagename.1: IDENT
+
+# from spec: enumName = IDENT
+?enumname: IDENT
+
+# from spec: fieldName = IDENT
+?fieldname: IDENT
+
+# from spec: oneofName = IDENT
+?oneofname: IDENT
+
+# from spec: mapName = IDENT
+?mapname: IDENT
+
+# from spec: serviceName = IDENT
+?servicename: IDENT
+
+# from spec: rpcName = IDENT
+?rpcname: IDENT
+
+# NOTE: I don't think we can distinguish between message and enum
+# types atm.  The syntax is the same, and they are used in
+# similar/same places?  If required, cross referencing the enumname
+# with a definition ('enum' rule/object) seems to be needed
+# And similarly messagename as used in a 'message' definition.
+
+# ...so we may as well inline them
+
+# from spec: messageType = [ "." ] { ident "." } messageName
+# Lark: Changed into a single regexp for easier processing
+# ?messagetype:  "."? (IDENT ".")* messagename
+MESSAGETYPE: /\.?([A-Za-z0-9_]+\.)*([A-Za-z0-9_]+)/
+
+# from spec: enumType = [ "." ] { ident "." } enumName
+?enumtype.1: "."? (IDENT ".")* enumname
+ENUMTYPE: /\.?([A-Za-z0-9_]+\.)*([A-Za-z0-9_]+)/
+DEFINEDTYPE: /\.?([A-Za-z0-9_]+\.)*([A-Za-z0-9_]+)/
+
+# Integer Literals
+# ----------------
+
+# from spec: intLit = decimalLit | octalLit | hexLit
+?intlit.2: INT | OCTALLIT | HEXLIT
+
+# from spec: decimalLit = [-] ( "1" ... "9" ) { decimalDigit }
+# Lark: Simplified to a plain regexp:
+DECIMALLIT.1: /-?[1-9][0-9]*/
+
+# Not sure why DECIMALLIT was so strictly defined as > 0 ??
+# Some failures in parsing where we have assignment to zero, so substituting INT pattern in those places
+INT.1: /-?[0-9]+/
+
+# from spec: octalLit = [-] "0" { octalDigit }
+# Lark: Simplified to a plain regexp:
+OCTALLIT.1: /-?0[0-7]*/
+
+# from spec: hexLit = [-] "0" ( "x" | "X" ) hexDigit { hexDigit }
+# Lark: Simplified to a plain regexp
+HEXLIT.1: /-?0x[0-9A-Fa-f]+/
+
+# Floating-point Literals
+# -----------------------
+
+# from spec: floatLit = [-] ( decimals "." [ decimals ] [ exponent ] | decimals exponent | "."decimals [ exponent ] ) | "inf" | "nan"
+# exponent: ("e" | "E")? ("+" | "-")? decimals
+# Lark: Split into a few regexps to keep complexity down.
+# (still, the original EBNF looks strange - is it really correct?)
+#floatlit.1: FLOATLIT1 | FLOATLIT2 | FLOATLIT3 | FLOATLIT4
+#FLOATLIT1.5: /-?[0-9]+\.([0-9]*[eE][+-]?[0-9]+)/
+#FLOATLIT2.4: /-?\.[0-9]*([eE]?[+-]?[0-9]+)?/
+#FLOATLIT3.3: /-?[0-9]+\.[0-9]+/
+# The spec seem to allow also this format starting with "." but no decimals following it
+#FLOATLIT4.2: /inf|nan/
+
+# Combine the regexes, let's see if it works:
+FLOATLIT.1: /-?[0-9]+\.([0-9]*[eE][+-]?[0-9]+)?|-?\.[0-9]*([eE]?[+-][0-9]+)?|inf|nan/
+
+# from spec: decimals  = [-] decimalDigit { decimalDigit }
+# Lark: Simplified to a plain regexp
+# comment: decimallit above is required to start with a 1, not
+# zero, but in definition of floatingpoint, it is using
+# "decimaldigit" which would allow a leading zero?
+?decimals: /-?[0-9]+/
+
+# from spec: exponent  = ( "e" | "E" ) [ "+" | "-" ] decimals
+exponent: ("e" | "E") ("+" | "-")? decimals
+
+# Boolean
+# -------
+
+# from spec: boolLit = "true" | "false"
+# Lark: Simplified to a plain regexp.  Prio 1 to prefer this over IDENT
+BOOLLIT.1: /true|false/
+
+# String Literals 
+
+# from spec: charValue = hexEscape | octEscape | charEscape | unicodeEscape | unicodeLongEscape | /[^\0\n\\]/
+# Not sure what the intention is with the regexp at the end.
+# It looks like it matches NOT null, NOT newline and NOT backslash?
+# ... but this rule needs the ability to match any string as far as
+# I can see => hence changed to X_CHARSTRINGVAL pattern instead
+?charvalue: hexescape | octescape | charescape | unicodeescape | unicodelongescape | X_CHARSTRING
+X_CHARSTRING: /[^\0\n\\"]+/
+
+# from spec: hexEscape = '\' ( "x" | "X" ) hexDigit [ hexDigit ]
+# comment: Is it correct to only allow max two digits?
+hexescape: "\\" ( "x" | "X" ) HEXDIGIT HEXDIGIT?
+
+# from spec: octEscape = '\' octalDigit [ octalDigit [ octalDigit ] ]
+octescape: "\\" OCTALDIGIT OCTALDIGIT? OCTALDIGIT?
+
+# from spec: charEscape = '\' ( "a" | "b" | "f" | "n" | "r" | "t" | "v" | '\' | "'" | '"' )
+# Lark: Simplified to a plain regexp
+charescape: /[\][abfnrtv\'"]/
+
+# from spec: unicodeEscape = '\' "u" hexDigit hexDigit hexDigit hexDigit
+unicodeescape: "\\u" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT
+
+# from spec: unicodeLongEscape = '\' "U" ( "000" hexDigit hexDigit hexDigit hexDigit hexDigit  | "0010" hexDigit hexDigit hexDigit hexDigit
+unicodelongescape: "\\U" ("000" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT | "0010" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT)
+
+# Emptystatement
+# --------------
+
+# from spec: emptyStatement = ";"
+?emptystatement: ";"
+
+# Constant 
+# --------
+
+# from spec:  constant = fullIdent | ( [ "-" | "+" ] intLit ) | ( [ "-" | "+" ] floatLit ) | strLit | boolLit | messageValue
+# comment: The spec looks buggy because intLit already allows for a - sign in front of it, so why not allow a + sign on all intlits also?
+# => We deviate from spec slightly here, because a prefixed "+" is unlikely to happen in input anyway:
+# comment2: Why can't a constant be a Hexadecimal literal??
+#?constant: BOOLLIT | FLOATLIT | DECIMALLIT | HEXLIT | fullident | intlit | strlit | messagevalue
+?constant: INT | BOOLLIT | FLOATLIT | HEXLIT | fullident | strlitsingle | intlit | messagevalue
+#STRLITSINGLE: /"[A-Za-z0-9_.]+"|'[A-Za-z0-9_.]+'/
+
+# from spec: strLit = strLitsingle { strLitsingle }
+?strlit: strlitsingle+
+
+# from spec: strLitsingle = ( "'" { charValue } "'" ) |  ( '"' { charValue } '"' )
+?strlitsingle: "'" charvalue "'" | "\"" charvalue "\""
+
+
+# from spec: "MessageValue is defined in the Text Format Language Specification.  "
+# from text format spec: MessageValue = "{", Message, "}" | "<", Message, ">" ;
+?messagevalue: "{" message "}" | "<" message ">"
+
+# Syntax
+# ------
+
+# from spec: syntax = "syntax" "=" ("'" "proto3" "'" | '"' "proto3" '"') ";"
+# comment: We only support spec version 3 here, (and for that
+# version only the string "proto3" is allowed)
+syntax: "syntax" "=" ("'" | "\"") "proto3" ("'" | "\"") ";"
+
+# Import Statement
+# ----------------
+
+# from spec: import = "import" [ "weak" | "public" ] strlit ";"
+import: "import" X_IMPORTMODIFIER? strlit ";"
+X_IMPORTMODIFIER: /weak|public/
+
+# Package
+# -------
+
+# from spec: package = "package" fullIdent ";"
+package: "package" FULLIDENT ";"
+
+# Option
+# ------
+
+# from spec: option = "option" optionName  "=" constant ";"
+option: "option" OPTIONNAME "=" constant ";"
+
+# from spec: optionName = optionNamePart { "." optionNamePart }
+# from spec: optionNamePart = { IDENT | "(" ["."] fullident ")" }
+#
+# Lark alternative:
+#?optionname: optionnamepart ( "." optionnamepart )*
+#?optionnamepart: IDENT | "(" "."? fullident ")"
+#
+# Lark final: optionname combined to a single regexp for easier processing
+OPTIONNAME: /[A-Za-z0-9_]+|
+             \([A-Za-z0-9_]+\)|
+             \(\.?([A-Za-z0-9_]+\.)*[A-Za-z0-9_]+\)
+            /x
+
+# Fields
+# ------
+
+# from spec: type = "double" | "float" | "int32" | "int64" | "uint32" | "uint64" | "sint32" | "sint64" | "fixed32" | "fixed64" | "sfixed32" | "sfixed64" | "bool" | "string" | "bytes" | messagetype | enumtype
+# comment: We have to capture the actual type that is used - easiest is to match them with regexp.  It's not enough since we also have composite rules messagetype and enumtype to take care of - so an extra X_BUILTINTYPE added, and it is also prioritized (.1) over messagetype which might otherwise match
+# NOTE: 'messagetype' and 'enumtype' are defined identically, and also only used to define 'type' here.
+# Therefore, it is easier to combine them => let's call it DEFINEDTYPE
+?type: X_BUILTINTYPE | DEFINEDTYPE
+X_BUILTINTYPE.1: /(double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)/
+
+# from spec: fieldNumber = intLit;
+# comment: There should not be a semicolon there, I think?
+?fieldnumber: intlit
+
+# Normal Field
+# ------------
+
+# from spec: field = [ "repeated" ] type fieldName "=" fieldNumber [ "[" fieldOptions "]" ] ";"
+field: X_REPEATED? type fieldname "=" fieldnumber ( "[" fieldoptions "]" )?  ";"
+X_REPEATED: "repeated"
+
+# from spec: fieldOptions = fieldOption { ","  fieldOption }
+?fieldoptions: valueoption ( ","  valueoption )*
+
+# from spec: fieldOption = optionName "=" constant
+valueoption: OPTIONNAME "=" constant
+
+# Oneof and Oneof Field
+# ---------------------
+
+# from spec: oneof = "oneof" oneofName "{" { option | oneofField } "}"
+oneof: "oneof" oneofname "{" ( option | oneoffield )+ "}"
+
+# from spec: oneofField = type fieldName "=" fieldNumber [ "[" fieldOptions "]" ] ";"
+oneoffield: type fieldname "=" fieldnumber ( "[" fieldoptions "]" )? ";"
+
+# Map Field
+# ---------
+
+# from spec: mapField = "map" "<" keyType "," type ">" mapName "=" fieldNumber [ "[" fieldOptions "]" ] ";"
+mapfield: "map" "<" keytype "," type ">" mapname "=" fieldnumber ("[" fieldoptions "]")? ";"
+
+# from spec: keyType = "int32" | "int64" | "uint32" | "uint64" | "sint32" | "sint64" | "fixed32" | "fixed64" | "sfixed32" | "sfixed64" | "bool" | "string"
+keytype: "int32" | "int64" | "uint32" | "uint64" | "sint32" | "sint64" | "fixed32" | "fixed64" | "sfixed32" | "sfixed64" | "bool" | "string"
+
+# Reserved
+# --------
+
+# from spec: reserved = "reserved" ( ranges | strFieldNames ) ";"
+reserved: "reserved" ( ranges | strfieldnames ) ";"
+
+# from spec: ranges = range { "," range }
+?ranges: range ( "," range )*
+
+# from spec: range =  intLit [ "to" ( intLit | "max" ) ]
+range:  intlit ( "to" ( intlit | X_MAX ) )?
+X_MAX: "max" 
+
+# from spec: strFieldNames = strFieldName { "," strFieldName }
+?strfieldnames: strfieldname ( "," strfieldname )*
+
+# from spec: strFieldName = "'" fieldName "'" | '"' FieldName '"'
+?strfieldname: ("'" | "\"") fieldname ("'" | "\"")
+
+# Top Level Definitions
+# ---------------------
+
+# Enum Definition
+# ---------------
+
+# from spec: enum = "enum" enumName enumBody
+enum: "enum" enumname enumbody
+
+# from spec: enumBody = "{" { option | enumField | emptystatement | reserved } "}"
+?enumbody: "{" ( enumfield | reserved | enumoption )* "}"
+
+# NOTE: Something buggy when using the current option definition, creating a new one for option-in-enum here
+?enumoption: "option" OPTIONNAME "=" constant ";"
+
+# from spec: enumField = IDENT "=" [ "-" ] intLit [ "[" enumValueOption { ","  enumValueOption } "]" ]";"
+# comment: As noted before, intlit already allows for a "-" minus sign so not sure why it is included here again.
+# enumfield: IDENT "=" "-"? intlit ( "[" enumvalueoption ( ","  enumvalueoption )* "]" )? ";"
+# Lark optimization: enumvalueoption and fieldoptions look the same - just reuse a common rule "valueoption"
+enumfield: IDENT "=" "-"? intlit ( "[" valueoption ( ","  valueoption )* "]" )? ";"
+
+# from spec: enumValueOption = optionName "=" constant
+# Lark: Reuse 'valueoption' (defined above) as common for fieldoption and enumvalueoption
+
+# Message Definition
+# ------------------
+
+# from spec: message = "message" messageName messageBody
+message: "message" messagename messagebody
+
+# from spec: messageBody = "{" { field | enum | message | option | oneof | mapField | reserved | emptyStatement } "}"
+messagebody: "{" ( field | enum | message | option | oneof | mapfield | reserved | emptystatement )* "}"
+
+# Service Definition
+# ------------------
+
+# from spec: service = "service" serviceName "{" { option | rpc | emptyStatement } "}"
+service: "service" servicename "{" ( option | rpc | emptystatement )* "}"
+
+# from spec: rpc = "rpc" rpcName "(" [ "stream" ] messageType ")" "returns" "(" [ "stream" ] messageType ")" (( "{" {option | emptyStatement } "}" ) | ";")
+rpc: "rpc" rpcname "(" X_STREAM? MESSAGETYPE ")" "returns" "(" X_STREAM? MESSAGETYPE ")" (( "{" (option | emptystatement )* "}" ) | ";")
+X_STREAM: "stream"
+
+# Proto File
+# ----------
+
+# from spec: proto = syntax { import | package | option | topLevelDef | emptyStatement }
+?proto: syntax ( import | package | option | topleveldef | emptystatement )*
+
+# from spec: topLevelDef = message | enum | service
+?topleveldef: message | enum | service
+
+
+# Lark-specific adjustements
+# --------------------------
+#
+# Lark requires the root to use the rule name "start"
+?start: proto
+
+# Reuse definition of whitespace
+%import common (WS)
+
+# Whitespace is implicitly assumed for all the above rules, in
+# other words it must be ignored by the parser.
+%ignore WS
