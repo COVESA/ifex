@@ -71,6 +71,14 @@ def field_is_optional(field):
     """Check if the typing hint of a member field is Optional."""
     return is_optional(field.type)
 
+def is_any(type_indicator):
+    """Check if the type indicator is Any."""
+    return type_indicator is Any
+
+def field_is_any(field):
+    """Check if the typing hint of a member field is Any."""
+    return is_any(field.type)
+
 def is_list(type_indicator):
     """Check if the type indicator is List (Optional or not)"""
     # If type indicator is wrapped in Optional we must extract the inner "actual type":

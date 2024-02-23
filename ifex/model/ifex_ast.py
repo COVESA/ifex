@@ -176,6 +176,7 @@ class Method:
     output: Optional[List[Argument]] = field(default_factory=EmptyList)
     """ Contains a list of the method output arguments. """
 
+    # FIXME return argument should be possible to have anonymous (no given name)
     returns: Optional[List[Argument]] = field(default_factory=EmptyList)
     """ Contains a list of the method return arguments. """
 
