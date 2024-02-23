@@ -6,8 +6,8 @@ This module adds a type-checking constructor to dataclass definitions if they ha
 """
 
 from dataclasses import dataclass, fields
-from typing import get_type_hints, List, Optional
-from ifex.model.ifex_ast_introspect import is_list, actual_type, inner_type, field_is_optional
+from typing import get_type_hints, List, Optional, Any
+from ifex.model.ifex_ast_introspect import is_list, actual_type, inner_type, is_optional, field_is_optional, is_any
 
 def is_correct_type(value, _type):
     if type(value) is list and is_list(_type):
@@ -16,7 +16,14 @@ def is_correct_type(value, _type):
         # is fulfilled, so we check that all values in list have the right type:
         expected_type = inner_type(_type)
         return all(type(v) == expected_type for v in value)
-    else: # Non-list field, just check single type:
+    # For optional types, it's OK to set them to None
+    elif is_optional(_type):
+        #print(f"OPTIONAL-> allowing None")
+        return value == None or type(value) == actual_type(_type)
+    # If type is "Any", then any type is accepted
+    elif is_any(_type):
+        return True
+    else:
         return type(value) == actual_type(_type)
 
 
@@ -56,7 +63,7 @@ def add_constructor(cls):
 
         for name, value in list(zip(arg_names, args)) + list(kwargs.items()):
             if not is_correct_type(value, arg_types[name]):
-               raise TypeError(f'Object construction error: According to specification, value named \'{name}\' must be of type {arg_types[name]}, but instead {type(value)=}.')
+                raise TypeError(f'Object construction error: According to specification, value named \'{name}\' must be of type: {arg_types[name]}, but was instead: {type(value)!r}.')
 
             # Assign field value
             setattr(self, name, value)
