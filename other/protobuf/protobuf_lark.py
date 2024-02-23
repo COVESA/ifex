@@ -259,7 +259,7 @@ def process_field(f):
     if next_node.type in ['X_BUILTINTYPE', 'DEFINEDTYPE']:
         fieldtype = next_node.value
     else:
-        raise Exception(f'Unexpected node type when interpreting field {details=}')
+        raise Exception(f'Unexpected node type when interpreting field. Details: {next_node=}')
 
     # --- 3 field name ---
     next_node = f.children.pop(0)
@@ -508,6 +508,9 @@ def create_proto_ast(grammar_file, proto_file):
 
         # Remove line comments
         proto = filter_out(proto, re.compile('^ *[/][/]'))
+
+        # Remove multi-line comments
+        proto = re.sub(r"/\*.*?\*/", "", proto, flags=re.DOTALL)
 
         # Get parsed content
         tree = p.parse(proto)
