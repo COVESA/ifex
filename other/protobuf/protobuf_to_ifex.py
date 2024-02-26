@@ -19,6 +19,29 @@ import sys
 #   - "stream" modifier for types
 #   - options
 
+# --- Fundamental types ---
+type_translation = {
+   "bool"     : "boolean",
+   "bytes"    : "uint8[]",
+   "double"   : "double",
+   "fixed32"  : "uint32",
+   "fixed64"  : "uint64",
+   "float"    : "float",
+   "int32"    : "int32",
+   "int64"    : "int64",
+   "sfixed32" : "int32",
+   "sfixed64" : "int64",
+   "sint32"   : "int32",
+   "sint64"   : "int64",
+   "string"   : "string",
+   "uint32"   : "uint32",
+   "uint64"   : "uint64"
+}
+
+def translate_type(t):
+    t2 = type_translation.get(t)
+    return t2 if t2 is not None else t
+
 # --- Partial tree conversion functions ---
 
 # NOTE: The conventional python naming convention for methods is
@@ -29,7 +52,7 @@ import sys
 # Protobuf Messages are defined as IFEX Struct data types.  This conversion is
 # applied for both outer and inner (nested) message types.
 def Fields_to_Members(proto_fields):
-    return [ifex.Member(f.name, f.datatype) for f in proto_fields]
+    return [ifex.Member(f.name, translate_type(f.datatype)) for f in proto_fields]
 
 def Messages_to_Members(proto_messages):
     if proto_messages == None:
@@ -71,9 +94,9 @@ def Enumerations_in_Messages(proto_messages):
 
 def RPCs_to_Methods(proto_rpcs):
     return [ifex.Method(name = r.name,
-                        input = [ifex.Argument(name = f"in", datatype = r.input)],
-                        returns = [ifex.Argument("_", r.returns)])
-            for r in proto_rpcs]
+                        input = [ifex.Argument(name = "in", 
+                                               datatype = translate_type(r.input))],
+                        returns = [ifex.Argument("_", r.returns)]) for r in proto_rpcs]
 
 def Service_to_Interface(proto_service):
     return ifex.Interface(name = proto_service.name,
