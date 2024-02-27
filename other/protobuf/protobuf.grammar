@@ -398,7 +398,7 @@ X_MAX: "max"
 enum: "enum" enumname enumbody
 
 # from spec: enumBody = "{" { option | enumField | emptystatement | reserved } "}"
-?enumbody: "{" ( enumfield | reserved | enumoption )* "}"
+enumbody: "{" ( enumfield | reserved | enumoption )* "}"
 
 # NOTE: Something buggy when using the current option definition, creating a new one for option-in-enum here
 ?enumoption: "option" OPTIONNAME "=" constant ";"

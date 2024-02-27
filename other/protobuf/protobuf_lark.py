@@ -259,7 +259,7 @@ def process_field(f):
     if next_node.type in ['X_BUILTINTYPE', 'DEFINEDTYPE']:
         fieldtype = next_node.value
     else:
-        raise Exception(f'Unexpected node type when interpreting field. Details: {next_node=}')
+        raise Exception(f'Unexpected node type when interpreting field {details=}')
 
     # --- 3 field name ---
     next_node = f.children.pop(0)
@@ -274,7 +274,6 @@ def process_field(f):
     if len(f.children) > 0:
         next_node = f.children.pop(0)
         assert_rule_match( next_node, 'fieldoptions')
-        print(f"{next_node.children=}")
         for o in next_node.children:
             options.append(process_option(o))
 
@@ -339,10 +338,18 @@ def process_message(m):
         # Recurse to take care of nested message
         ast_messages.append(process_message(m))
 
+    # --- 2.3 (Nested) enums
+    enums = get_items_of_type(next_node, 'enum')
+    ast_enums = []
+    for e in enums:
+        # Recurse to take care of nested message
+        ast_enums.append(process_enums(e))
+
     # === Create Message object in AST, and add to list ===
     return Message(name = msg_name,
                    fields = ast_fields,
-                   messages = None if ast_messages == [] else ast_messages)
+                   messages = ast_messages,
+                   enums = ast_enums)
 
 
 def process_package(p):

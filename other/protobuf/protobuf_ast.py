@@ -75,7 +75,7 @@ class Enumeration:
 @dataclass
 class Message:
     name: str
-    enums: Optional[str] = None # A reference to an enum type, defined elsewhere
+    enums: Optional[List[Enumeration]] = None
     fields: Optional[List[Field]] = None
     messages: Optional[List["Message"]] = None
     options: Optional[List[Option]] = None
