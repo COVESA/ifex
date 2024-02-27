@@ -154,7 +154,7 @@ def assert_token(node, token_type, data_match='*'):
 # Assert that node is one of the known literal types
 def assert_is_literal_type(node):
     if not (is_token(node) and
-            node.type in ['INT', 'FLOATLIT', 'DECIMALLIT', 'OCTALLIT', 'HEXLIT', 'BOOLLIT', 'X_CHARSTRING']):
+            node.type in ['INT', 'FLOATLIT', 'DECIMALLIT', 'OCTALLIT', 'HEXLIT', 'BOOLLIT', 'X_CHARSTRING', 'IDENT']):
         node_string = truncate_string(f"{node!r}")
         error_message = f"\nPROBLEM: Failed expected match:\n          - wanted a INT, FLOATLIT, DECIMALLIT, OCTALLIT, HEXLIT, BOOLLIT, or X_CHARSTRING\n          - item is: {node_string}"
         raise Exception(error_message)
@@ -271,9 +271,12 @@ def process_field(f):
 
     # --- 5 field options ---
     options = []
-    while len(f.children) > 0:
+    if len(f.children) > 0:
         next_node = f.children.pop(0)
-        options.append(process_option(next_node))
+        assert_rule_match( next_node, 'fieldoptions')
+        print(f"{next_node.children=}")
+        for o in next_node.children:
+            options.append(process_option(o))
 
     # NOTE: The field number follows next, but is discarded until
     # we find a reason to keep it - see comments in design document.

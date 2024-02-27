@@ -346,7 +346,7 @@ X_REPEATED: "repeated"
 X_OPTIONAL: "optional"
 
 # from spec: fieldOptions = fieldOption { ","  fieldOption }
-?fieldoptions: valueoption ( ","  valueoption )*
+fieldoptions: valueoption ( ","  valueoption )*
 
 # from spec: fieldOption = optionName "=" constant
 valueoption: OPTIONNAME "=" constant
