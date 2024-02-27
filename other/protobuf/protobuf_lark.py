@@ -280,6 +280,7 @@ def process_field(f):
     return Field(name = fieldname,
                  datatype = fieldtype,
                  repeated = repeated,
+                 optional = optional,
                  options = options)
 
 def process_service(s):
