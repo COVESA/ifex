@@ -108,7 +108,7 @@ def Service_to_Interface(proto_service):
 def proto_to_ifex(node):
     ns = ifex.Namespace(name = node.package or '_',
                         structs = Messages_to_Structs(node.messages),
-                        enumerations = Enums_to_Enumerations(node.enums))
+                        enumerations = Enums_to_Enumerations(node.enums) + Enumerations_in_Messages(node.messages))
 
     # For now, only one service per conversion is supported
     if len(node.services) > 1:
