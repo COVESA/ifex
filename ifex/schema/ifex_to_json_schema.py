@@ -14,6 +14,10 @@ Generate JSON Schema equivalent to the python-internal model definition.
 """
 
 from dataclasses import fields
+from datetime import datetime, date
+
+from ifex.model.ifex_ast_construction import is_simple_type
+
 from ifex.model.ifex_ast import AST
 from ifex.model.ifex_ast_introspect import actual_type, field_actual_type, field_inner_type, inner_type, is_forwardref, is_list, type_name, field_is_list, field_is_optional, field_referenced_type
 from typing import Any
@@ -29,10 +33,18 @@ import json
 def get_type_name(t):
     if t is Any:
         return "Any"
+    if t is bool:
+        return "boolean"
+    elif t is datetime:
+        return "string"
+    elif t is date:
+        return "string"
     elif t is str:
         return "string"
     elif t is int:
         return "integer"
+    elif t is float:
+        return "number"
     else: # "complex type"
         return type_name(actual_type(t))
 
@@ -109,7 +121,7 @@ def collect_type_info(t, collection={}, seen={}):
 
     # We don't need to gather information about primitive types because they
     # will not have any member fields below them.
-    if t in [str, int, Any]:
+    if is_simple_type(t):
         return
 
     # ForwardRef will fail if we try to recurse over its children.  However,

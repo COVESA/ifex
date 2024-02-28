@@ -44,6 +44,7 @@ likely to be used in X-to-IFEX model conversions.
 
 from collections import OrderedDict
 from dataclasses import is_dataclass, fields
+from datetime import date, datetime
 from ifex.model import ifex_ast
 from ifex.model.type_checking_constructor_mixin import add_constructor
 
@@ -67,6 +68,8 @@ def is_empty(node) -> bool:
     else:
         return node is None
 
+def is_simple_type(t) -> bool:
+    return t in [str, int, float, bool, date, datetime]
 
 def ifex_ast_to_dict(node, debug_context="") -> OrderedDict:
 
@@ -76,7 +79,7 @@ def ifex_ast_to_dict(node, debug_context="") -> OrderedDict:
         raise TypeError(f"None-value should not be passed to function, {debug_context=}")
 
     # Strings and Ints are directly understood by the YAML output printer so just put them in.
-    if type(node) in [str, int]:
+    if is_simple_type(type(node)):
         return node
 
     # In addition to dicts, we might have python lists, which will be output as lists in YAML
@@ -95,13 +98,13 @@ def ifex_ast_to_dict(node, debug_context="") -> OrderedDict:
     # we skip them.  Note that empty items can happen only on fields that are
     # Optional, otherwise the type-checking constructor would have caught the
     # error.
- 
+
     for f in fields(node):
         item = getattr(node, f.name)
         if not is_empty(item):
             ret[f.name] = ifex_ast_to_dict(item, debug_context=str(f))
 
-    return ret 
+    return ret
 
 
 def ifex_ast_as_yaml(node):
@@ -126,4 +129,3 @@ if __name__ == '__main__':
     print(ifex_ast_to_dict(root))
     print("\n--- Test objects as YAML: ---")
     print(ifex_ast_as_yaml(root))
-
