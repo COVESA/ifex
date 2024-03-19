@@ -121,7 +121,7 @@ def collect_type_info(t, collection={}, seen={}):
 
     # We don't need to gather information about primitive types because they
     # will not have any member fields below them.
-    if is_simple_type(t):
+    if is_simple_type(t) or t is Any:
         return
 
     # ForwardRef will fail if we try to recurse over its children.  However,
