@@ -19,7 +19,7 @@
 bamm:description "{{ x.description.strip().replace("\n", " ") }}"@en ;
 {%- endmacro %}
 
-{# Render an Aspect definition based on a VSC Namespace #}
+{# Render an Aspect definition based on a IFEX Namespace #}
 {% macro render_aspect(element) %}
 :{{ element.name.capitalize() }} a bamm:Aspect ;-
     bamm:name "{{ element.name.capitalize() }}" ;
@@ -29,7 +29,7 @@ bamm:description "{{ x.description.strip().replace("\n", " ") }}"@en ;
     bamm:events ({{ element_names(element.events) }}) .
 {% endmacro %}
 
-{# Render a Operation definition based on a VSC Method #}
+{# Render a Operation definition based on a IFEX Method #}
 {% macro render_operation( method) %}
 {% if not method.name in bammElementDictonary %}
 {%- set _ = bammElementDictonary.update({method.name: method}) -%}
@@ -43,7 +43,7 @@ bamm:description "{{ x.description.strip().replace("\n", " ") }}"@en ;
 {% endif %}
 {% endmacro %}
 
-{# Render a Property definition based on a VSC Member #}
+{# Render a Property definition based on a IFEX Member #}
 {% macro render_property(member) %}
 {% if not member.name in bammElementDictonary -%}
 {%- set _ = bammElementDictonary.update({member.name: member}) -%}
@@ -54,7 +54,7 @@ bamm:description "{{ x.description.strip().replace("\n", " ") }}"@en ;
 {% endif -%}
 {% endmacro %}
 
-{# Render an Event definition based on a VSC Event #}
+{# Render an Event definition based on a IFEX Event #}
 {% macro render_event(event) %}
 {% if not event.name in bammElementDictonary %}
 {%- set _ = bammElementDictonary.update({event.name: event}) -%}
@@ -65,7 +65,7 @@ bamm:description "{{ x.description.strip().replace("\n", " ") }}"@en ;
 {% endif %}
 {% endmacro %}
 
-{# Render an Entity definition based on a VSC Struct #}
+{# Render an Entity definition based on a IFEX Struct #}
 {% macro render_entity(struct) %}
 {% if not struct.name in bammElementDictonary %}
 {%- set _ = bammElementDictonary.update({struct.name: struct}) -%}
@@ -76,7 +76,7 @@ bamm:description "{{ x.description.strip().replace("\n", " ") }}"@en ;
 {% endif %}
 {% endmacro %}
 
-{# Render a Characteristic definition based on a VSC Member #}
+{# Render a Characteristic definition based on a IFEX Member #}
 {% macro render_characteristic(member) %}
 {% set characteristic_name = _render_characteristic_name(member) -%}
 {% if not characteristic_name in bammElementDictonary %}
@@ -130,7 +130,7 @@ a bamm-c:RangeConstraint ;
 {% endif %}
 {% endmacro -%}
 
-{# Render an Enumeration definition based on a VSC Enum #}
+{# Render an Enumeration definition based on a IFEX Enum #}
 {% macro render_enumeration(enum) %}
 {% set characteristic_name = _render_characteristic_name(enum) -%}
 {% if not characteristic_name in bammElementDictonary %}
