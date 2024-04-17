@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-from distutils import extension
 import glob
-from distutils.core import setup
+from setuptools import setup
 from setuptools import find_packages
 
 from ifex.templates import TemplateDir
