@@ -15,3 +15,4 @@ tomli==2.0.1
 dacite==1.6.0
 jsonschema>=4.20
 lark==1.1.9
+setuptools
