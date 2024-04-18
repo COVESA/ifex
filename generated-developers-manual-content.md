@@ -9,6 +9,7 @@ General documents describe our general strategy for approaching mappings.
 Individual documents describe particular target (or source) standards.
 
 - [D-Bus](./static-mapping-dbus.md)
+- [Protobuf/gRPC](./static-mapping-protobuf.md)
 
 # Datatype mapping
 
