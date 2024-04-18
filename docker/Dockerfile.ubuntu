@@ -19,8 +19,8 @@ WORKDIR /ifex
 USER ubuntu
 ENV PATH "/home/ubuntu/.pyenv/bin:/usr/bin:/bin"
 RUN scripts/install_pyenv.sh
-RUN scripts/install_python_version_in_pyenv.sh 3.11
-RUN pyenv global 3.11
+RUN scripts/install_python_version_in_pyenv.sh 3.12
+RUN pyenv global 3.12
 RUN eval "$(pyenv init -)" && pip install --upgrade pip
 RUN eval "$(pyenv init -)" && pip install -r requirements.txt
 RUN eval "$(pyenv init -)" && python setup.py develop

@@ -6,7 +6,7 @@
 
 # Official python image has an alpine-based version.  It's easiest to
 # use it directly instead of building from source with pyenv.
-FROM python:3.11-alpine
+FROM python:3.12-alpine
 
 # Install extras
 RUN apk add sudo bash
