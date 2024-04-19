@@ -4,9 +4,9 @@
 # This file is part of the IFEX project
 
 from ifex.model.ifex_ast_construction import add_constructors_to_ifex_ast_model, ifex_ast_as_yaml
-from protobuf_lark import create_proto_ast
+from other.protobuf.protobuf_lark import create_proto_ast
 import ifex.model.ifex_ast as ifex
-import protobuf_ast as pb
+import other.protobuf.protobuf_ast as pb
 import os
 import sys
 
