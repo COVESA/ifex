@@ -65,3 +65,12 @@ jobs:
         run: |
           python ifex/schema/ifex_to_json_schema.py >temp-schema
           python ifex/schema/pretty_print_json.py temp-schema >ifex-core-idl-schema.json
+
+      - name: Clone uservices repository
+        run: |
+          git clone https://github.com/COVESA/uservices/
+
+      - name: Run protobuf->IFEX translation
+        run: |
+          ifexconv_protobuf uservices/src/main/proto/vehicle/propulsion/engine/v1/engine_service.proto >engine_service.ifex
+          cat engine_service.ifex
