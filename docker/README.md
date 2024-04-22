@@ -32,5 +32,7 @@ make run_alpine
 
 When the container is run, it will map the current directory to /work.
 
+Once inside an interactive shell in the container, you can run tools like `ifexgen` directly.
+
 **BUGS**
 See `Makefile` and `Dockerfile.*` for other options (e.g. alpine based)

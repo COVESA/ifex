@@ -28,138 +28,176 @@ technologies, such as the [Jinja2 templating language](https://jinja.palletsproj
 ## Getting started
 
 ### Prerequisites
-* Python >=3.10 installed (exact version might vary - the best definition of what works is likely the [automated workflow files](https://github.com/COVESA/ifex/tree/master/.github/workflows)
+* Python >=3.10 installed (exact version might vary - the best
+  definition of what works is likely the [automated workflow
+files](https://github.com/COVESA/ifex/tree/master/.github/workflows)
+or [tox.ini](./tox.ini))
 * Dependencies installed according to instructions below
 
-### Project Setup
+### Container use
 
-* If you use a custom pip installation directory, set the `PYTHONPATH` environment variable to the directory that you set in the `pip.ini` file.
+As an alternative to installation instructions below, all the installations can also be hidden in a container.  Refer to the [README in the docker/ directory](./docker/README.md) for running the tools using containers instead.
 
-### Setup with `virtualenv`
+## Installing and use python version(s) with `pyenv`
 
-```sh
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### Setup with `pipenv`
-[pipenv](https://pypi.org/project/pipenv/) is a tool that manages a virtual environment and install the package and its dependencies, making the process much simpler and predictable, since the `Pipfile` states the dependencies, while `Pipfile.lock` freezes the exact version in use.
-
-### (alternative) setup with `pyenv`
+NOTE: Pyenv is not quite the same as other virtual environment
+handlers.  Its most important function is to download, compile, and
+install a particular python version from source code.  If your
+system python version is one that is not supported by this project
+and you are not able to install the right python version using
+another method, then this can be used *if* you are not able to
+install the right python version using another method.  It can also
+be used in combination with virtual-environment handlers, to get
+access to different python versions.
 
 If [`pyenv` shell command](https://github.com/pyenv/pyenv) is not installed, use its [installer](https://github.com/pyenv/pyenv-installer) to get it:
 
 ```bash
-   curl https://pyenv.run | bash  # download and install
+   curl https://pyenv.run | bash  # download and install (YOU are responsible to check the script content)
    exec $SHELL                    # restart your shell using the new $PATH
 ```
 
-NOTE: In the following instructions, you might have to adjust the exact python version.  See prerequisites.
+### Setup a python virtual environment (recommended)
 
-Make sure Python version 3.10.6 is installed:
-```bash
-   pyenv install 3.10.6  # install the versions required by Pipfile
-```
+Once you have an appropriate version of python, a virtual environment is
+recommended to avoid any particulars in the main system installation.
 
-Activate a virtual environment
+Go to project directory and then:
 ```sh
-pyenv local 3.10.6
+python -m venv venv
+source venv/bin/activate
 ```
 
-## Installing packages
+NEXT: Go to **Installing packages**
 
-_(regardless of which venv tool you use)_
+### Setup without virtual environment (not recommended)
 
-Install the IFEX provided modules into your virtual environment)
-```
-python setup.py develop
+Go directly to Installing packages
 
-```
-Install dependencies:
-```
-pip install pyyaml jinja2 pytest anytree
-```
-(Alternatively, we are providing a requirements.txt file but it might be
-deprecated later in favor of pipenv):
-
-```
-pip install -r requirements.txt
-```
-
-## Setup  with pipenv (alternative)
-
-**DEPRECATED / currently not working**
-(We would welcome if you investigate it, and provide an updated instructions)
-
+### Setup with `pipenv`
 [pipenv](https://pypi.org/project/pipenv/) is a tool that manages a virtual environment and install the package and its dependencies, making the process much simpler and predictable, since the `Pipfile` states the dependencies, while `Pipfile.lock` freezes the exact version in use.
 
 Install this project and its dependencies in the local `.venv` folder in this project, then use it (`pipenv shell`):
 ```bash
    export PIPENV_VENV_IN_PROJECT=1 # will create a local `.venv` in the project, otherwise uses global location
    pipenv install --dev # install the development dependencies as well
+```
+
+NEXT: Go to **Installing packages**
+
+You can then run:
+```
    pipenv shell         # starts a shell configured to use the virtual environment
 ```
 
-### Setup without virtual environment (not recommended)
+### Activate a chosen python version using pyenv
 
-To install to your system environment:
+Activate a version in the current environment
+```sh
+pyenv local 3.10.6
+```
+
+IMPORTANT: Follow the pyenv instructions to make sure that pyenv environment
+setup is added to `.bashrc` so that the binaries can be found every time a
+shell is started.  Something like:
+
+```sh
+eval ($pyenv init)
+```
+should be run before anything else.
+
+NEXT: Go to **Installing packages**
+
+### Setup and run tests using tox
+
+Tox is another way to set up the working environment.  It is primarily used to test the program using multiple python versions.
+
+1. Install tox
+2. Install pyenv (most likely needed, use it if additional python versions are required)
+3. (optional) edit the provided tox.ini file
+4. Run tox  -- this will execute pytest for all stated python versions
+
+Here we provide a script that will check which versions are requested by `tox.ini`, and install all of those versions first, using pyenv:
+
+```bash
+   pip install "tox>=4"
+   scripts/pyenv_install_for_tox.sh
+   tox
+```
+Note:  In this case, tox takes care of calling `pip` and `setup.py` to install the required packages.
+
+## Installing packages
+
+(for any or none, virtual-environment -- but not needed if using tox)
+
+Regardless of which type of virtual environment (if any) you use, it is required to install the IFEX package into your python environment, and to install needed dependencies with pip.
+
+
+1. Install dependencies:
 ```
 pip install -r requirements.txt
+```
+
+2. Install the IFEX provided modules into your virtual environment)
+```
 python setup.py develop
 ```
 
 ## Trying it out
 
-Installing the IFEX tools using `setup.py` also creates some convenient
-executable shims, e.g. `ifexgen`:
+Installing the IFEX tools using `setup.py` creates some convenient
+executable shims, e.g. `ifexgen`, `ifexgen_dbus`, `ifexconv_protobuf`, ...
 
-To run this generic code generator and specify an output template:
+If those commands are not in your environment, try setting up python virtual environment and make sure setup.py runs correctly.  After that, they should be in the `$PATH` variable and possible to run.
+
+To run a generic code generator and specify an output template:
 
 ```
-usage: ifexgen [-h] -d templates-dir-name ifex-input-file [root-template]
+usage: ifexgen [-h] -d templates-dir-name ifex-input-file
 ```
-
-Example:
-```bash
-   ifexgen comfort-service.yml -d d-bus
-```
-
-For the moment, try this:
+To get some test IFEX files, clone the VSC repo:
 
 ```bash
    git clone https://github.com/COVESA/vehicle_service_catalog
 
-   ifexgen vehicle_service_catalog/comfort-service.yml -d simple 
+   # Using a template
+   ifexgen vehicle_service_catalog/comfort-service.yml -d dtdl 
+
+   # D-Bus:
+   ifexgen_dbus vehicle_service_catalog/comfort-service.yml
 ```
 
-The comfort-service example above exercises the parser to create the AST out
-of a YAML file from the Vehicle Service Catalog definition, and then prints
-out an overview using the template.
+To test some <other>-to-IFEX conversion, for example **gRPC/protobuf**:
+
+```bash
+   git clone https://github.com/COVESA/uservices
+   ifexconv_protobuf uservices/src/main/proto/vehicle/propulsion/engine/v1/engine_service.proto >engine_service.ifex
+```
+
+To try the D-Bus XML generator:
+```
+usage: ifexgen_dbus input_ifex.yaml
+```
 
 # Unit Tests
 
-The project uses pytest to define unit tests. In the tests directory is a
-simple starting point. More can be added.
+The project uses pytest to define unit tests. A starting point is in the tests
+directory and more can be added.
 
-To run tests, just run pytest in the root directory.
+To run tests, just run pytest in the root directory, (optionally specify the tests directory).
 
 ```bash
-   pytest -v
+   pytest -v tests
 ```
+
+# Contribution
+
+Propose changes using the GitHub Issues or Pull Request.
 
 # Development
 
-Please refer to the [developer documentation](https://covesa.github.io/ifex/developers-manual)
-
-# Existing Tools/Templates
-
-Try the directory names of dtdl, protobuf, sds-bamm, simple etc.  (see [templates dir](https://github.com/COVESA/ifex/tree/master/ifex/templates) for more)
-
-- dtdl: Generates a DTDL description of the service: [documentation](ifex/templates/dtdl/dtdl.md)
-- sds-bamm:  Generates a BAMM Aspect Meta Model of the service: [documentation](ifex/templates/sds-bamm-aspect-model.md)
-- simple: Just outputs some simple overview (incomplete) in HTML format.  For simple testing.
-- protobuf: Generate protobuf(gRPC) description language, including the "rpc" feature.
-- d-bus: Linux D-Bus introspection XML format (pending)
+Make sure you have read the [Specification](https://covesa.github.io/ifex/developers-manual)
+Then please refer to the [developer documentation](https://covesa.github.io/ifex/developers-manual)
 
 # Future plans, new proposals and enhancements
 
@@ -176,5 +214,5 @@ with the label "bug"
 Various tips to consider:
 
 * If the installation (pip install) is executed behind a (corporate) proxy, the following environments variables must be set: `http_proxy` and `https_proxy` (including authentication e.g., `http://${proxy_username):$(proxy_password)@yourproxy.yourdomain`)
+* If you use a custom pip installation directory, set the `PYTHONPATH` environment variable to the directory that you set in the `pip.ini` file.
 * If you do not run with administration rights, you may need to configure pip target path to write to your user home directory or consider using one of the `virtual environment` methods.
-
