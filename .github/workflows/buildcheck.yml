@@ -72,5 +72,5 @@ jobs:
 
       - name: Run protobuf->IFEX translation
         run: |
-          ifexconv_protobuf uservices/src/main/proto/vehicle/propulsion/engine/v1/engine_service.proto >engine_service.ifex
-          cat engine_service.ifex
+          ifexconv_protobuf uservices/src/main/proto/vehicle/chassis/suspension/v1/suspension_topics.proto >suspension_topics.ifex
+          cat suspension_topics.ifex
