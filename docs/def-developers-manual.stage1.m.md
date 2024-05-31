@@ -13,6 +13,8 @@ Individual documents describe particular target (or source) standards.
 
 !INCLUDE "static-ifex-type-mapping-howto.md"
 
+!INCLUDE "static-layer-types.md"
+
 !INCLUDE "static-developer-generators.md"
 
 ______________________________________________________________________
