@@ -1,4 +1,4 @@
-Documentation generated from: e00ca12a36871176d70a20ab1d63fb056101503d
+Documentation generated from: 1b110afdd60ff5efd47f69272bd8d1fc2d0661d6
 
 - [FEATURES](#features)  
     - [Features that are not included _in the core IDL_, but worth describing](#features-that-are-not-included-in-the-core-idl-but-worth-describing)  
@@ -17,7 +17,7 @@ Documentation generated from: e00ca12a36871176d70a20ab1d63fb056101503d
         - [Signals (not a core IDL feature)](#signals-not-a-core-idl-feature)  
 - [NAMESPACE VERSIONING](#namespace-versioning)  
 - [INTERFACE VERSIONING](#interface-versioning)  
-- [TYPES PLACEHOLDER](#types-placeholder)  
+- [FUNDAMENTAL TYPES](#fundamental-types)  
 - [LAYERS CONCEPT](#layers-concept)  
     - [Deployment file object list extensions](#deployment-file-object-list-extensions)  
 - [DEPLOYMENT LAYER](#deployment-layer)  

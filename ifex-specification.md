@@ -13,7 +13,7 @@ License: Creative Commons Attribution 4.0 International
 License (CC-BY-4.0), described [here](https://creativecommons.org/licenses/by/4.0/)
 
 <!-- Heading and TOC -->
-Documentation generated from: e00ca12a36871176d70a20ab1d63fb056101503d
+Documentation generated from: 1b110afdd60ff5efd47f69272bd8d1fc2d0661d6
 
 - [FEATURES](#features)  
     - [Features that are not included _in the core IDL_, but worth describing](#features-that-are-not-included-in-the-core-idl-but-worth-describing)  
@@ -32,7 +32,7 @@ Documentation generated from: e00ca12a36871176d70a20ab1d63fb056101503d
         - [Signals (not a core IDL feature)](#signals-not-a-core-idl-feature)  
 - [NAMESPACE VERSIONING](#namespace-versioning)  
 - [INTERFACE VERSIONING](#interface-versioning)  
-- [TYPES PLACEHOLDER](#types-placeholder)  
+- [FUNDAMENTAL TYPES](#fundamental-types)  
 - [LAYERS CONCEPT](#layers-concept)  
     - [Deployment file object list extensions](#deployment-file-object-list-extensions)  
 - [DEPLOYMENT LAYER](#deployment-layer)  
@@ -388,9 +388,24 @@ required to be supported at the same time.
 <!-- Types, constraints/ranges, type resolution in namespaces. -->
 ----
 
-# TYPES PLACEHOLDER
+# FUNDAMENTAL TYPES
 
-----
+These are the supported fundamental (primitive) types, as generated from the source code model.  These primitive types are identical to the types used in the VSS (Vehicle Signal Specification) model, and of course they should easily match typical datatypes in other interface description systems.
+
+|Name|Description|Min value|Max value|
+|----|-----------|---------|---------|
+|uint8 | unsigned 8-bit integer | 0 | 255|
+|int8 | signed 8-bit integer | -128 | 127|
+|uint16 | unsigned 16-bit integer | 0 | 65535|
+|int16 | signed 16-bit integer | -32768 | 32767|
+|uint32 | unsigned 32-bit integer | 0 | 4294967295|
+|int32 | signed 32-bit integer | -2147483648 | 2147483647|
+|uint64 | unsigned 64-bit integer | 0 | 2^64 - 1|
+|int64 | signed 64-bit integer | -2^63 | 2^63 - 1|
+|boolean | boolean value | False | True|
+|float | floating point number | -3.4e -38 | 3.4e 38|
+|double | double precision floating point number | -1.7e -300 | 1.7e 300|
+|string | character string | N/A | N/A|
 
 <!-- Layers concept, IFEX File Syntax, semantics and structure -->
 -----------------------
