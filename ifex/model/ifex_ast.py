@@ -1,16 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2022 MBition GmbH.
 # SPDX-License-Identifier: MPL-2.0
 
-from dataclasses import dataclass, field
-from typing import List, Optional, Any
-
-
-# shortcut to reduce code duplication for default_factory
-# parameter in field()
-def EmptyList():
-    return []
-
-
 # Module contains Vehicle Service Catalog abstract syntax tree
 # implemented using python dataclasses.
 #
@@ -18,6 +8,19 @@ def EmptyList():
 # this file.  This file is the formal definition of the language.
 # https://github.com/COVESA/vehicle_service_catalog/blob/master/syntax.md
 
+from dataclasses import dataclass, field
+from typing import List, Optional, Any
+import inspect, sys
+
+# shortcut to reduce code duplication for default_factory
+# parameter in field()
+def EmptyList():
+    return []
+
+# This small helper function returns a list of all the dataclass names -
+# in other words all the AST node types. There are no other classes in this file.
+def get_ast_node_type_names():
+    return [x[0] for x in inspect.getmembers(sys.modules[__name__], inspect.isclass)]
 
 @dataclass
 class Argument:
