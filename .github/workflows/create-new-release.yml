@@ -1,0 +1,80 @@
+# Workflow to create a new release when RELEASE-TAG is included in commit.
+#
+# Preconditions:
+# 1) The tag that is determined from the commit message must not already exist
+# 2) The workflow does not work if pushing an existing tag.  
+# 3) The precondition ensures this workflow is NOT run if no RELEASE-TAG field.
+#
+# Action steps:
+# 1) Commit and add the RELEASE-TAG in message
+# 2) Tag locally with the tag
+#   DO NOT PUSH THE TAG
+# 3) Push commit (possibly via a pull request)
+# 4) When pushed or merge to master, the release process will create the remote tag and the release
+
+name: Deploy JSON Schema and create release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy_json_schema:
+    if: "contains(github.event.head_commit.message, 'RELEASE-TAG')"
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12.3
+
+      - name: Install dependencies
+        run: |
+          python -V
+          pip install -r requirements.txt
+
+      - name: Install IFEX module
+        run: python setup.py develop
+
+      - name: Run JSON-Schema generator
+        run: |
+          python ifex/schema/ifex_to_json_schema.py >temp-schema
+          python ifex/schema/pretty_print_json.py temp-schema >ifex-core-idl-schema.json
+
+      - name: Determine variables
+        run: |
+          echo "TAG=$(echo "${{ github.event.head_commit.message }}" | grep -E '^ *RELEASE-TAG' | awk '{print $2}')"  >> "$GITHUB_OUTPUT"
+          echo "HASH=$(git rev-parse HEAD | cut -c 1-16)" >> "$GITHUB_OUTPUT"
+          echo "SHORTHASH=$(git rev-parse HEAD | cut -c 1-10)" >> "$GITHUB_OUTPUT"
+        id: vars
+
+      - name: Create Release of JSON Schema file
+        if: "contains(github.event.head_commit.message, 'RELEASE-TAG')"
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: "JSON schema for ${{ steps.vars.outputs.TAG }}"
+          tag_name: "${{ steps.vars.outputs.TAG }}"
+          body: |
+            The JSON Schema file for the IFEX Core IDL is a resulting artifact, generated from the internal model representation.
+            This one was generated from commit hash ${{ steps.vars.outputs.HASH }} and was assigned the release-name: ${{ steps.vars.outputs.TAG }}."
+        env:
+          GITHUB_TOKEN: "${{ github.token }}"
+
+      - name: Upload Release Asset
+        if: "contains(github.event.head_commit.message, 'RELEASE-TAG')"
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # Defined by previous step
+          asset_path: ./ifex-core-idl-schema.json
+          asset_name: ifex-core-idl-schema.json
+          asset_content_type: application/json
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
