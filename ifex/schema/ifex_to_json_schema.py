@@ -168,7 +168,8 @@ if __name__ == "__main__":
     # Then print JSON-schema
     print('''{
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "IFEX Core IDL (YAML format)",
+    "title": "IFEX Core IDL (YAML format), version: TAG-PLACEHOLDER",
+    "description": "This file can be used to validate IFEX Core IDL files, which are normally written in YAML, not JSON.  The schema is not the source-of-truth but an artifact generated from the source-of-truth, so it should be consistent",
     "type": "object",
     "allOf": [ { "$ref": "#/definitions/AST" } ],
     "definitions": {

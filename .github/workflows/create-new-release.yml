@@ -12,7 +12,7 @@
 # 3) Push commit (possibly via a pull request)
 # 4) When pushed or merge to master, the release process will create the remote tag and the release
 
-name: Deploy JSON Schema and create release
+name: Create release tag and publish JSON Schema
 
 on:
   push:
@@ -20,7 +20,7 @@ on:
       - master
 
 jobs:
-  deploy_json_schema:
+  create_release:
     if: "contains(github.event.head_commit.message, 'RELEASE-TAG')"
     runs-on: ubuntu-22.04
     steps:
@@ -39,11 +39,6 @@ jobs:
       - name: Install IFEX module
         run: python setup.py develop
 
-      - name: Run JSON-Schema generator
-        run: |
-          python ifex/schema/ifex_to_json_schema.py >temp-schema
-          python ifex/schema/pretty_print_json.py temp-schema >ifex-core-idl-schema.json
-
       - name: Determine variables
         run: |
           echo "TAG=$(echo "${{ github.event.head_commit.message }}" | grep -E '^ *RELEASE-TAG' | awk '{print $2}')"  >> "$GITHUB_OUTPUT"
@@ -51,7 +46,13 @@ jobs:
           echo "SHORTHASH=$(git rev-parse HEAD | cut -c 1-10)" >> "$GITHUB_OUTPUT"
         id: vars
 
-      - name: Create Release of JSON Schema file
+      - name: Run JSON-Schema generator
+        run: |
+          python ifex/schema/ifex_to_json_schema.py >temp-schema
+          python ifex/schema/pretty_print_json.py temp-schema >ifex-core-idl-schema.json
+          sed -i 's/TAG-PLACEHOLDER/${{ steps.vars.outputs.TAG }}/' ifex-core-idl-schema.json
+
+      - name: Create a new release
         if: "contains(github.event.head_commit.message, 'RELEASE-TAG')"
         uses: actions/create-release@v1
         id: create_release
@@ -66,7 +67,7 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ github.token }}"
 
-      - name: Upload Release Asset
+      - name: Upload JSON schema file as a release asset
         if: "contains(github.event.head_commit.message, 'RELEASE-TAG')"
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
