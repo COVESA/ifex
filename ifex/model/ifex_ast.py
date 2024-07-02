@@ -645,6 +645,23 @@ class AST():
     includes: Optional[List[Include]] = field(default_factory=EmptyList)
     namespaces: Optional[List[Namespace]] = field(default_factory=EmptyList)
 
+    # The following two arguments are strictly not necessary for IFEX Core IDL
+    # files, however to prepare for differentiating between multiple Layer
+    # Types, these fields are added here, with the intention that all future
+    # Layer Types shall also include them.  For this AST model, which defines
+    # the IFEX Core IDL, the value shall always be written as indicated here.
+    # Other Layer types may define their own name for the filetype.
+    filetype: Optional[str] = "IFEX Core IDL"
+
+    # The schema field may optionally be a filename (typically to communicate
+    # the schema name to a human) or a URI (typically to communicate to tools
+    # where to fetch the schema).  **If** a more strict definition is required
+    # (for example if a particular tool MUST be able to download the schema to
+    # function correctly), then it is up to that tool to inform the tool user
+    # that the value must be a complete URI.
+    schema: Optional[str] = str()
+
+
 class FundamentalTypes:
     # Fundamental types are the same as for VSS (Vehicle Signal Specification)
     # This table copied from VSS documentation:
