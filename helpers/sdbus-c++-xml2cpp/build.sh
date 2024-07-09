@@ -7,6 +7,6 @@ cd sdbus-cpp
 rm -rf build
 mkdir -p build
 cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_CODE_GEN=True
+cmake .. -DCMAKE_BUILD_TYPE=Release -DSDBUSCPP_BUILD_CODEGEN=ON
 cmake --build  .
 tools/sdbus-c++-xml2cpp -h
