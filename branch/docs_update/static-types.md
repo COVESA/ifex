@@ -1,5 +1,0 @@
-----
-
-# TYPES PLACEHOLDER
-
-----
