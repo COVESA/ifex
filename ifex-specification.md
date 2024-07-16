@@ -13,7 +13,7 @@ License: Creative Commons Attribution 4.0 International
 License (CC-BY-4.0), described [here](https://creativecommons.org/licenses/by/4.0/)
 
 <!-- Heading and TOC -->
-Documentation generated from: be3e03ddec3a79d61c98a98696976eb3a2fdbfcf
+Documentation generated from: 6d28965593db02bb0c0b9471b02c6f84835e2205
 
 - [FEATURES](#features)  
     - [Features that are not included _in the core IDL_, but worth describing](#features-that-are-not-included-in-the-core-idl-but-worth-describing)  
@@ -34,8 +34,9 @@ Documentation generated from: be3e03ddec3a79d61c98a98696976eb3a2fdbfcf
 - [INTERFACE VERSIONING](#interface-versioning)  
 - [FUNDAMENTAL TYPES](#fundamental-types)  
 - [LAYERS CONCEPT](#layers-concept)  
-    - [Deployment file object list extensions](#deployment-file-object-list-extensions)  
+    - [Extending the interface model by mimicking the structure](#extending-the-interface-model-by-mimicking-the-structure)  
 - [DEPLOYMENT LAYER](#deployment-layer)  
+- [More Layer Information](#more-layer-information)  
 - [IFEX FILE SYNTAX, SEMANTICS AND STRUCTURE](#ifex-file-syntax-semantics-and-structure)  
     - [NODE TYPES](#node-types)  
     - [Namespace](#namespace)  
@@ -475,15 +476,22 @@ name: comfort
       description: The movement of a seat component
 ```
 
-## Deployment file object list extensions
+## Extending the interface model by mimicking the structure
 
-If a deployment file's object list element (e.g. `events`) is also
-defined in the IFEX file, the IFEX's list will traversed recursively and
-extended by the deployment file's corresponding list.
+Most layers\*\*\* will follow the same hierarchical structure as the original
+interface definiton written in the IFEX Core IDL.  If a layer object list
+element (e.g. `events`) is also defined in the IFEX file, the IFEX's list will
+traversed recursively and extended by the deployment file's corresponding list.
 
-**FIXME** Possibly add description on how various edge cases are resolved.
+\*\* For more information on layer types and different strategies, refer to the developers manual.
 
-Example:
+In this example, an overlay is used to add a new parameter to an existing
+interface.  This is a bit of a peculiar case, but some development strategies
+may use this to more clearly local modifications on top of a standard interface
+description - such as an industry standard API.  Separating it into an overlay
+makes it more explicit, but this should be understood as an example rather than
+a design guideline.
+
 
 **File: `comfort-service.yml`**  
 ```YAML
@@ -509,7 +517,9 @@ events:
         datatype: string
 ```
 
-The combined YAML structure to be processed will look like this:
+The combined structure to be processed will look like the following:  (We show it here
+using YAML syntax, but this combined representation might only exist only
+inside the tool memory, after reading more than one input file.)
 
 ```YAML
 name: comfort
@@ -592,6 +602,11 @@ file can follow a different specification/schema and add keys that
 are not allowed in the plain IDL layer.  In the example above, the
 `dbus_interface` key-value pair can only be added in a deployment file since
 `dbus_interface` is not a part of the regular IFEX IDL file syntax.
+
+
+# More Layer Information
+
+For more information about Layer Types and Layer design, refer to the corresponding chapter in the [developers-manual.md](https://covesa.github.io/ifex/developers-manual)
 
 ----------
 

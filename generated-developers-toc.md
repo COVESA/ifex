@@ -1,4 +1,4 @@
-Documentation generated from: be3e03ddec3a79d61c98a98696976eb3a2fdbfcf
+Documentation generated from: 6d28965593db02bb0c0b9471b02c6f84835e2205
 
 - [Mapping documents](#mapping-documents)  
 - [Datatype mapping](#datatype-mapping)  
@@ -8,6 +8,12 @@ Documentation generated from: be3e03ddec3a79d61c98a98696976eb3a2fdbfcf
     - [Additional types available in some programming environments](#additional-types-available-in-some-programming-environments)  
     - [Opaque (special) type](#opaque-special-type)  
 - [Comments on pointers, references, etc.](#comments-on-pointers-references-etc)  
+- [Layer Types and Schemas](#layer-types-and-schemas)  
+    - [Conforming to schema](#conforming-to-schema)  
+    - [File definition with combined layers.](#file-definition-with-combined-layers)  
+    - [Syntax shortcuts](#syntax-shortcuts)  
+    - [Layer Types](#layer-types)  
+        - [Example: End-to-end data integrity check](#example-endtoend-data-integrity-check)  
 - [Generators](#generators)  
     - [Configurability - when to create a layer?](#configurability--when-to-create-a-layer)  
     - [Writing a generator](#writing-a-generator)  

@@ -1,4 +1,4 @@
-Documentation generated from: be3e03ddec3a79d61c98a98696976eb3a2fdbfcf
+Documentation generated from: 6d28965593db02bb0c0b9471b02c6f84835e2205
 
 - [FEATURES](#features)  
     - [Features that are not included _in the core IDL_, but worth describing](#features-that-are-not-included-in-the-core-idl-but-worth-describing)  
@@ -19,8 +19,9 @@ Documentation generated from: be3e03ddec3a79d61c98a98696976eb3a2fdbfcf
 - [INTERFACE VERSIONING](#interface-versioning)  
 - [FUNDAMENTAL TYPES](#fundamental-types)  
 - [LAYERS CONCEPT](#layers-concept)  
-    - [Deployment file object list extensions](#deployment-file-object-list-extensions)  
+    - [Extending the interface model by mimicking the structure](#extending-the-interface-model-by-mimicking-the-structure)  
 - [DEPLOYMENT LAYER](#deployment-layer)  
+- [More Layer Information](#more-layer-information)  
 - [IFEX FILE SYNTAX, SEMANTICS AND STRUCTURE](#ifex-file-syntax-semantics-and-structure)  
     - [NODE TYPES](#node-types)  
     - [Namespace](#namespace)  
