@@ -111,7 +111,7 @@ class Error:
     description: Optional[str] = str()
     """ Specifies a description of how the errors shall be used. """
 
-    arraysize: Optional[str] = None
+    arraysize: Optional[int] = None
     """
     Specifies the number of elements in the input parameter array.
     This key is only allowed if the datatype element specifies an array (ending with []).
