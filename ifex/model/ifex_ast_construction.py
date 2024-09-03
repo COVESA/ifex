@@ -99,6 +99,7 @@ def ifex_ast_to_dict(node, debug_context="") -> OrderedDict:
     # Optional, otherwise the type-checking constructor would have caught the
     # error.
 
+    #print(f"node is: {node}\n")
     for f in fields(node):
         item = getattr(node, f.name)
         if not is_empty(item):
