@@ -23,7 +23,7 @@ RUN scripts/install_python_version_in_pyenv.sh 3.12
 RUN pyenv global 3.12
 RUN eval "$(pyenv init -)" && pip install --upgrade pip
 RUN eval "$(pyenv init -)" && pip install -r requirements.txt
-RUN eval "$(pyenv init -)" && python setup.py develop
+RUN eval "$(pyenv init -)" && pip install -e .
 
 # Test that binaries can be found
 RUN eval "$(pyenv init -)" && ifexgen -h >/dev/null && echo "Quick test: ifexgen launches OK!"

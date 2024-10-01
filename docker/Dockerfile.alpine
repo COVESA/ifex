@@ -26,7 +26,7 @@ RUN python -m venv venv
 RUN chown -R ifex:ifex /ifex /home/ifex
 USER ifex
 RUN . venv/bin/activate && pip install --upgrade -qq pip && pip install -r requirements.txt
-RUN . venv/bin/activate && python setup.py develop
+RUN . venv/bin/activate && pip install -e .
 
 # Test that binaries can be found
 RUN . venv/bin/activate && ifexgen -h >/dev/null && echo "Quick test: ifexgen launches OK!"
