@@ -847,7 +847,7 @@ methods:
 |-----|-----------|
 | name | A single **str** |
 | description | A single **str** |
-| arraysize | A single **str** |
+| arraysize | A single **int** |
 | range | A single **str** |
 
 
