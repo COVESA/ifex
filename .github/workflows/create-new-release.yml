@@ -37,7 +37,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Install IFEX module
-        run: python setup.py develop
+        run: pip install -e .
 
       - name: Determine variables
         run: |
