@@ -683,7 +683,7 @@ class FundamentalTypes:
 
     ctypes = [
             # name, description, min value, max value
-            ["set", "A set of fundamental unsigned 8-bit integer", "N/A", "N/A"],
-            ["map", "A key-value mapping type", "N/A", "N/A"],
+            ["set", "A set (unique values), each of the same type. Format: set<ItemType>", "N/A", "N/A"],
+            ["map", "A key-value mapping type.  Format: map<keytype,valuetype>", "N/A", "N/A"],
             ["opaque", "Indicates a complex type which is not explicitly defined in this context.", "N/A","N/A"]
             ]
