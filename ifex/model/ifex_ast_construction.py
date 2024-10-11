@@ -76,7 +76,7 @@ def ifex_ast_to_dict(node, debug_context="") -> OrderedDict:
     """Given a root node, return a key-value mapping dict (which represents the YAML equivalent). The function is recursive. """
 
     if node is None:
-        raise TypeError(f"None-value should not be passed to function, {debug_context=}")
+        raise TypeError(f"None-value should not be passed to function, parent debug: {debug_context=}")
 
     # Strings and Ints are directly understood by the YAML output printer so just put them in.
     if is_simple_type(type(node)):
@@ -84,7 +84,7 @@ def ifex_ast_to_dict(node, debug_context="") -> OrderedDict:
 
     # In addition to dicts, we might have python lists, which will be output as lists in YAML
     #if is_list(node) or type(node) == list:
-    if type(node) == list:
+    if type(node) is list:
         ret = []
         for listitem in node:
             ret.append(ifex_ast_to_dict(listitem, debug_context=str(node)))
