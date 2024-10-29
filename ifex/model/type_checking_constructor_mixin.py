@@ -63,7 +63,11 @@ def add_constructor(cls):
 
         for name, value in list(zip(arg_names, args)) + list(kwargs.items()):
             if not is_correct_type(value, arg_types[name]):
-                raise TypeError(f'Object construction error: According to specification, value named \'{name}\' must be of type: {arg_types[name]}, but was instead: {type(value)!r}.')
+                try:
+                    nameinfo = f"Additional Info:  The object was named: {self.name}"
+                except:
+                    nameinfo = ""
+                raise TypeError(f'Object construction error for class {type(self)}: According to specification, value named \'{name}\' must be of type: {arg_types[name]}, but was instead: {type(value)!r}. {nameinfo}')
 
             # Assign field value
             setattr(self, name, value)
