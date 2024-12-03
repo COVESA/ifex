@@ -28,7 +28,7 @@ build_ubuntu:
 	@DOCKERFILE=docker/Dockerfile.ubuntu TAG=${IMAGE_NAME_U} make build_generic
 
 build_generic:
-	cd .. && ${CTR_TOOL} build --tag=${TAG}:latest -f ${DOCKERFILE} .
+	cd ../.. && ${CTR_TOOL} build --tag=${TAG}:latest -f ${DOCKERFILE} .
 
 # Targets to run containers
 run: run_alpine
