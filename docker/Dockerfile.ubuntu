@@ -4,7 +4,7 @@
 # This file is part of IFEX project
 # ---------------------------------------------------------------------------
 
-FROM ubuntu:23.04
+FROM ubuntu:24.04
 
 # Install what's needed to compile python from source using pyenv
 RUN apt-get update && apt-get install -y bash build-essential curl git libbz2-dev libffi-dev liblzma-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libssl-dev llvm lzma-dev make ncurses-dev python3-openssl python3 sudo tk-dev wget xz-utils zlib1g-dev
