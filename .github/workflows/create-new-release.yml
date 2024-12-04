@@ -63,7 +63,7 @@ jobs:
           tag_name: "${{ steps.vars.outputs.TAG }}"
           body: |
             The JSON Schema file for the IFEX Core IDL is a resulting artifact, generated from the internal model representation.
-            This one was generated from commit hash ${{ steps.vars.outputs.HASH }} and was assigned the release-name: ${{ steps.vars.outputs.TAG }}."
+            This one was generated from commit hash ${{ steps.vars.outputs.HASH }} and was assigned the release-name: ${{ steps.vars.outputs.TAG }}.
         env:
           GITHUB_TOKEN: "${{ github.token }}"
 
