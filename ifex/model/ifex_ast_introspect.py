@@ -15,7 +15,7 @@ that process the IFEX AST, or any other model designed in the same way.
 """
 
 import re
-import ifex_ast
+import ifex.model.ifex_ast as ifex_ast
 from dataclasses import is_dataclass, fields
 from typing import get_args, get_origin, List, Optional, Union, Any, ForwardRef
 import typing
@@ -291,4 +291,5 @@ if __name__ == "__main__":
     print(f"{is_ifex_variant_typedef(y)=}")
     print(f"The types of y are: {get_variant_types(y)}")
     print(f"The types of x are: {get_variant_types(x)}")
-    print(f"The types of variant<this, that ,and,another > are: {get_variant_types("variant<this, that ,and,another >")}")
+    s = "variant<this, that ,and,another >"
+    print(f"The types of {s} are: {get_variant_types(s)}")

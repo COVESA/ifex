@@ -1,0 +1,38 @@
+# SPDX-FileCopyrightText: Copyright (c) 2022 MBition GmbH.
+# SPDX-License-Identifier: MPL-2.0
+
+name: named_service
+description: This is it.
+major_version: 3
+minor_version: 0
+
+namespaces:
+    - name: first_nested
+      description: first namespace description
+
+      methods:
+        - name: another_method
+          description: this is yet another sample method
+          input:
+            - name: arg1
+              datatype: variant<string, uint32 >
+
+      structs:
+        - name: MyStruct
+          members:
+            - name: x
+              datatype: uint32
+            - name: y
+              datatype: string
+
+      typedefs:
+        - name: MyVariant
+          description: Test of typedefed variant
+          datatypes:
+            - MyStruct
+            - string
+            - uint32
+        - name: MyVariant2
+          description: Test 2 of typedefed variant
+          datatype: variant<uint32, MyStruct>
+
