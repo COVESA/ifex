@@ -15,7 +15,7 @@ that process the IFEX AST, or any other model designed in the same way.
 """
 
 import re
-import ifex_ast
+import ifex.model.ifex_ast as ifex_ast
 from dataclasses import is_dataclass, fields
 from typing import get_args, get_origin, List, Optional, Union, Any, ForwardRef
 import typing
