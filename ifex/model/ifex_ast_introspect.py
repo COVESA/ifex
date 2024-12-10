@@ -291,5 +291,6 @@ if __name__ == "__main__":
     print(f"{is_ifex_variant_typedef(y)=}")
     print(f"The types of y are: {get_variant_types(y)}")
     print(f"The types of x are: {get_variant_types(x)}")
-    print(f"The types of variant<this, that ,and,another > are: {get_variant_types("variant<this, that ,and,another >")}")
+    s = "variant<this, that ,and,another >"
+    print(f"The types of {s} are: {get_variant_types(s)}")
 
