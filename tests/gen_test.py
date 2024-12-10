@@ -11,6 +11,7 @@ from typing import Optional
 import yaml
 
 from ifex.model import ifex_ast, ifex_parser, ifex_generator
+import ifex.model.ifex_ast_introspect as introspect
 import dacite, pytest
 import os
 
@@ -53,6 +54,28 @@ def test_ast_gen():
     assert service.name == "named_service"
     assert service.major_version == 3
     assert service.minor_version == 0
+
+
+# This does not assert anything -> but if printouts are captured they can be studied
+def test_print():
+    ast = ifex_parser.get_ast_from_yaml_file(os.path.join(TestPath, 'test.variant', 'input.yaml'))
+    print(yaml.dump(ast, sort_keys=False))
+    print(introspect.get_variant_types(ast.namespaces[0].typedefs[0]))
+
+# Test expectations and helper-functions on the variant type
+def test_variant():
+    ast = ifex_parser.get_ast_from_yaml_file(os.path.join(TestPath, 'test.variant', 'input.yaml'))
+    # Method argument
+    v0type = ast.namespaces[0].methods[0].input[0].datatype
+    assert not introspect.is_ifex_variant_typedef(v0type)
+    assert introspect.is_ifex_variant_shortform(v0type)
+
+    # Typdefs
+    v1 = ast.namespaces[0].typedefs[0]
+    v2 = ast.namespaces[0].typedefs[1]
+    assert introspect.is_ifex_variant_typedef(v1)
+    assert introspect.is_ifex_variant_typedef(v2)
+    assert introspect.is_ifex_variant_shortform(v2.datatype)
 
 
 def test_ast_manual():

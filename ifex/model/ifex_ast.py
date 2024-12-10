@@ -436,8 +436,11 @@ class Typedef:
     name: str
     """ Specifies the name of the typedef. """
 
-    datatype: str
+    datatype: Optional[str] = str()
     """ Specifies datatype name of the typedef. """
+
+    datatypes: Optional[List[str]] = field(default_factory=EmptyList)
+    """ If specified, then the type is a variant type.  At least two datatypes should be listed.  The single datatype: field must *not* be used at the same time. """
 
     description: Optional[str] = str()
     """ Specifies the description of the typedef. """
@@ -685,5 +688,6 @@ class FundamentalTypes:
             # name, description, min value, max value
             ["set", "A set (unique values), each of the same type. Format: set<ItemType>", "N/A", "N/A"],
             ["map", "A key-value mapping type.  Format: map<keytype,valuetype>", "N/A", "N/A"],
+            ["variant", "A variant (union) type that can carry any of a predefined set of types, akin to Union in C.  Format: variant<type1,type2,type3...>", "N/A", "N/A"],
             ["opaque", "Indicates a complex type which is not explicitly defined in this context.", "N/A","N/A"]
             ]
