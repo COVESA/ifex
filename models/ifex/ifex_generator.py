@@ -19,7 +19,7 @@ IFEX code-generation functions
 
 # For other features from parser module
 from typing import Any
-from ifex.templates import JinjaTemplateEnv
+from output_filters.templates import JinjaTemplateEnv
 
 # Module global - probably soon to be modified to run-time instantiation of a
 # JinjaTemplateEnv instance instead.
