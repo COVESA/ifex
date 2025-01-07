@@ -253,12 +253,13 @@ typedefs:
 |Field Name|Contents|
 |-----|-----------|
 | name | A single **str** |
-| datatype | A single **str** |
 
 #### Optional fields for Typedef:
 
 |Field Name|Contents|
 |-----|-----------|
+| datatype | A single **str** |
+| datatypes | A list of **str**_s_ |
 | description | A single **str** |
 | arraysize | A single **int** |
 | min | A single **int** |

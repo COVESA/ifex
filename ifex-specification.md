@@ -13,7 +13,7 @@ License: Creative Commons Attribution 4.0 International
 License (CC-BY-4.0), described [here](https://creativecommons.org/licenses/by/4.0/)
 
 <!-- Heading and TOC -->
-Documentation generated from: 2b9fbda78732ac7fa6a9847e5a868ee21b634c07
+Documentation generated from: 90854b104b5ec260fe40230ab8c980abb7532765
 
 - [FEATURES](#features)  
     - [Features that are not included _in the core IDL_, but worth describing](#features-that-are-not-included-in-the-core-idl-but-worth-describing)  
@@ -958,12 +958,13 @@ typedefs:
 |Field Name|Contents|
 |-----|-----------|
 | name | A single **str** |
-| datatype | A single **str** |
 
 #### Optional fields for Typedef:
 
 |Field Name|Contents|
 |-----|-----------|
+| datatype | A single **str** |
+| datatypes | A list of **str**_s_ |
 | description | A single **str** |
 | arraysize | A single **int** |
 | min | A single **int** |
