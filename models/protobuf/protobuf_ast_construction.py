@@ -13,7 +13,7 @@ likely to be used in Protobuf-to/from-IFEX model conversions.
 
 from dataclasses import is_dataclass
 from models.ifex.type_checking_constructor_mixin import add_constructor
-import other.protobuf.protobuf_ast as protobuf_ast
+import models.protobuf.protobuf_ast as protobuf_ast
 
 def add_constructors_to_protobuf_ast_model() -> None:
     """ Mix-in the type-checking constructor support into each of the protobuf_ast classes: """
