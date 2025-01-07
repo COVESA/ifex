@@ -9,23 +9,23 @@ jobs:
 
       - name: Build containers
         run: |
-          cd docker
+          cd packaging/docker
           make build_alpine
           make build_ubuntu
 
       - name: Test Interactive Commands
         run: |
-          cd docker
+          cd packaging/docker
           variant=alpine make run_interactivity_test
           variant=ubuntu make run_interactivity_test_pyenv
 
       - name: Run unit tests in Ubuntu container
         run: |
-          cd docker
+          cd packaging/docker
           make run_ubuntu_test
 
       - name: Run unit tests in Alpine container
         run: |
-          cd docker
+          cd packaging/docker
           make run_alpine_test
 
