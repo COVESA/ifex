@@ -36,7 +36,7 @@ or [tox.ini](./tox.ini))
 
 ### Container use
 
-As an alternative to installation instructions below, all the installations can also be hidden in a container.  Refer to the [README in the docker/ directory](./docker/README.md) for running the tools using containers instead.
+As an alternative to installation instructions below, all the installations can also be hidden in a container.  Refer to the [README in the packaging/docker/ directory](./packaging/docker/README.md) for running the tools using containers instead.
 
 ## Installing and use python version(s) with `pyenv`
 

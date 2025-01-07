@@ -22,10 +22,10 @@ default:
 build: build_ubuntu
 
 build_alpine:
-	@DOCKERFILE=docker/Dockerfile.alpine TAG=${IMAGE_NAME_A} make build_generic
+	@DOCKERFILE=packaging/docker/Dockerfile.alpine TAG=${IMAGE_NAME_A} make build_generic
 
 build_ubuntu:
-	@DOCKERFILE=docker/Dockerfile.ubuntu TAG=${IMAGE_NAME_U} make build_generic
+	@DOCKERFILE=packaging/docker/Dockerfile.ubuntu TAG=${IMAGE_NAME_U} make build_generic
 
 build_generic:
 	cd ../.. && ${CTR_TOOL} build --tag=${TAG}:latest -f ${DOCKERFILE} .
@@ -45,11 +45,11 @@ run_ubuntu:
 
 run_alpine_test:
 	${CTR_TOOL} rm -f ${CONTAINER_NAME}
-	${CTR_TOOL} run -t -h "${CONTAINER_HOSTNAME}" -v ${PWD}/..:/work${ZFLAG} --name=${CONTAINER_NAME} ${IMAGE_NAME_A}:latest /ifex/venv/bin/pytest /work/tests
+	${CTR_TOOL} run -t -h "${CONTAINER_HOSTNAME}" -v ${PWD}/../..:/work${ZFLAG} --name=${CONTAINER_NAME} ${IMAGE_NAME_A}:latest /ifex/venv/bin/pytest /work/tests
 
 run_ubuntu_test:
 	${CTR_TOOL} rm -f ${CONTAINER_NAME}
-	${CTR_TOOL} run -t -h "${CONTAINER_HOSTNAME}" -v ${PWD}/..:/work${ZFLAG} --name=${CONTAINER_NAME} ${IMAGE_NAME_U}:latest /home/ubuntu/.pyenv/shims/pytest /ifex/tests
+	${CTR_TOOL} run -t -h "${CONTAINER_HOSTNAME}" -v ${PWD}/../..:/work${ZFLAG} --name=${CONTAINER_NAME} ${IMAGE_NAME_U}:latest /home/ubuntu/.pyenv/shims/pytest /ifex/tests
 
 # For container variants that set up using bashrc
 # Must be run by setting $variant!
