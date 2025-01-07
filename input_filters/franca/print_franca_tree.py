@@ -15,7 +15,7 @@ for p in ['pyfranca', 'pyfranca/pyfranca']:
         sys.path.append(os.path.join(mydir,p))
 
 import oyaml
-import other.franca.pyfranca.pyfranca as pyfranca
+import input_filters.franca.pyfranca.pyfranca as pyfranca
 from collections import OrderedDict
 
 def is_simple_type(t) -> bool:
