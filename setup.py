@@ -24,8 +24,8 @@ setup(name='ifex',
       },
       entry_points='''
             [console_scripts]
-            ifexgen=ifex.scripts.generator:ifex_generator_run
-            ifexgen_dbus=ifex.scripts.generator_dbus:ifex_dbus_generator_run
-            ifexconv_protobuf=ifex.scripts.protobuf_ifex:protobuf_to_ifex_run
+            ifexgen=packaging.entrypoints.generator:ifex_generator_run
+            ifexgen_dbus=packaging.entrypoints.generator_dbus:ifex_dbus_generator_run
+            ifexconv_protobuf=packaging.entrypoints.protobuf_ifex:protobuf_to_ifex_run
       '''
       )
