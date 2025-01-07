@@ -63,8 +63,8 @@ jobs:
 
       - name: Run JSON-Schema generator
         run: |
-          python ifex/schema/ifex_to_json_schema.py >temp-schema
-          python ifex/schema/pretty_print_json.py temp-schema >ifex-core-idl-schema.json
+          python output_filters/schema/ifex_to_json_schema.py >temp-schema
+          python output_filters/schema/pretty_print_json.py temp-schema >ifex-core-idl-schema.json
 
       - name: Clone uservices repository
         run: |
