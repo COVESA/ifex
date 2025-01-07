@@ -3,7 +3,7 @@
 
 # User-invocation script for protobuf-to-ifex
 
-from other.protobuf import protobuf_to_ifex
+from input_filters.protobuf import protobuf_to_ifex
 import argparse
 
 def protobuf_to_ifex_run():

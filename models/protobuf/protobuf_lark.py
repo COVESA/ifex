@@ -4,7 +4,7 @@
 # This file is part of the IFEX project
 
 from lark import Lark, logger, Tree, Token
-from other.protobuf.protobuf_ast import Option, EnumField, Enumeration, MapField, Field, Import, Message, RPC, Service, Proto
+from models.protobuf.protobuf_ast import Option, EnumField, Enumeration, MapField, Field, Import, Message, RPC, Service, Proto
 import lark
 import re
 import sys
@@ -39,7 +39,7 @@ import sys
 
 
 # Use protobuf_construction mixin
-import other.protobuf.protobuf_ast_construction as protobuf_ast_construction
+import models.protobuf.protobuf_ast_construction as protobuf_ast_construction
 protobuf_ast_construction.add_constructors_to_protobuf_ast_model()
 
 # Remove lines matching regexp
