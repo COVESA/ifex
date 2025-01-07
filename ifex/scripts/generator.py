@@ -1,9 +1,9 @@
 # SPDX-FileCopyrightText: Copyright (c) 2022 MBition GmbH.
 # SPDX-License-Identifier: MPL-2.0
 
-from ifex.model.ifex_generator import jinja_env
-from ifex.model.ifex_generator import gen
-from ifex.model.ifex_parser import get_ast_from_yaml_file
+from models.ifex.ifex_generator import jinja_env
+from models.ifex.ifex_generator import gen
+from models.ifex.ifex_parser import get_ast_from_yaml_file
 import argparse, dacite
 
 def ifex_generator_run():

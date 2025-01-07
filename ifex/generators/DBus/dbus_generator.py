@@ -5,9 +5,9 @@
 # Custom generator for D-Bus XML format
 # ----------------------------------------------------------------------------
 
-from ifex.model.ifex_generator import jinja_env, gen
-from ifex.model.ifex_parser import get_ast_from_yaml_file
-from ifex.generators.DBus import dbus_types
+from models.ifex.ifex_generator import jinja_env, gen
+from models.ifex.ifex_parser import get_ast_from_yaml_file
+from models.DBus import dbus_types
 import lxml.etree as etree
 import sys
 

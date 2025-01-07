@@ -23,7 +23,7 @@ jobs:
 
       - name: Generate syntax document from source
         run: |
-          python ifex/model/ifex_ast_doc.py >docs/generated-syntax.md
+          python models/ifex/ifex_ast_doc.py >docs/generated-syntax.md
 
       - name: Join docs into one specification
         run: |

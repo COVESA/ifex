@@ -15,7 +15,7 @@ VSC parser/reader to be used by generators and other tools
 
 import yaml, dacite
 from typing import Dict, Any
-from ifex.model.ifex_ast import AST
+from models.ifex.ifex_ast import AST
 
 
 def read_yaml_file(filename) -> str:

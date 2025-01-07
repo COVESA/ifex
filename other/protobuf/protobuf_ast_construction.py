@@ -12,7 +12,7 @@ likely to be used in Protobuf-to/from-IFEX model conversions.
 # is and why.  It follows the exact same pattern.
 
 from dataclasses import is_dataclass
-from ifex.model.type_checking_constructor_mixin import add_constructor
+from models.ifex.type_checking_constructor_mixin import add_constructor
 import other.protobuf.protobuf_ast as protobuf_ast
 
 def add_constructors_to_protobuf_ast_model() -> None:
