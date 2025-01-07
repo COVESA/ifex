@@ -4,7 +4,7 @@ import glob
 from setuptools import setup
 from setuptools import find_packages
 
-from ifex.templates import TemplateDir
+from output_filters.templates import TemplateDir
 
 def get_template_files():
       paths = []

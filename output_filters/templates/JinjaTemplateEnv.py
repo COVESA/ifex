@@ -4,7 +4,7 @@
 import os
 import jinja2
 from typing import Dict, Any
-from ifex.templates import TemplateDir
+from output_filters.templates import TemplateDir
 
 class JinjaTemplateEnv:
 
