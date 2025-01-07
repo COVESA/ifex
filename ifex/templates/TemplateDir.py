@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: Copyright (c) 2022 MBition GmbH.
 # SPDX-License-Identifier: MPL-2.0
 
-from ifex.model import ifex_ast
-from ifex.model import ifex_ast_doc
+from models.ifex import ifex_ast
+from models.ifex import ifex_ast_doc
 import os
 import sys
 

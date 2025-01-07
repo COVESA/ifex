@@ -12,13 +12,13 @@ for p in ['pyfranca', 'pyfranca/pyfranca']:
     if p not in sys.path:
         sys.path.append(os.path.join(mydir,p))
 
-import ifex.model.ifex_ast as ifex
+import models.ifex.ifex_ast as ifex
 import other.franca.pyfranca.pyfranca as pyfranca
 import other.franca.rule_translator as m2m
 import pyfranca.ast as franca
 import re
 
-from ifex.model.ifex_ast_construction import add_constructors_to_ifex_ast_model, ifex_ast_as_yaml
+from models.ifex.ifex_ast_construction import add_constructors_to_ifex_ast_model, ifex_ast_as_yaml
 from other.franca.rule_translator import Preparation, Constant, Unsupported
 
 def translate_type_name(francaitem):

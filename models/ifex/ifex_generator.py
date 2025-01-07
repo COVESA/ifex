@@ -109,7 +109,7 @@ jinja_env.set_template_env(gen=gen)
 # ----------------------------------------------------------------
 # MAIN = Standalone test Code only, not normal use.
 import sys
-from ifex.model.ifex_parser import get_ast_from_yaml_file
+from models.ifex.ifex_parser import get_ast_from_yaml_file
 if __name__ == '__main__':
     yaml_file = sys.argv[1]
     template_dir = sys.argv[2]

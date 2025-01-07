@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 import yaml
 from collections import OrderedDict
-from ifex.model.stable_sort_ifex import ifex_stable_order, represent_ordereddict
+from models.ifex.stable_sort_ifex import ifex_stable_order, represent_ordereddict
 
 # The program compares two IFEX (YAML) files after normalizing ("sorting",
 # basically) the order of elements so that the comparison becomes more relevant.

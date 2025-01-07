@@ -10,13 +10,13 @@ from typing import Optional
 
 import yaml
 
-from ifex.model import ifex_ast, ifex_parser, ifex_generator
-import ifex.model.ifex_ast_introspect as introspect
+from models.ifex import ifex_ast, ifex_parser, ifex_generator
+import models.ifex.ifex_ast_introspect as introspect
 import dacite, pytest
 import os
 
-from ifex.model.ifex_ast import Argument, AST, Namespace, Interface, Method
-from ifex.model.ifex_ast_construction import ifex_ast_as_yaml
+from models.ifex.ifex_ast import Argument, AST, Namespace, Interface, Method
+from models.ifex.ifex_ast_construction import ifex_ast_as_yaml
 
 TestPath = os.path.dirname(os.path.realpath(__file__))
 

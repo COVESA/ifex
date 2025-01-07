@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2023 Novaspring AB
 # SPDX-License-Identifier: MPL-2.0
 
-from ifex.model.ifex_ast import FundamentalTypes
+from models.ifex.ifex_ast import FundamentalTypes
 
 print("|Name|Description|Min value|Max value|")
 print("|----|-----------|---------|---------|")

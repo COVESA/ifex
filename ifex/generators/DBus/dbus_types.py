@@ -4,7 +4,7 @@
 # Type resolver for the D-Bus XML format generator
 # ----------------------------------------------------------------------------
 
-from ifex.model.ifex_ast import (
+from models.ifex.ifex_ast import (
     AST,
     Namespace,
     Interface,
@@ -13,7 +13,7 @@ from ifex.model.ifex_ast import (
     Struct,
     Typedef,
 )
-from ifex.model import ifex_parser
+from models.ifex import ifex_parser
 import sys
 
 # D-Bus basic types, as defined in [D-Bus Specification](https://dbus.freedesktop.org/doc/dbus-specification.html#basic-types)

@@ -26,8 +26,8 @@ likely to be used in X-to-IFEX model conversions.
 # With __init__ it is possible to create an object tree in a straight forward
 # and expected way, including some type checks:
 #
-#    from ifex.model import ifex_ast_construction 
-#    from ifex.model.ifex_ast import Namespace, Interface, ...
+#    from models.ifex import ifex_ast_construction 
+#    from models.ifex.ifex_ast import Namespace, Interface, ...
 #
 #    # Initialize support:
 #    ifex_ast_construction.add_constructors_to_ifex_ast_model()
@@ -45,8 +45,8 @@ likely to be used in X-to-IFEX model conversions.
 from collections import OrderedDict
 from dataclasses import is_dataclass, fields
 from datetime import date, datetime
-from ifex.model import ifex_ast
-from ifex.model.type_checking_constructor_mixin import add_constructor
+from models.ifex import ifex_ast
+from models.ifex.type_checking_constructor_mixin import add_constructor
 
 # Use the oyaml library because it supports OrderedDict. We can output keys in
 # the order they are defined in the AST classes (e.g. "name" comes first!)
@@ -113,7 +113,7 @@ def ifex_ast_as_yaml(node):
 # ----------------- TEST CODE BELOW --------------------
 
 if __name__ == '__main__':
-    from ifex.model.ifex_ast import AST, Namespace, Interface, Method, Argument
+    from models.ifex.ifex_ast import AST, Namespace, Interface, Method, Argument
 
     # How to create a AST representation in code:
     root = AST('test')

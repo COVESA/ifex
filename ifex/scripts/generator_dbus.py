@@ -4,8 +4,8 @@
 # User-invocation script for D-Bus generation
 # (small wrapper around the main implementation)
 
-from ifex.model.ifex_parser import get_ast_from_yaml_file
-from ifex.generators.DBus import dbus_generator
+from models.ifex.ifex_parser import get_ast_from_yaml_file
+from output_filters.DBus import dbus_generator
 import argparse, dacite
 
 def ifex_dbus_generator_run():
