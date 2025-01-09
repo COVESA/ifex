@@ -234,8 +234,7 @@ methods:
 
 Dataclass used to represent IFEX Typedef.
 
-Each typedef is an alias to an existing fundamental type, defined type, or enumerator, giving it an additional name.
-The new data type can be used by other datatypes, method & event parameters, and properties.
+A Typedef is an alias to an existing fundamental type or defined type, including structs, enumerators, etc.  It can also be used to name and define a variant type.  The new data type name can be used in the definition of other datatypes, method- and event-parameters, and properties.
 
 A typedefs list object example is given below:
 
@@ -248,9 +247,21 @@ typedefs:
     description: The movement of a seat component
 ```
 
-Variant types:
+**Variant types**
 
 The fields `datatype` and `datatypes` are mutually exclusive - only one of them may have a value.  The field `datatypes` is used to specify multiple types associated with this type name.  Doing this makes it a `variant` type.  It is also possible to define a variant type using the `variant<a,b,c>`-style syntax in any location requiring a datatype, but the ability to specify it as a list can be more useful if the number of types is large.  Handling this as a list can also allow Layers to extend a variant type more conveniently.
+
+```yaml
+typedefs:
+  - name: StringOrStruct
+    datatypes:
+      - string
+      - MyStruct
+      - OtherStruct
+    description: The Thing, represented in one of 3 ways.
+```
+
+**NOTE!** The fields `datatype` and `datatypes` are defined as optional in the language model, but one of them must be defined.
 
 
 #### Mandatory fields for Typedef:
