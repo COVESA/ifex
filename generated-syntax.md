@@ -248,6 +248,11 @@ typedefs:
     description: The movement of a seat component
 ```
 
+Variant types:
+
+The fields `datatype` and `datatypes` are mutually exclusive - only one of them may have a value.  The field `datatypes` is used to specify multiple types associated with this type name.  Doing this makes it a `variant` type.  It is also possible to define a variant type using the `variant<a,b,c>`-style syntax in any location requiring a datatype, but the ability to specify it as a list can be more useful if the number of types is large.  Handling this as a list can also allow Layers to extend a variant type more conveniently.
+
+
 #### Mandatory fields for Typedef:
 
 |Field Name|Contents|

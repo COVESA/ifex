@@ -13,7 +13,7 @@ License: Creative Commons Attribution 4.0 International
 License (CC-BY-4.0), described [here](https://creativecommons.org/licenses/by/4.0/)
 
 <!-- Heading and TOC -->
-Documentation generated from: 90854b104b5ec260fe40230ab8c980abb7532765
+Documentation generated from: cd1c2f1ff286d2be08dbbafa63fdbe48ff184f92
 
 - [FEATURES](#features)  
     - [Features that are not included _in the core IDL_, but worth describing](#features-that-are-not-included-in-the-core-idl-but-worth-describing)  
@@ -952,6 +952,11 @@ typedefs:
     max: 1000
     description: The movement of a seat component
 ```
+
+Variant types:
+
+The fields `datatype` and `datatypes` are mutually exclusive - only one of them may have a value.  The field `datatypes` is used to specify multiple types associated with this type name.  Doing this makes it a `variant` type.  It is also possible to define a variant type using the `variant<a,b,c>`-style syntax in any location requiring a datatype, but the ability to specify it as a list can be more useful if the number of types is large.  Handling this as a list can also allow Layers to extend a variant type more conveniently.
+
 
 #### Mandatory fields for Typedef:
 
