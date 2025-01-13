@@ -3,14 +3,17 @@
 # Preconditions:
 # 1) The tag that is determined from the commit message must not already exist
 # 2) The workflow does not work if pushing an existing tag.  
-# 3) The precondition ensures this workflow is NOT run if no RELEASE-TAG field.
+# 3) The precondition ensures this workflow is NOT run if a RELEASE-TAG is
+#    not found in the commit message.
 #
 # Action steps:
-# 1) Commit and add the RELEASE-TAG in message
-# 2) Tag locally with the tag
-#   DO NOT PUSH THE TAG
+# 1) Set package version number in setup.py and add RELEASE-TAG: line to the commit message
+# 2) Tag locally with the tag name
+#   DO NOT PUSH THE TAG! *
 # 3) Push commit (possibly via a pull request)
-# 4) When pushed or merge to master, the release process will create the remote tag and the release
+# 4) When pushed or merged to master, the release process will create the remote tag and the release
+#    (Note: Since we use and expect fast-forward merges, "merging" here means fast forwarding
+#     and therefore the local tag should be on the same commit as the one created remotely.)
 
 name: Create release tag and publish JSON Schema
 
