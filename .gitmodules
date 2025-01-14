@@ -1,0 +1,3 @@
+[submodule "input_filters/franca/pyfranca"]
+	path = input_filters/franca/pyfranca
+	url = https://github.com/gunnarx/pyfranca
