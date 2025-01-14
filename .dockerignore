@@ -2,8 +2,13 @@
 *
 
 # Except this...
-!ifex
-!scripts
+!input_filters/
+!models/
+!output_filters/
+!packaging/
+!scripts/
+!tests/
+!transformers/
 !setup.py
-!tests
 !requirements.txt
+!tox.ini
