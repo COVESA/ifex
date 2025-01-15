@@ -6,7 +6,7 @@
 
 ## Table of Contents
 
-Documentation generated from: 8b82cf9e114b9d5c94b4ea783da640b2c062039e
+Documentation generated from: 615a3cc63c3bf2671c0c648715ade2a469822bf7
 
 - [Mapping documents](#mapping-documents)  
 - [Datatype mapping](#datatype-mapping)  
@@ -288,7 +288,7 @@ A simple generator (with only one template) can be done like this:
 
 Unless you need to add more logic, generating one input file with one (or several)
 templates is basically already available if ifex_generator.py is called as a
-main program.  You specify the directory name (relative to `<project-dir>/ifex/templates`)
+main program.  You specify the directory name (relative to `<project-dir>/output_filters/templates`)
 where the template(s) is stored.  Note that `setup.py` "installs" an executable entrypoint
 `ifexgen` to call the program:
 
@@ -302,7 +302,7 @@ An advanced generator (with several templates) can be done like this:
 * Import the ifex_generator.py and ifex_parser.py, and TemplateDir modules.
 * Get the needed Service description file(s) (YAML), for example from command line argument
 * For each file, get the Abstract Syntax Tree representation by calling `ifex_parser.get_ast_from_yaml_file(service_desc_file)`
-* Write templates according to (some, not all) node types.  You can call `gen(node)` or `gen(node, <Template>)` from within a template - see details below.  Templates must be under a specific sub-directory of `<project-dir>/ifex/templates` and must be named with the naming convention such that the node type is mentioned first (see template chapter).
+* Write templates according to (some, not all) node types.  You can call `gen(node)` or `gen(node, <Template>)` from within a template - see details below.  Templates must be under a specific sub-directory of `<project-dir>/output_filters/templates` and must be named with the naming convention such that the node type is mentioned first (see template chapter).
 * Once the template directory is known, ee-initialize the TemplateDir object if needed.  This will populate the default templates data structure such that gen() knows which template to use.  It automatically uses the naming of the templates to know which template is for which node type.
 * Implement the `gen()` function, normally by delegating directly into `ifex_generator.gen()`, but you can put your own logic here if needed.
 * Set the jinja environment, passing in the gen() and any other symbols that must be callable from within Jinja templates.
@@ -392,7 +392,7 @@ gen(node, 'My-alternative-method-template.tpl')
 ### Naming convention
 The only strict requirement is that all templates to be used by automatic type-to-template mapping in the gen() function, must be within the same subdirectory and must be named according to the naming conventioned mentioned before.
 
-Templates can be stored in the sub-directories of the ifex/templates/ directory.
+Templates can be stored in the sub-directories of the output_filters/templates/ directory.
 
 The intended target format (output format) is normally clear from the naming of the subdirectory.  E.g. "protobuf", or "D-Bus" or "ARXML" or other output format.
 

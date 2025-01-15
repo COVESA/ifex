@@ -6,14 +6,14 @@ The documentation, [published](https://covesa.github.io/ifex) on GitHub pages, i
 
 - The [GitHub actions workflow](/.github/workflows/generate_docs.yml) encodes the build steps.
 - [markup-markdown](https://github.com/hailiang-wang/markup-markdown) is used to combine several markdown files into one.  Some markdown files are static and stored in [[doc-parts]], whereas some are generated from source files.  The naming convention for the definition files are `*.m.md`
-- [ifex_ast_doc.py](../ifex/model/ifex_ast_doc.py) generates the main syntax documentation directly from the datatypes used in the internal model AST.  The language definition for the YAML based IDL represents the internal object model.  In the end, both the program behavior _and the documentation of it_ is defined from the python source definition in [ifex_ast.py](../ifex/model/ifex_ast.py)
+- [ifex_ast_doc.py](../models/ifex/ifex_ast_doc.py) generates the main syntax documentation directly from the datatypes used in the internal model AST.  The language definition for the YAML based IDL represents the internal object model.  In the end, both the program behavior _and the documentation of it_ is defined from the python source definition in [ifex_ast.py](../models/ifex/ifex_ast.py)
 - The script [create-toc.py](create-toc.py) is used to generate a Table of Contents for the document.
 
 ## Source files:
 
 - [def-specification.stage1.m.md](./def-specification.stage1.m.md).  Lists the parts required to produce the main specification.
 - [def-specification.stage2.m.md](./def-specification.stage2.m.md).  To combine the specification with the table-of-contents.
-- [ifex_ast.py](../ifex/model/ifex_ast.py) is the python source that is interpreted to produce `generated-syntax.md` which is later included as the Syntax chapter in the specification.
+- [ifex_ast.py](../models/ifex/ifex_ast.py) is the python source that is interpreted to produce `generated-syntax.md` which is later included as the Syntax chapter in the specification.
 - [def-developers-manual.m.md](./def-developers-manual.m.md) lists the parts required to produce the developer documentation. (Work in progress)
 
 ## Build sequence
