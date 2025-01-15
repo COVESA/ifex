@@ -132,15 +132,21 @@ Note:  In this case, tox takes care of calling `pip` and `setup.py` to install t
 
 Regardless of which type of virtual environment (if any) you use, it is required to install the IFEX package into your python environment, and to install needed dependencies with pip.
 
+0. **If you use a virtual environment, remember to first activate it!**  
+For example:
+```
+source venv/bin/activate
+```
 
 1. Install dependencies:
 ```
 pip install -r requirements.txt
 ```
 
-2. Install the IFEX provided modules into your virtual environment)
+2. Install the IFEX provided modules into your virtual environment
+The following installs the package in develop mode (using setup.py)
 ```
-python setup.py develop
+pip install -e .
 ```
 
 ## Trying it out
@@ -148,7 +154,7 @@ python setup.py develop
 Installing the IFEX tools using `setup.py` creates some convenient
 executable shims, e.g. `ifexgen`, `ifexgen_dbus`, `ifexconv_protobuf`, ...
 
-If those commands are not in your environment, try setting up python virtual environment and make sure setup.py runs correctly.  After that, they should be in the `$PATH` variable and possible to run.
+If those commands are not in your environment, try setting up python virtual environment and make sure pip install -e (setup.py) runs correctly.  After that, they should be in the `$PATH` variable and possible to run.
 
 To run a generic code generator and specify an output template:
 
