@@ -1,4 +1,4 @@
-Documentation generated from: 859e7711d4a86d1d27cd251faacb808a71ccff58
+Documentation generated from: a73515c73bd79c910fe26d919649eee9a4303129
 
 - [Mapping documents](#mapping-documents)  
 - [Datatype mapping](#datatype-mapping)  

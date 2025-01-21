@@ -1,6 +1,9 @@
 # IFEX CORE SPECIFICATION
 
-(C) 2022, 2023 - MBition GmbH  
+<img src="docs/images/IFEX-Logo-updated-turquoise%201.svg" alt="IFEX Logo Turquoise SVG" width="400" height="157">
+
+(C) 2022-2025 - MBition GmbH  
+(C) 2023 - Novaspring AB
 (C) 2022 - COVESA  
 (C) 2021 - Magnus Feuer  
 
@@ -13,7 +16,7 @@ License: Creative Commons Attribution 4.0 International
 License (CC-BY-4.0), described [here](https://creativecommons.org/licenses/by/4.0/)
 
 <!-- Heading and TOC -->
-Documentation generated from: 859e7711d4a86d1d27cd251faacb808a71ccff58
+Documentation generated from: a73515c73bd79c910fe26d919649eee9a4303129
 
 - [FEATURES](#features)  
     - [Features that are not included _in the core IDL_, but worth describing](#features-that-are-not-included-in-the-core-idl-but-worth-describing)  
