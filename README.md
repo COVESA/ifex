@@ -1,5 +1,7 @@
 # Interface Exchange framework (IFEX)
 
+<img src="docs/images/IFEX-Logo-updated-turquoise%201.svg" alt="IFEX Logo Turquoise SVG" width="300" height="118">
+
 This repository includes:
 
 1. Specifications and documentation
