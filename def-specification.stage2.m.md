@@ -1,6 +1,6 @@
 # IFEX CORE SPECIFICATION
 
-<img src="https://github.com/COVESA/ifex_private/blob/master/docs/images/IFEX-Logo-updated-turquoise%201.svg?raw=true" alt="IFEX Logo Turquoise SVG" width="400" height="157">
+<img src="https://github.com/COVESA/ifex/blob/master/docs/images/IFEX-Logo-updated-turquoise%201.svg?raw=true" alt="IFEX Logo Turquoise SVG" width="400" height="157">
 
 (C) 2022-2025 - MBition GmbH  
 (C) 2023 - Novaspring AB

@@ -1,6 +1,6 @@
 # IFEX CORE SPECIFICATION
 
-<img src="https://github.com/COVESA/ifex_private/blob/master/docs/images/IFEX-Logo-updated-turquoise%201.svg?raw=true" alt="IFEX Logo Turquoise SVG" width="400" height="157">
+<img src="https://github.com/COVESA/ifex/blob/master/docs/images/IFEX-Logo-updated-turquoise%201.svg?raw=true" alt="IFEX Logo Turquoise SVG" width="400" height="157">
 
 (C) 2022-2025 - MBition GmbH  
 (C) 2023 - Novaspring AB
@@ -16,7 +16,7 @@ License: Creative Commons Attribution 4.0 International
 License (CC-BY-4.0), described [here](https://creativecommons.org/licenses/by/4.0/)
 
 <!-- Heading and TOC -->
-Documentation generated from: 72c141746b4ead44280160ae9a361b8b043f8cec
+Documentation generated from: 6a5c55b024beec7a444c73d68103f86256441dea
 
 - [FEATURES](#features)  
     - [Features that are not included _in the core IDL_, but worth describing](#features-that-are-not-included-in-the-core-idl-but-worth-describing)  
