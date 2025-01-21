@@ -1,6 +1,9 @@
 # IFEX CORE SPECIFICATION
 
-(C) 2022, 2023 - MBition GmbH  
+<img src="docs/images/IFEX-Logo-updated-turquoise%201.svg" alt="IFEX Logo Turquoise SVG" width="400" height="157">
+
+(C) 2022-2025 - MBition GmbH  
+(C) 2023 - Novaspring AB
 (C) 2022 - COVESA  
 (C) 2021 - Magnus Feuer  
 
