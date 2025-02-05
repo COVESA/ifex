@@ -95,7 +95,7 @@ As an alternative to installation instructions below, all the installations can 
 
 ## Installing and use python version(s) with `pyenv`
 
-NOTE: Pyenv can set up virtual environments but is often considered no the best
+NOTE: Pyenv can set up virtual environments but is often considered not the best
 choice for that, and we don't use it that way.  Pyenv's most important function
 is to download, compile, and install a particular python version from source
 code.  If your system python version is one that is not supported by this
@@ -108,6 +108,11 @@ If [`pyenv` shell command](https://github.com/pyenv/pyenv) is not installed, use
 ```bash
    curl https://pyenv.run | bash  # download and install (YOU are responsible to check the script content)
    exec $SHELL                    # restart your shell using the new $PATH
+```
+
+Activate a version in the current environment
+```sh
+pyenv local 3.10.6
 ```
 
 ### Setup a python virtual environment (recommended)
@@ -142,24 +147,6 @@ You can then run:
 ```
    pipenv shell         # starts a shell configured to use the virtual environment
 ```
-
-### Activate a chosen python version using pyenv
-
-Activate a version in the current environment
-```sh
-pyenv local 3.10.6
-```
-
-IMPORTANT: Follow the pyenv instructions to make sure that pyenv environment
-setup is added to `.bashrc` so that the binaries can be found every time a
-shell is started.  Something like:
-
-```sh
-eval ($pyenv init)
-```
-should be run before anything else.
-
-NEXT: Go to **Installing packages**
 
 ### Setup and run tests using tox
 
