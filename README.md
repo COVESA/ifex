@@ -132,22 +132,6 @@ NEXT: Go to **Installing packages**
 
 Go directly to Installing packages
 
-### Setup with `pipenv`
-[pipenv](https://pypi.org/project/pipenv/) is a tool that manages a virtual environment and install the package and its dependencies, making the process much simpler and predictable, since the `Pipfile` states the dependencies, while `Pipfile.lock` freezes the exact version in use.
-
-Install this project and its dependencies in the local `.venv` folder in this project, then use it (`pipenv shell`):
-```bash
-   export PIPENV_VENV_IN_PROJECT=1 # will create a local `.venv` in the project, otherwise uses global location
-   pipenv install --dev # install the development dependencies as well
-```
-
-NEXT: Go to **Installing packages**
-
-You can then run:
-```
-   pipenv shell         # starts a shell configured to use the virtual environment
-```
-
 ### Setup and run tests using tox
 
 Tox is another way to set up the working environment.  It is primarily used to test the program using multiple python versions.
