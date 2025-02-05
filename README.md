@@ -9,11 +9,20 @@ This repository includes:
 
 ...for the the *Interface Exchange framework (IFEX)*.
 
-IFEX is a general interface description and transformation technology which
-started in the Vehicle Service Catalog (VSC) project.  The technology (IFEX) is
-now developed under a separate name to better describe its purpose and that it
-is widely and generally applicable.  (This repository was previously named
-_vsc-tools_)
+IFEX is a general interface description and transformation technology to
+integrate/unify/translate different IDLs, and provide tools and methods to
+facilitate system integration using popular IPC/RPC protocols, and a variety of
+deployment technologies.
+
+In addition, IFEX defines a Interface Model (and its associated YAML syntax =
+IDL), which can be _optionally_ used as a one-and-all source format for
+interface definitions.  The flexible core model together with the strong
+_Composable Layers_ design makes it a strong candidate for being the most
+capable interface description approach available. However, using the
+translation tools does not in itself require accepting the IFEX "IDL" as the
+unifying format.
+
+## Documentation
 
 Please refer to the [documentation](https://covesa.github.io/ifex) for more information.
 
@@ -26,6 +35,50 @@ interface model/language-specification and other documentation.
 The implementations are primarily written in python and using some preferred
 technologies, such as the [Jinja2 templating language](https://jinja.palletsprojects.com) 
 ([(alt.  link)](https://jinja2docs.readthedocs.io/en/stable/)).
+
+## Project Structure
+
+```
+├── docs
+│   ├── MD-formatted documents, templates for generation, and static content.
+│   ├── README.md => when viewing docs directory in GitHub, the README is rendered
+├── helpers
+│   ├── Integrations to associated ecosystems and tools
+│   ├── How-tos or scripts to run code-generation on output results
+│   ├── Example:  sd-bus-c++ generator tools
+├── input_filters
+│   ├── Separate dirs for each supported input IDL
+│   ├── Implementation of common code for parsing/reading each format
+│   ├──    ... but not including the AST definitions (see models/)
+│   ├──    ... therefore, dirs are not guaranteed to include any code
+           ... if it is self contained under the respective transformation implementation
+│   ├──    ... however, some common code for a language may find its place here
+├── output_filters
+│   ├── Separate dirs for each supported interface description model
+│   ├── Implementation of converters from ANY (AST) to text IDL
+│   ├──    ... in other words "print out this AST" type of function
+│   ├── JSON-schema generation
+│   ├── Jinja templates exist here
+├── models
+│   ├── Separate dirs for each supported interface description model
+│   ├── The internal models (a.k.a. AST definition) for IFEX and other languages
+├── packaging
+│   ├── Helper files for packaging the project in various ways
+│   ├── docker - Docker deployment, for testing and/or end-user use
+│   └── entrypoints - 
+│       ├── Short script wrappers defining entry-points for python tools
+│       ├──    ... defines the executable commands created when installing the package
+├── requirements.txt, pyproject.toml, tox.ini. - Python dependencies expressed in different ways
+├── scripts
+│   ├── Helper scripts primarily used for development, not end-user scripts
+├── tests
+│   ├── Unit test definitions, and input data
+└── transformers
+│   ├── Separate dirs for each supported interface description model
+│   ├── Generic rule-based "transformation engine" implementation, that may be used by multiple tools
+│   ├── Implementation of specific transformers, if not covered by input/output filters
+
+```
 
 ## Getting started
 
@@ -42,15 +95,13 @@ As an alternative to installation instructions below, all the installations can 
 
 ## Installing and use python version(s) with `pyenv`
 
-NOTE: Pyenv is not quite the same as other virtual environment
-handlers.  Its most important function is to download, compile, and
-install a particular python version from source code.  If your
-system python version is one that is not supported by this project
-and you are not able to install the right python version using
-another method, then this can be used *if* you are not able to
-install the right python version using another method.  It can also
-be used in combination with virtual-environment handlers, to get
-access to different python versions.
+NOTE: Pyenv can set up virtual environments but is often considered no the best
+choice for that, and we don't use it that way.  Pyenv's most important function
+is to download, compile, and install a particular python version from source
+code.  If your system python version is one that is not supported by this
+project and you are not able to install the right python version using another
+method, then Pyenv can be used.  It can be used in combination with
+virtual-environment handlers, to get access to different python versions.
 
 If [`pyenv` shell command](https://github.com/pyenv/pyenv) is not installed, use its [installer](https://github.com/pyenv/pyenv-installer) to get it:
 
