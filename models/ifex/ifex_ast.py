@@ -39,7 +39,8 @@ class Argument:
     name: str
     """ Specifies the name of the argument """
 
-    datatype: str
+    # FIXME Remove this default, otherwise it won't be mandatory anymore (won't be recognized as missing)
+    datatype: str = str()
     """
     Specifies the data type of the argument, The type can be either a fundamental or defined type.  If `datatype` refers
     to a defined type, this type can be a local, nested, or externally defined reference.  If the type is an array
