@@ -1,0 +1,19 @@
+name: Original
+filetype: IFEX Core IDL
+namespaces:
+- name: common.namespace
+  methods:
+  - name: m2
+    # (empty)
+  - name: m1
+    input:
+    - name: first_param
+      datatype: int32
+    - name: second_param
+      datatype: map<int32,string>
+- name: other.namespace
+  methods:
+  - name: m1
+    input:
+    - name: bar
+      datatype: int32

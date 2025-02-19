@@ -1,0 +1,22 @@
+name: Overlay extending variant type
+namespaces:
+- name: common.namespace
+  methods:
+  - name: m1
+    input:
+    - name: var
+      datatype: VariType
+  typedefs:
+  - name: VariType
+    datatypes:
+    - NewType
+    - int32
+    - map<string,string>
+    - string[]
+  - name: VariType2
+    datatype: string
+  - name: New
+    datatypes:
+    - uint8
+    description: A new type
+filetype: IFEX Core IDL
