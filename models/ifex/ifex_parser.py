@@ -50,7 +50,8 @@ def get_ast_from_yaml_file(filename: str) -> AST:
     yaml_dict = parse_yaml_file(yaml_string)
 
     try:
-        cfg = dacite.Config(strict=True) # Fail if unknown keys in dict
+        #cfg = dacite.Config(strict=True) # Fail if unknown keys in dict
+        cfg = dacite.Config(strict=False) # Fail if unknown keys in dict
         ast = dacite.from_dict(data_class=AST, data=yaml_dict, config=cfg)
         return ast
     except dacite.UnexpectedDataError as e:
