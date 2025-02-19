@@ -1,0 +1,16 @@
+name: Overlay extending variant type
+filetype: IFEX Core IDL
+namespaces:
+- name: common.namespace
+  typedefs:
+  - name: VariType
+    datatypes:
+    - -uint16  # (Removal)
+    - +map<string,string>
+    - NewType
+  - name: VariType2
+    datatype: string  # Replace type
+  - name: New
+    description: A new type
+    datatypes:
+    - uint8
