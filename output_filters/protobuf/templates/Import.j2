@@ -1,0 +1,7 @@
+{% if item.weak %}
+import weak "{{ item.path }}";
+{% elif item.public %}
+import public "{{ item.path }}";
+{% else %}
+import "{{ item.path }}";
+{% endif %}

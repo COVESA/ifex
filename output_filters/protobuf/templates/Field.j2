@@ -1,0 +1,9 @@
+{% if item.repeated %}repeated {% endif %}{% if item.optional %}optional {% endif %}{{ item.datatype }} {{ item.name }} = 0
+{%- if item.options %}
+[
+  {% for option in item.options %}
+    {{ gen(option) }}{{ "" if loop.last else ", " }}
+  {% endfor %}
+]
+{% endif %};
+

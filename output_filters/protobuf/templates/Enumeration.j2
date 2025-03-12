@@ -1,0 +1,16 @@
+enum {{ item.name }} {
+{%+ for field in item.fields %}
+    {{ gen(field) }}
+{% endfor %}
+{% if item.options %}
+  {% for option in item.options %}
+    {{ gen(option) }}
+  {% endfor %}
+
+{% endif %}
+{% if item.reservations %}
+  {% for reserved in item.reservations %}
+    {{ gen(reserved) }}
+  {% endfor %}
+
+{% endif %}  }

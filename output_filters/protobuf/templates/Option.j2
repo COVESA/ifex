@@ -1,0 +1,9 @@
+{% if item.structuredoptions != None %}
+option ({{ item.name }}) = {
+   {% for o in item.structuredoptions %}
+      {{ gen(o) }}
+   {% endfor %}
+   }
+{% else %}
+option {{ item.name }} = {{ gen(item.value) }}
+{%- endif %}
