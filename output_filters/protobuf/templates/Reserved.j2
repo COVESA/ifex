@@ -1,0 +1,8 @@
+reserved {
+{% for range in item.ranges %}
+  {{ gen(range) }};
+{% endfor %}
+{% for name in item.strfieldnames %}
+  "{{ name }}";
+{% endfor %}
+}

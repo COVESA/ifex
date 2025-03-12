@@ -1,0 +1,5 @@
+{% if item.single_value %}
+{{ item.single_value }}
+{% else %}
+{{ item.range_start }} to {{ item.range_end }}
+{% endif %}

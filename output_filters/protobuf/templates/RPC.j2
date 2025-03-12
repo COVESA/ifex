@@ -1,0 +1,7 @@
+rpc {{ item.name }}({% if item.input_stream %}stream {% endif %}{{ item.input }}) returns ({% if item.return_stream %}stream {% endif %}{{ item.returns }})
+{%- if item.options %} {
+  {% for option in item.options %}
+    {{ gen(option) }}
+{% endfor %}
+  }
+{%- endif %}
