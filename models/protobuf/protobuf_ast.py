@@ -9,10 +9,17 @@ from dataclasses import dataclass
 from typing import List, Optional, Union
 
 # The protobuf syntax is different for options when they appear in
-# rpc/service/msg or in fields, but the actual content is the same (name and
-# value) so we can use a common type for them:
+# rpc/service/msg or in fields, but the actual content is the same
+# However, it helps output-templates if the types are different, so
+# they can generate different output
+# For now FieldOption is treated separate - may be needed also for others
 @dataclass
 class Option:
+    name: str
+    value: str
+
+@dataclass
+class FieldOption:
     name: str
     value: str
 
@@ -35,7 +42,7 @@ class Field:
     datatype: str
     repeated: Optional[bool] = False
     optional: Optional[bool] = False
-    options: Optional[List[Option]] = None
+    options: Optional[List[FieldOption]] = None
 
 @dataclass
 class OneOf:
