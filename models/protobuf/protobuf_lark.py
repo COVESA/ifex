@@ -4,7 +4,7 @@
 # This file is part of the IFEX project
 
 from lark import Lark, logger, Tree, Token
-from models.protobuf.protobuf_ast import Option, EnumField, Enumeration, MapField, Field, Import, Message, RPC, Service, Proto
+from models.protobuf.protobuf_ast import Option, FieldOption, EnumField, Enumeration, MapField, Field, Import, Message, RPC, Service, Proto
 import lark
 import re
 import sys
@@ -236,6 +236,25 @@ def process_option(o):
 
     return Option(option_name, constant_value)
 
+# TODO enumoption should possibly also be handled this way
+
+def process_field_option(o):
+
+    # Sanity check
+    assert_rule_match_any(o, ['valueoption'])
+
+    # 1. Option Name
+    next_node = o.children.pop(0)
+    assert_token(next_node, 'OPTIONNAME')
+    # ... remove parens from name - should we do that here, or in later processing?
+    option_name = next_node.value.replace('(','').replace(')','')
+
+    # 2. Option Value
+    next_node = o.children.pop(0)
+    # ... constant rule is inlined, so not a composite node.
+    assert_is_literal_type(next_node)
+    constant_value = next_node.value
+    return FieldOption(option_name, constant_value)
 
 def process_field(f):
 
@@ -275,7 +294,7 @@ def process_field(f):
         next_node = f.children.pop(0)
         assert_rule_match( next_node, 'fieldoptions')
         for o in next_node.children:
-            options.append(process_option(o))
+            options.append(process_field_option(o))
 
     # NOTE: The field number follows next, but is discarded until
     # we find a reason to keep it - see comments in design document.
