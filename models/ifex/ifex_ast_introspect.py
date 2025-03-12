@@ -230,7 +230,8 @@ def walk_type_tree(node, process, seen={}):
 
     # (No need to document, or recurse on the following types):
     # FIXME: this is correct for our documentation generation but maybe not for all cases
-    if node in [str, int, typing.Any]:
+    # or we may change condition to:  "if not is_dataclass"
+    if node in [str, int, typing.Any, bool]:
         return
 
     # Skip duplicates (like Namespace, it appears more than once in the AST model)
