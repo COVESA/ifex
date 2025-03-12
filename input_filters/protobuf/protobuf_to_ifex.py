@@ -7,6 +7,7 @@ from models.ifex.ifex_ast_construction import add_constructors_to_ifex_ast_model
 from models.protobuf.protobuf_lark import create_proto_ast
 import models.ifex.ifex_ast as ifex
 import models.protobuf.protobuf_ast as pb
+from models import protobuf as protobuf_model # Need this to know directory of grammar
 import os
 import sys
 
@@ -120,10 +121,10 @@ def proto_to_ifex(node):
 
 
 def proto_ast_from_input(protofile):
-    # Parse protobuf input and create Protobuf AST
-    thisdir = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-    return create_proto_ast(grammar_file = os.path.join(thisdir, 'protobuf.grammar'),
-                                 proto_file = protofile)
+    # Get location of protobuf model - in the same place we find the grammar
+    modeldir=os.path.dirname(protobuf_model.__file__)
+    grammar_file = os.path.join(modeldir, 'protobuf.grammar')
+    return create_proto_ast(grammar_file, protofile)
 
 # --- Script entry point ---
 
