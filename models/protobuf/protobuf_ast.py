@@ -8,6 +8,11 @@
 from dataclasses import dataclass
 from typing import List, Optional, Union
 
+@dataclass
+class StructuredOption:
+    name: str
+    value: str
+
 # The protobuf syntax is different for options when they appear in
 # rpc/service/msg or in fields, but the actual content is the same
 # However, it helps output-templates if the types are different, so
@@ -16,7 +21,9 @@ from typing import List, Optional, Union
 @dataclass
 class Option:
     name: str
-    value: str
+    # NOTE: An option is *either* one value, or a list of structuredoption values
+    value: Optional[str] = None
+    structuredoptions: Optional[List[StructuredOption]] = None
 
 @dataclass
 class FieldOption:

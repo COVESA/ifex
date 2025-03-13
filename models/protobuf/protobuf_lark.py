@@ -4,7 +4,7 @@
 # This file is part of the IFEX project
 
 from lark import Lark, logger, Tree, Token
-from models.protobuf.protobuf_ast import Option, FieldOption, EnumField, Enumeration, MapField, Field, Import, Message, RPC, Service, Proto
+from models.protobuf.protobuf_ast import Option, FieldOption, EnumField, Enumeration, MapField, Field, Import, Message, RPC, Service, Proto, StructuredOption
 import lark
 import re
 import sys
@@ -136,9 +136,13 @@ def assert_match(node, pattern, error_message=None):
            error_message = create_error_message(node, pattern)
        raise Exception(error_message)
 
+# Check if the node is a tree representing a RULE of type "grammar_rule_name"
+def rule_match(tree, grammar_rule_name):
+    return matcher(tree, Tree(Token('RULE', grammar_rule_name), ['*']))
+
 # Assert that the node is a tree representing a RULE of type "grammar_rule_name"
 def assert_rule_match(tree, grammar_rule_name):
-   assert_match(tree, Tree(Token('RULE', grammar_rule_name), ['*']))
+    assert_match(tree, Tree(Token('RULE', grammar_rule_name), ['*']))
 
 # Assert that tree matches *at least one* of the named rules
 def assert_rule_match_any(tree, grammar_rule_names):
@@ -151,10 +155,13 @@ def assert_rule_match_any(tree, grammar_rule_names):
 def assert_token(node, token_type, data_match='*'):
     assert_match(node, Token(token_type, data_match))
 
+def is_literal_type(node):
+    return (is_token(node) and
+            node.type in ['INT', 'FLOATLIT', 'DECIMALLIT', 'OCTALLIT', 'HEXLIT', 'BOOLLIT', 'X_CHARSTRING', 'IDENT'])
+
 # Assert that node is one of the known literal types
 def assert_is_literal_type(node):
-    if not (is_token(node) and
-            node.type in ['INT', 'FLOATLIT', 'DECIMALLIT', 'OCTALLIT', 'HEXLIT', 'BOOLLIT', 'X_CHARSTRING', 'IDENT']):
+    if not is_literal_type(node):
         node_string = truncate_string(f"{node!r}")
         error_message = f"\nPROBLEM: Failed expected match:\n          - wanted a INT, FLOATLIT, DECIMALLIT, OCTALLIT, HEXLIT, BOOLLIT, or X_CHARSTRING\n          - item is: {node_string}"
         raise Exception(error_message)
@@ -229,12 +236,29 @@ def process_option(o):
     option_name = next_node.value.replace('(','').replace(')','')
 
     # 2. Option Value
-    next_node = o.children.pop(0)
     # ... constant rule is inlined, so not a composite node.
-    assert_is_literal_type(next_node)
-    constant_value = next_node.value
+    next_node = o.children.pop(0)
+    if is_literal_type(next_node):
+        constant_value = next_node.value
+    elif rule_match(next_node, 'structuredconstant'):
+       if len(next_node.children) > 0:
+          next_node = next_node.children.pop(0)
+          assert_rule_match(next_node, 'keyvalmappings')
+          options = []
+          for kv in next_node.children:
+              assert(len(kv.children) > 0)
+              key_node = kv.children.pop(0)
+              assert_token(key_node, 'IDENT')
+              keyname = key_node.value
+              value_node = kv.children.pop(0)
+              assert_is_literal_type(value_node)
+              options.append(StructuredOption(keyname, value=value_node.value))
+          return Option(name=option_name, structuredoptions=options)
 
-    return Option(option_name, constant_value)
+    else:
+        raise Exception(f'Unexpected node type when interpreting option {next_node=}, parent object: {o=}')
+
+    return Option(option_name, value=constant_value)
 
 # TODO enumoption should possibly also be handled this way
 
