@@ -265,8 +265,8 @@ unicodelongescape: "\\U" ("000" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT | "
 # comment: The spec looks buggy because intLit already allows for a - sign in front of it, so why not allow a + sign on all intlits also?
 # => We deviate from spec slightly here, because a prefixed "+" is unlikely to happen in input anyway:
 # comment2: Why can't a constant be a Hexadecimal literal??
-#?constant: BOOLLIT | FLOATLIT | DECIMALLIT | HEXLIT | fullident | intlit | strlit | messagevalue
 ?constant: INT | BOOLLIT | FLOATLIT | HEXLIT | fullident | strlitsingle | intlit | messagevalue
+
 #STRLITSINGLE: /"[A-Za-z0-9_.]+"|'[A-Za-z0-9_.]+'/
 
 # from spec: strLit = strLitsingle { strLitsingle }
@@ -304,11 +304,25 @@ package: "package" FULLIDENT ";"
 # Option
 # ------
 
-# from spec: option = "option" optionName  "=" constant ";"
-option: "option" OPTIONNAME "=" constant ";"
+# Option can be set to = a constant, but it also seems to allow a braced
+# structure like:  {  id : value, id2 : value 2 } This seems to be not
+# reflected in the specification for option?  (and also not in the
+# specification for a constant)?
+# Similarly messageValue does not seem to cover this so... adding something
+# called "structuredconstant" as an alternative.  I have seen this
+# structuredconstant only as a service option but assume it is possible to use
+# wherever an option is used, and possibly(?) wherever a constant can be used.
+# For the moment, we keep it for Option only.
 
-# from spec: optionName = optionNamePart { "." optionNamePart }
-# from spec: optionNamePart = { IDENT | "(" ["."] fullident ")" }
+option: "option" ( OPTIONNAME | bracedfullident) "=" (constant ";" | structuredconstant)
+bracedfullident: "(" "."? FULLIDENT ")"
+structuredconstant: "{" (keyvalmappings) "}"
+keyvalmappings: keyvalmapping ("," keyvalmapping)*
+keyvalmapping: IDENT ":" constant
+
+# According to spec, but this looks weird -> using regexp OPTIONNAME for now
+# optionName: ( IDENT | bracedFullIdent ) ( "."? ( IDENT | BRACEDFULLIDENT ))?
+
 #
 # Lark alternative:
 #?optionname: optionnamepart ( "." optionnamepart )*
