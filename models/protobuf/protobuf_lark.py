@@ -18,9 +18,11 @@ import sys
 # In this file we build a more understandable and usable data structure.
 # The AST we want follows the definitions provided in protobuf_ast.py
 
-# NOTE: The following features are not converted to AST:
+# NOTE: The following features are not converted to AST.  They should be
+# accepted by the lexer, but the parser then ignores them.
 # - OneOf
 # - Reserved
+# - edition
 
 # The datastructure we get out of Lark is a combination of Tree and Token
 # objects.  This is how to understand it -- we are only interested in two
