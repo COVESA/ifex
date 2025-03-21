@@ -286,7 +286,13 @@ unicodelongescape: "\\U" ("000" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT | "
 # from spec: syntax = "syntax" "=" ("'" "proto3" "'" | '"' "proto3" '"') ";"
 # comment: We only support spec version 3 here, (and for that
 # version only the string "proto3" is allowed)
-syntax: "syntax" "=" ("'" | "\"") "proto3" ("'" | "\"") ";"
+syntax: "syntax" "=" ("'" | "\"") ("proto3" | "proto2")  ("'" | "\"") ";"
+
+# Edition
+# -------
+# There is a keyword to set the "edition" of proto syntax
+edition: "edition" "=" strlitsingle ";"
+
 
 # Import Statement
 # ----------------
@@ -449,7 +455,8 @@ X_STREAM: "stream"
 # ----------
 
 # from spec: proto = syntax { import | package | option | topLevelDef | emptyStatement }
-?proto: syntax ( import | package | option | topleveldef | emptystatement )*
+# However spec does not mention "edition" (is it deprecated?) but some files use it
+?proto: edition? syntax? ( import | package | option | topleveldef | emptystatement )*
 
 # from spec: topLevelDef = message | enum | service
 ?topleveldef: message | enum | service
