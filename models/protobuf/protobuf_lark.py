@@ -46,6 +46,10 @@ protobuf_ast_construction.add_constructors_to_protobuf_ast_model()
 def filter_out(s, re):
     return '\n'.join([l for l in s.split('\n') if not re.match(l)])
 
+# Remove partial lines matching regexp
+def filter_out_partial(s, pattern):
+    return '\n'.join([re.sub(pattern, "", l) for l in s.split('\n')])
+
 # Useful helpers
 def is_tree(node):
     return type(node) is lark.Tree
@@ -560,8 +564,11 @@ def create_proto_ast(grammar_file, proto_file):
     with open(proto_file, 'r') as f:
         proto = f.read()
 
-        # Remove line comments
+        # Remove comment-lines
         proto = filter_out(proto, re.compile('^ *[/][/]'))
+
+        # Remove comments at end of line
+        proto = filter_out_partial(proto, r'//.*$')
 
         # Remove multi-line comments
         proto = re.sub(r"/\*.*?\*/", "", proto, flags=re.DOTALL)
