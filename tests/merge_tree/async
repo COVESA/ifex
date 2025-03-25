@@ -1,0 +1,15 @@
+# New layer (different information) to add sync/async info to method
+name: Async/Sync layer example
+filetype: Async specifier
+namespaces:
+- name: common.namespace
+  methods:
+  - name: m2
+    async: false
+  - name: m1
+    async: true
+  methods:
+- name: common.other.namespace
+  methods:
+  - name: m1
+    async: false

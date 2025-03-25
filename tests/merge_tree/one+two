@@ -1,0 +1,23 @@
+name: Overlay_Example
+namespaces:
+- name: common.namespace
+  methods:
+  - name: m2
+  - name: m1
+    input:
+    - name: first_param
+      datatype: int32
+    - name: second_param
+      datatype: map<int32,string>
+    - name: new_param
+      datatype: string[]
+    output:
+    - name: out_param
+      datatype: string
+- name: other.namespace
+  methods:
+  - name: m1
+    input:
+    - name: bar
+      datatype: int32
+filetype: IFEX Core IDL

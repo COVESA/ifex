@@ -1,0 +1,18 @@
+name: Overlay_Example with removal
+namespaces:
+- name: common.namespace
+  methods:
+  - name: m1
+    input:
+    - name: first_param
+      datatype: int32
+    - name: new_param
+      datatype: string
+      arraysize: 42
+- name: other.namespace
+  methods:
+  - name: m1
+    input:
+    - name: bar
+      datatype: int32
+filetype: IFEX Core IDL

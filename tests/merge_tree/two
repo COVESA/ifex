@@ -1,0 +1,13 @@
+# Overlay, adding an output parameter to existing method m1
+name: Overlay_Example
+filetype: IFEX Core IDL
+namespaces:
+- name: common.namespace
+  methods:
+  - name: m1
+    input:
+    - name: +new_param
+      datatype: string[]
+    output:
+    - name: out_param
+      datatype: string
