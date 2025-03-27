@@ -5,5 +5,5 @@ option ({{ item.name }}) = {
    {% endfor %}
    }
 {% else %}
-option {{ item.name }} = {{ gen(item.value) }}
+option {{ item.name }} = {{ gen_str_or_int(item.value) }}
 {%- endif %}
