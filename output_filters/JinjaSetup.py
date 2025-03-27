@@ -95,16 +95,52 @@ class JinjaTemplateEnv:
         tfinder = TemplateFinder("generator-from-ifex")
         self.default_templates = tfinder.find_matching_template_files(tpath, root_node)
 
+    # Helper gen-functions for simple / built-in types like str/int, etc.
+    # NOTE: To generate a string as a "quoted" string, call gen(item), which
+    # should cause gen_quoted_string to be called.
+    # However, if you want the string without quotes, use simply {{ item }} in
+    # Jinja template.
+    #
+    # Similarly {{ someinteger }} should work, but we provide gen(someinteger)
+    # support anyway here.
+
+    # Assume strings should be quoted in output
+    def gen_quoted_string(self, item):
+        return '"' + item + '"'
+
+    # Should work for ints, etc.  (If not... improve it)
+    def gen_non_string(self, item):
+        return item
+
+    # Should generally not happen, but keep for debugging
+    def gen_none(self, item):
+        return "FIXME"
+
+    def get_specialized_gen_function(self, node):
+        match node:
+            case str(): return self.gen_quoted_string
+            case int(): return self.gen_non_string
+            case bool(): return self.gen_non_string
+            case None: return self.gen_none
+        return None
 
     # wrapper over jinja2 render
     def render_node(self, node):
 
         template_file = self.get_default_template_file(ifex_ast_doc.type_name(type(node)))
         if template_file is None:
-            raise GeneratorError(f"gen() function called with node of type '{type(node)}' but no default template is defined for this type.")
+            gen_function = self.get_specialized_gen_function(node)
+            if gen_function is None:
+                raise GeneratorError(f"gen() function called with node of type '{type(node)}' but no default template is defined for this type.")
 
+        # Generate with built-in function
+        if template_file is None and gen_function is not None:
+           return gen_function(node)
+
+        # or Generate with template
         template = self.get_template(template_file)
         if template is None:
+            # (should not happen)
             raise GeneratorError(f'Failure to get actual template object from Jinja framework for {template_file=}')
         else:
             return template.render({"item" : node})
