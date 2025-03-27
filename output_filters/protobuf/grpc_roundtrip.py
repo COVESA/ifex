@@ -8,6 +8,12 @@ from models.protobuf import protobuf_ast
 from output_filters import JinjaSetup
 from input_filters.protobuf import protobuf_to_ifex
 
+def gen_str_or_int(item):
+    if item.isdigit():
+        return int(item)  # Could also be just item... either way jinja should output just the number
+    else:
+        return '"' + item + '"'  # Quoted string
+
 # This parses a Protobuf/gRPC file and then prints it back out again.  
 # Text -> Protobuf Parser -> Protobuf AST -> to text via Jinja templates
 if __name__ == '__main__':
@@ -42,7 +48,7 @@ if __name__ == '__main__':
     gen = jinja_setup.create_gen_closure()
 
     # Import the gen() function to Jinja environment
-    jinja_setup.set_template_env(gen=gen)
+    jinja_setup.set_template_env(gen=gen, gen_str_or_int=gen_str_or_int)
 
     # And call Jinja generation with the top node.  Templates take care of the
     # subsequent recursive calls for all found member variables in the nodes
