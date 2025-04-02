@@ -31,7 +31,7 @@ def ast_to_text(proto_ast: protobuf_ast.Proto) -> str:
 
     # Call Jinja generation with the top node.  Templates take care of the
     # subsequent recursive calls for all found member variables in the nodes
-    return gen(proto_ast)
+    return gen(proto_ast).rstrip() + "\n"
 
 
 # This parses a Protobuf/gRPC file and then prints it back out again.  

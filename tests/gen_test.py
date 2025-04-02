@@ -3,7 +3,7 @@
 # (C) 2021 COVESA
 # Test code for code generator part of IFEX
 # ----------------------------------------------------------------------------
-# This is maybe not ideal way but seems efficient enough
+
 from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Optional
@@ -25,9 +25,9 @@ def test_x():
 
 def test_gen():
 
-    # Get matching dirs named 'test.<something>'
+    # Get matching dirs named 'test.ifex.<something>'
     for (_,dirs,_) in os.walk(TestPath):
-        test_dirs = [ x for x in dirs if x.startswith('test.') ]
+        test_dirs = [ x for x in dirs if x.startswith('test.ifex.') ]
         break # First level of walk is enough.
 
     for subdir in test_dirs:
@@ -49,7 +49,7 @@ def test_gen():
 
 
 def test_ast_gen():
-    service = ifex_parser.get_ast_from_yaml_file(os.path.join(TestPath, 'test.sample', 'input.yaml'))
+    service = ifex_parser.get_ast_from_yaml_file(os.path.join(TestPath, 'test.ifex.sample', 'input.yaml'))
 
     assert service.name == "named_service"
     assert service.major_version == 3
@@ -58,13 +58,13 @@ def test_ast_gen():
 
 # This does not assert anything -> but if printouts are captured they can be studied
 def test_print():
-    ast = ifex_parser.get_ast_from_yaml_file(os.path.join(TestPath, 'test.variant', 'input.yaml'))
+    ast = ifex_parser.get_ast_from_yaml_file(os.path.join(TestPath, 'test.ifex.variant', 'input.yaml'))
     print(yaml.dump(ast, sort_keys=False))
     print(introspect.get_variant_types(ast.namespaces[0].typedefs[0]))
 
 # Test expectations and helper-functions on the variant type
 def test_variant():
-    ast = ifex_parser.get_ast_from_yaml_file(os.path.join(TestPath, 'test.variant', 'input.yaml'))
+    ast = ifex_parser.get_ast_from_yaml_file(os.path.join(TestPath, 'test.ifex.variant', 'input.yaml'))
     # Method argument
     v0type = ast.namespaces[0].methods[0].input[0].datatype
     assert not introspect.is_ifex_variant_typedef(v0type)
