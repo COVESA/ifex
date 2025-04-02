@@ -4,7 +4,7 @@
 # This file is part of the IFEX project
 
 from models.ifex.ifex_ast_construction import add_constructors_to_ifex_ast_model, ifex_ast_as_yaml
-from models.protobuf.protobuf_lark import create_proto_ast
+from models.protobuf.protobuf_lark import get_ast_from_proto_file
 import models.ifex.ifex_ast as ifex
 import models.protobuf.protobuf_ast as pb
 from models import protobuf as protobuf_model # Need this to know directory of grammar
@@ -120,12 +120,6 @@ def proto_to_ifex(node):
     return ifex.AST(namespaces = [ns])
 
 
-def proto_ast_from_input(protofile):
-    # Get location of protobuf model - in the same place we find the grammar
-    modeldir=os.path.dirname(protobuf_model.__file__)
-    grammar_file = os.path.join(modeldir, 'protobuf.grammar')
-    return create_proto_ast(grammar_file, protofile)
-
 # --- Script entry point ---
 
 if __name__ == '__main__':
@@ -134,7 +128,7 @@ if __name__ == '__main__':
     add_constructors_to_ifex_ast_model()
 
     # Parse protobuf input and create Protobuf AST
-    proto_ast = proto_ast_from_input(sys.argv[1])
+    proto_ast = get_ast_from_proto_file(sys.argv[1])
 
     # Add the type-checking constructor mixin
     add_constructors_to_ifex_ast_model()

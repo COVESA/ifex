@@ -4,8 +4,10 @@
 # This file is part of the IFEX project
 
 from lark import Lark, logger, Tree, Token
+from models import protobuf as protobuf_model
 from models.protobuf.protobuf_ast import Option, FieldOption, EnumField, Enumeration, MapField, Field, Import, Message, RPC, Service, Proto, StructuredOption
 import lark
+import os
 import re
 import sys
 
@@ -554,15 +556,9 @@ def process_lark_tree(root):
                 options = ast_options)
     return proto
 
-
 # Main entry point - pass grammar file and proto file:
 
-def create_proto_ast(grammar_file, proto_file):
-    with open(grammar_file, 'r') as f:
-        grammar = f.read()
-
-    p = Lark(grammar, parser='lalr', debug=True)
-
+def read_proto_file(proto_file) -> str:
     with open(proto_file, 'r') as f:
         proto = f.read()
 
@@ -573,13 +569,42 @@ def create_proto_ast(grammar_file, proto_file):
         proto = filter_out_partial(proto, r'//.*$')
 
         # Remove multi-line comments
-        proto = re.sub(r"/\*.*?\*/", "", proto, flags=re.DOTALL)
+        return re.sub(r"/\*.*?\*/", "", proto, flags=re.DOTALL)
+
+
+def parse_proto_file(grammar_file, proto_file):
+    """
+    Tries to parse proto/grpc into a python dictionary
+    :param string: String containing text in .proto format
+    :return: Dictionary
+    """
+
+    with open(grammar_file, 'r') as f:
+        grammar = f.read()
+
+        proto = read_proto_file(proto_file)
+
+        p = Lark(grammar, parser='lalr', debug=True)
 
         # Get parsed content
         tree = p.parse(proto)
 
         # Return Protobuf AST
         return process_lark_tree(tree)
+
+
+# Convenience function - grammar file can be derived from parser module directory
+def get_ast_from_proto_file(protofile: str) -> Proto:
+    """
+    Reads a .proto file and returns Protobuf AST
+    :param filename: path to a .proto file
+    :return: Protobuf/gRPC abstract syntax tree
+    """
+
+    # Get location of protobuf model - in the same place we find the grammar
+    modeldir=os.path.dirname(protobuf_model.__file__)
+    grammar_file = os.path.join(modeldir, 'protobuf.grammar')
+    return parse_proto_file(grammar_file, protofile)
 
 
 # TEST CODE ONLY ------------------------------------------
@@ -598,6 +623,5 @@ if __name__ == '__main__':
     x = lark.Tree(lark.Token('RULE','something'),[])
     print(f"{matcher(x, lark.Tree(lark.Token('RULE','notmatching'), []))=}")
 
-    ast = create_proto_ast(grammar_file = sys.argv[1],
-                           proto_file = sys.argv[2])
+    ast = get_ast_from_proto_file(proto_file = sys.argv[1])
     print(ast)
