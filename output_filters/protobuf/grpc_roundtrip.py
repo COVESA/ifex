@@ -4,7 +4,7 @@
 import argparse
 import os
 import sys
-from models.protobuf import protobuf_ast
+from models.protobuf import protobuf_ast, protobuf_lark
 from output_filters import JinjaSetup
 from input_filters.protobuf import protobuf_to_ifex
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     path = os.path.dirname(protobuf_to_ifex.__file__)
 
     # Parse the given input file (gRPC/proto format expected)
-    proto_ast = protobuf_to_ifex.proto_ast_from_input(args.protofile)
+    proto_ast = protobuf_lark.get_ast_from_proto_file(args.protofile)
 
     # Get a handle to the gen() function
     gen = jinja_setup.create_gen_closure()
