@@ -14,6 +14,26 @@ def gen_str_or_int(item):
     else:
         return '"' + item + '"'  # Quoted string
 
+
+def ast_to_text(proto_ast: protobuf_ast.Proto) -> str:
+    # Set up Jinja environment - collect templates that match the names of the
+    # Proto AST classes (recursive search through AST types).
+    jinja_setup = JinjaSetup.JinjaTemplateEnv(protobuf_ast.Proto, template_dir)
+
+    # Reuse the protobuf-parser function in protobuf_to_ifex
+    path = os.path.dirname(protobuf_to_ifex.__file__)
+
+    # Get a handle to the gen() function
+    gen = jinja_setup.create_gen_closure()
+
+    # Import the gen() function to Jinja environment
+    jinja_setup.set_template_env(gen=gen, gen_str_or_int=gen_str_or_int)
+
+    # Call Jinja generation with the top node.  Templates take care of the
+    # subsequent recursive calls for all found member variables in the nodes
+    return gen(proto_ast)
+
+
 # This parses a Protobuf/gRPC file and then prints it back out again.  
 # Text -> Protobuf Parser -> Protobuf AST -> to text via Jinja templates
 if __name__ == '__main__':
@@ -34,22 +54,9 @@ if __name__ == '__main__':
     # Get template directory which is templates/ relative to this file location
     template_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates")
 
-    # Set up Jinja environment - collect templates that match the names of the
-    # Proto AST classes (recursive search through AST types).
-    jinja_setup = JinjaSetup.JinjaTemplateEnv(protobuf_ast.Proto, template_dir)
-
-    # Reuse the protobuf-parser function in protobuf_to_ifex
-    path = os.path.dirname(protobuf_to_ifex.__file__)
-
     # Parse the given input file (gRPC/proto format expected)
     proto_ast = protobuf_lark.get_ast_from_proto_file(args.protofile)
 
-    # Get a handle to the gen() function
-    gen = jinja_setup.create_gen_closure()
+    # Print out the AST as text
+    print(ast_to_text(proto_ast))
 
-    # Import the gen() function to Jinja environment
-    jinja_setup.set_template_env(gen=gen, gen_str_or_int=gen_str_or_int)
-
-    # And call Jinja generation with the top node.  Templates take care of the
-    # subsequent recursive calls for all found member variables in the nodes
-    print(gen(proto_ast))
