@@ -15,7 +15,7 @@ def gen_str_or_int(item):
         return '"' + item + '"'  # Quoted string
 
 
-def ast_to_text(proto_ast: protobuf_ast.Proto) -> str:
+def ast_to_text(proto_ast: protobuf_ast.Proto, template_dir) -> str:
     # Set up Jinja environment - collect templates that match the names of the
     # Proto AST classes (recursive search through AST types).
     jinja_setup = JinjaSetup.JinjaTemplateEnv(protobuf_ast.Proto, template_dir)
@@ -58,5 +58,5 @@ if __name__ == '__main__':
     proto_ast = protobuf_lark.get_ast_from_proto_file(args.protofile)
 
     # Print out the AST as text
-    print(ast_to_text(proto_ast))
+    print(ast_to_text(proto_ast, template_dir))
 

@@ -24,8 +24,9 @@ def test_gen():
         # The files named 'input.yaml', 'template' and 'result' are in each test directory
         ast_root = protobuf_parser.get_ast_from_proto_file(os.path.join(path, 'input'))
 
-        generated = grpc_generator.ast_to_text(ast_root)
-        #print(generated)
+        template_dir = os.path.join(os.path.dirname(grpc_generator.__file__), "templates")
+
+        generated = grpc_generator.ast_to_text(ast_root, template_dir)
 
         with open(os.path.join(path,"result"), "r") as result_file:
             # Apparently we must strip newline or it will be added superfluously here
