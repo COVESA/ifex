@@ -68,6 +68,18 @@ class Preparation:
     func: callable
     pass
 
+# This class wraps the store_delegated_object function as a closure, binding the two input parameters node_type and
+# attr_name when created.  Next when the Delegate operation is found, it will store the delegated object for later
+# use.  Finally, during processing, the getattr_value function always checks first if there is a delegated object
+# and the stored object to be processed under the predefined stated node type and attribute name.
+class Delegate:
+    def __init__(self, node_type, attr_name):
+        _log("DEBUG", f"Instantiate Delegate: {node_type=}, {attr_name=}")
+        self.delegate_to_this_node_type = node_type
+        self.delegate_to_this_attr = attr_name
+        # Closure captures the node_type and attr_name
+        self.func = lambda input_obj, input_attr : \
+            store_delegated_object(input_obj, input_attr, self.delegate_to_this_node_type, self.delegate_to_this_attr)
 
 # -----------------------------------------------------------------------------
 # Translation Table - Example, not used. The table be provided instead by the program
@@ -189,6 +201,8 @@ def eval_mapping(type_map_entry):
         input_arg, output_arg, *field_transform = type_map_entry
         # Unwrap array and use identity-function if no transformation required
         field_transform = field_transform[0] if field_transform else lambda _ : _
+
+        # Returns: (preparation_function, input_arg, output_arg, field_transform)
         return (None, input_arg, output_arg, field_transform)
 
 
@@ -232,6 +246,36 @@ def transform_value_common(mapping_table, value, field_transform):
 
     return value
 
+delegated_refs = {}
+
+def store_delegated_object(input_obj, input_attr, delegate_to_this_node_type, delegate_to_this_attr):
+    global delegated_refs
+
+    _log("DEBUG", f"\n\n==============   store_delegated_object: {delegate_to_this_attr=} {delegate_to_this_node_type=}:")
+
+    # Store under a tuple of type and attr name
+    delegated_refs[(delegate_to_this_node_type, delegate_to_this_attr)] = getattr(input_obj, input_attr)
+
+def clear_delegated_ref(input_type, input_attr):
+    global delegated_refs
+    _log("DEBUG", f"Clearing delegated_ref: {(input_type, input_attr)=} ")
+    delegated_refs.pop((input_type, input_attr), None)
+
+def get_delegated_ref(input_type, input_attr):
+    global delegated_refs
+    _log("DEBUG", f"Looking for {(input_type,input_attr)} in {delegated_refs=}")
+    return delegated_refs.get((input_type,input_attr))
+
+def getattr_value(input_obj, input_attr):
+    input_type = type(input_obj)
+
+    dv = get_delegated_ref(input_type, input_attr)
+    if dv is not None:
+        clear_delegated_ref(input_type, input_attr)
+        _log("DEBUG", f"Returning delegated value for {(input_type, input_attr)=}: {dv=}")
+        return dv
+    else:
+        return getattr(input_obj, input_attr)
 
 def transform(mapping_table, input_obj):
 
@@ -300,8 +344,14 @@ def transform(mapping_table, input_obj):
                 set_attr(attributes, output_attr, input_attr.const_value)
                 continue
 
-            # (else: Get input value and copy it, after transforming as necessary)
-            set_attr(attributes, output_attr, transform_value_common(mapping_table, getattr(input_obj, input_attr),
+            # Delegate -> call the function that stores the value for later use
+            if isinstance(output_attr, Delegate):
+                output_attr.func(input_obj, input_attr)  # Wraps any function/closure, but probably: 
+                continue
+
+            # else: normal mapping input_attr to output_attr:
+            # Get input value and copy it, after transforming as necessary
+            set_attr(attributes, output_attr, transform_value_common(mapping_table, getattr_value(input_obj, input_attr),
                                                                      field_transform))
 
             # Mark this attribute as handled
