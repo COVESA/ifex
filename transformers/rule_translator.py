@@ -165,13 +165,17 @@ def set_attr(attrs_dict, attr_key, attr_value):
                 value.append(attr_value)
             attrs_dict[attr_key] = value
             return
+
         # If it's set to None by an earlier step -> just overwrite
         elif value is None:
             attrs_dict[attr_key] = attr_value
+            return
+
+        # If it's a non-list but already set to a value, this is an error.  Don't overwrite it.
         else:
             _log("ERROR", f"""Attribute {attr_key} already has a scalar (non-list) value.  Check for multiple translations
                   mapping to this one.  We should not overwrite it, and since it is not a list type, we can't append.""")
-            _log("DEBUG", f"Target value {value} was ignored.")
+            _log("WARN", f"Target value {value} was ignored.")
             return
 
     # If it's a new assignment, go ahead
@@ -181,12 +185,13 @@ def set_attr(attrs_dict, attr_key, attr_value):
 # --- MAIN conversion function ---
 # ----------------------------------------------------------------------------
 
-# Here we use a helper function to allow one, two, or three values in the tuple.
+# Here we use a helper function to allow one, two, or three values in the tuples
+# of the mapping_table.
 # With normal decomposition of a tuple, only the last can be optional, like this:
 #     first, second, *maybe_more = (...tuple...)
-# But the table allows a single item, like Preparation() which is not a tuple,
-# so let's add some logic.
-# This function always returns a full 4-value tuple, for processing in the
+# But the table also allows a single item like Preparation() so let's add some logic
+# to avoid run-time error.
+# This function always returns a full 4-value tuple, that can be processed in the
 # main loop:
 # Returns: (preparation_function, input_arg, output_arg, field_transform)
 
@@ -216,6 +221,7 @@ def transform_value_common(mapping_table, value, field_transform):
 
     # OrderedDict is used at least by Franca AST -> return a list of transformed items
     if isinstance(value, OrderedDict):
+        _log("DEBUG", f"Value is OrderedDict! {value=}")
         if len(value.items()) == 0:
             name = ""
             try:
@@ -314,29 +320,30 @@ def transform(mapping_table, input_obj):
             # Call preparation function, if given.
             if preparation_function is not None:
                 preparation_function()
-                # preparation_function function always has its own line in mapping table, so skip to next line
                 continue
 
-            # In the case the rule is set to output_attr==None, then no output_attr is written.
-            # But if field_transform function is defined, the function is still called with the input_attr value.  This can be
-            # used to store/manipulate that value for later use.  There is no return value copied to any output_attr.
+            # In the case the rule is set to output_attr==None, then no output_attr is written.  But if field_transform
+            # function is defined, the function is still called with the input_attr value.  Since output_attr was set to
+            # None, there is no return value copied to any output_attr, but the function can manipulate and store the
+            # input value for later use, for example another field_transform function called later.
             if output_attr is None:
-                field_transform(getattr(input_obj, input_attr))
                 _log("DEBUG", f"{input_attr=} for {type(input_obj)} was mapped to None")
+                field_transform(getattr_value(input_obj, input_attr))
                 continue
 
             if output_attr is Unsupported:
-                value = getattr(input_obj, input_attr)
-                _log_if(value is not None, "ERROR", f"{type(input_obj)}:{input_obj.name} has an attribute for '{input_attr}' but that feature is unsupported. ({value=})")
+                value = getattr_value(input_obj, input_attr)
+                _log_if(bool(value) is not False, "ERROR", f"{type(input_obj)}:{input_obj.name} has an attribute for '{input_attr}' but that feature is unsupported. ({value=})")
                 continue
 
-            # If the input_attr is set to a function instead of an attribute name, then the result of the function is
-            # copied to the output_attr.
+            # If the input_attr is set to a function instead of an attribute name, then the result of calling the
+            # function is copied to the output_attr.  Unlike the field_transform, this type of function gets no
+            # input value.
             if callable(input_attr):
-                set_attr(attributes, output_attr, input_attr()) # <- note input_attr called as a function
+                set_attr(attributes, output_attr, input_attr()) # <- note that "input_attr" called as a function
                 continue
 
-            # If Constant-object, copy the value
+            # If defined as a Constant object, copy the constant value to the output field
             if isinstance(input_attr, Constant):
                 set_attr(attributes, output_attr, input_attr.const_value)
                 continue
@@ -401,5 +408,5 @@ def transform(mapping_table, input_obj):
 
 
     no_rule = f"no translation rule found for object {input_obj} of class {input_obj.__class__.__name__}"
-    _log("ERROR:", no_rule)
+    _log("ERROR", no_rule)
     raise TypeError(no_rule)
