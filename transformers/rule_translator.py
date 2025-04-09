@@ -220,10 +220,10 @@ def transform_value_common(mapping_table, value, field_transform):
     # (not used by Franca parser, but others might)
     elif isinstance(value, list):
         if len(value) == 0:
-            log("DEBUG", f"Empty list: {value=}")
+            _log("DEBUG", f"Empty list: {value=}")
             value = None
         else:
-            log("DEBUG", f"Non-empty list: {value=}")
+            _log("DEBUG", f"Non-empty list: {value=}")
             value = field_transform([transform(mapping_table, item) for item in value])
 
     # Plain attribute -> use transformation function if it was defined
@@ -350,6 +350,7 @@ def transform(mapping_table, input_obj):
             return obj
         except Exception as e:
             _log("ERROR", f"Could not create object of type {to_class} with {attributes=}.\n(Was mapped from type {from_class=}).  ")
+            _log("ERROR", f"Exception is: {e}")
 
 
     no_rule = f"no translation rule found for object {input_obj} of class {input_obj.__class__.__name__}"
