@@ -137,17 +137,14 @@ def _log_if(condition, level, string):
     if condition:
         _log(level, string)
 
-def _log(level, string):
-    #if level == "DEBUG":
-    #    print(f"{level}: {string}")
-    #if level == "INFO":
-    #    print(f"{level}: {string}")
-    #if level == "WARN":
-    #    print(f"{level}: {string}")
-    if level == "ERROR":
-        print(f"{level}: {string}")
-    #pass
+def _log(entry_level, string):
 
+    # Error is default if env-var is not specified
+    output_level = os.getenv("IFEX_LOG_LEVEL", "ERROR") 
+
+    order = ["DEBUG", "INFO", "WARN", "ERROR", "NONE"]
+    if output_level in order and order.index(output_level) <= order.index(entry_level):
+        print(f"{entry_level}: {string}")
 
 def is_builtin(x):
     return x.__class__.__module__ == 'builtins'
