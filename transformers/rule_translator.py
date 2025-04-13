@@ -17,14 +17,11 @@ rules to follow, and implemented by a generic function that can be used for many
 - Every type that is found in the input AST *should* have a mapping.  There is not yet perfect error
   reporting if something is missing, but it might be improved.
 - For each class, the equivalent member variable that need to be mapped is listed.
-- Member variable mappings are optional because any variable with Equal Name on each object
-  will be copied automatically (with possible transformation, *if* the input data is listed as a
-  complex type).
 - Each attribute mapping can also optionally state the name of a transformation function (or lambda)
   If no function is stated, the value will be mapped directly.  Mapping means to follow the transformation
   rules of the type-mapping table *if* the value is an instance of an AST class, and in other
   cases simly copy the value as it is (typically a string, integer, etc.)
-- In addition, it is possible to define global name-translations for attributes that are
+- In addition, it is possible to define global, a.k.a. Default name-translations for attributes that are
   equivalent but have different name in the two AST class families.
 - To *ignore* an attribute, map it to the None value.
 
@@ -33,11 +30,10 @@ See example table in rule_translator.py source for more information, or any of t
 """
 
 from collections import OrderedDict
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 import os
 import re
 import sys
-
 
 # -----------------------------------------------------------------------------
 # Translation Table Helper-objects
@@ -53,7 +49,6 @@ import sys
 # (Use frozen dataclasses to make them hashable. The attributes are given values at construction time only.)
 
 # Map to Unsupported to make a node type unsupported
-@dataclass(frozen=True)
 class Unsupported:
     pass
 
@@ -68,10 +63,15 @@ class Preparation:
     func: callable
     pass
 
-# This class wraps the store_delegated_object function as a closure, binding the two input parameters node_type and
-# attr_name when created.  Next when the Delegate operation is found, it will store the delegated object for later
-# use.  Finally, during processing, the getattr_value function always checks first if there is a delegated object
-# and the stored object to be processed under the predefined stated node type and attribute name.
+# Empty class used as a value to indicate the default mappings table
+class Default:
+    pass
+
+# This class wraps the store_delegated_object function as a closure that binds the two input parameters node_type and
+# attr_name when it is created.  Next when the Delegate operation is found, it will store the delegated object for later
+# use.  Finally, during processing, the getattr_value function always checks first if there is a delegated (stored)
+# object.  Each stored object is stored under the predefined stated node type and attribute name, as a unique identifier
+# for each.
 class Delegate:
     def __init__(self, node_type, attr_name):
         _log("DEBUG", f"Instantiate Delegate: {node_type=}, {attr_name=}")
@@ -89,42 +89,52 @@ class Delegate:
 example = """
 example_mapping = {
 
-        # global_attribute_map: Attributes with identical name are normally automatically mapped.  If attributes have
-        # different names we can avoid repeated mapping definitions by still defining them as equivalent in the
-        # global_attribute_map.  Attributes defined here ill be mapped in *all* classes.  Note: To ignore an attribute,
-        # map it to None!
+    # For common/global name mapps we can avoid repeated mapping definitions by defining them as equivalent in
+    # the Default map.  The rules in the Default are applied to all object types.
+    Default : [
+        ('datatype', 'datatype', translate_type_name),
+        ('name', 'name'),
+        #(Constant("This is description"), 'description'),
+        (get_description, 'description'),
+        ],
 
-        'global_attribute_map':  {
-            # (Attribute in FROM-class on the left, attribute in TO-class on the right)
-            'this' : 'that',
-            'something_not_needed' : None
-            },
+    # Then follows type-specific mappings
 
-        # type_map: Here follows Type (class) mappings with optional local attribute mappings
-        'type_map': {
-            (inmodule.ASTClass1, outmodule.MyASTClass) :
-            # followed by array of attribute mapping
+    (inmodule.ASTClass1, outmodule.MyASTClass) :
+    # followed by array of attribute mapping
 
-            # Here an array of tuples is used. (Format is subject to change)
-            # (FROM-class on the left, TO-class on the right)
-            # *optional* transformation function as third argument
-            # Special case: Preparation(myfunc), which calls any function at that point in the list
-            [
-              ('thiss', 'thatt'),
-              ('name', 'thename', capitalize_name_string),
-              Preparation(pre_counter_init),
-              ('zero_based_counter', 'one_based_counter', lambda x : x + 1),
-              ('thing',  None)
-             ]
+    # Here an array of tuples is used. (Format is subject to change)
+    # (FROM-class on the left, TO-class on the right)
+    # *optional* transformation function as third argument
+    # Special case: Preparation(myfunc), which calls any function at that point in the list
+    [
+      ('this', 'that'),
 
-            # Equally named types have no magic - it is still required to
-            # define that they shall be transformed/copied over.
-            (inmodule.AnotherType, outmodule.Anothertype), [
-                # Use a Constant object to always set the same value in target attribute
-                (Constant('int32'), 'datatype')
-                ],
-            # ListOf and other features are not yet implemented -> when the need arises
-        }
+      # Provide a field_transform function that will be called wit the input value ('name')
+      # to modify the value before it gets asigned to 'thename'.
+      ('name', 'thename', capitalize_name_string),
+
+      # A Preparation function will be called without assigning it to any output
+      # The mapping-tuples are processed in order, thus the preparation can be done before the
+      # ones that come after.
+      Preparation(pre_counter_init),
+      ('zero_based_counter', 'one_based_counter', lambda x : x + 1),
+      ('thing',  None),
+
+      # Use a Constant object to always set the same value in target attribute
+      Constant("always this value"), 'information'), # 'information' set to same value regardless of inputs
+
+      # Use a function ref (callable) to provide a callback function that generates the value
+      (my_function, 'dynamic') # Call the given function to generate the value for 'dynamic'
+     ]
+
+    # Equally named types have no magic - it is still required to
+    # define that they shall be transformed/copied over.
+    (inmodule.AnotherType, outmodule.Anothertype), [
+        # Use a Constant object to always set the same value in target attribute
+        ('type', 'datatype')
+        ],
+    # ListOf and other features are not yet implemented -> when the need arises
 }
 """
 
@@ -140,7 +150,7 @@ def _log_if(condition, level, string):
 def _log(entry_level, string):
 
     # Error is default if env-var is not specified
-    output_level = os.getenv("IFEX_LOG_LEVEL", "ERROR") 
+    output_level = os.getenv("IFEX_LOG_LEVEL", "ERROR")
 
     order = ["DEBUG", "INFO", "WARN", "ERROR", "NONE"]
     if output_level in order and order.index(output_level) <= order.index(entry_level):
@@ -176,8 +186,9 @@ def set_attr(attrs_dict, attr_key, attr_value):
 
         # If it's a non-list but already set to a value, this is an error.  Don't overwrite it.
         else:
-            _log("ERROR", f"""Attribute {attr_key} already has a scalar (non-list) value.  Check for multiple translations
-                  mapping to this one.  We should not overwrite it, and since it is not a list type, we can't append.""")
+            _log("ERROR", f"""Attribute '{attr_key}' already has a scalar {value=}.
+                              We should not overwrite it, and since it is not a list type, we can't append.
+                              Check for multiple translations mapping on {attr_key}.""")
             _log("WARN", f"Target value {value} was ignored.")
             return
 
@@ -198,12 +209,12 @@ def set_attr(attrs_dict, attr_key, attr_value):
 # main loop:
 # Returns: (preparation_function, input_arg, output_arg, field_transform)
 
-def eval_mapping(type_map_entry):
-    if isinstance(type_map_entry, Preparation):
+def eval_mapping(map_entry):
+    if isinstance(map_entry, Preparation):
         # Return the function that is wrapped inside Preparation()
-        return (type_map_entry.func, None, None, None)
+        return (map_entry.func, None, None, None)
     else:  # 3 or 4-value tuple is expected (field_transform is optional)
-        input_arg, output_arg, *field_transform = type_map_entry
+        input_arg, output_arg, *field_transform = map_entry
         # Unwrap array and use identity-function if no transformation required
         field_transform = field_transform[0] if field_transform else lambda _ : _
 
@@ -290,7 +301,14 @@ def transform(mapping_table, input_obj):
         return input_obj
 
     # Find a translation rule in the metadata
-    for (from_class, to_class), mappings in mapping_table['type_map'].items():
+    for key, mappings in mapping_table.items():
+
+        # Skip the Default key as it is handled explicitly below
+        if key == Default:
+            continue
+
+        # if not Default then we can assume it's a type-pair, so we can destructure it:
+        (from_class, to_class) = key
 
         # Use linear-search in mapping table until we find something matching input object.
         # Since the translation table is reasonably short, it should be OK for now.
@@ -322,7 +340,7 @@ def transform(mapping_table, input_obj):
 
             # Call preparation function, if given.
             if preparation_function is not None:
-                preparation_function()
+                preparation_function(input_obj, attributes)
                 continue
 
             # In the case the rule is set to output_attr==None, then no output_attr is written.  But if field_transform
@@ -341,75 +359,123 @@ def transform(mapping_table, input_obj):
 
             # If the input_attr is set to a function instead of an attribute name, then the result of calling the
             # function is copied to the output_attr.  Unlike the field_transform, this type of function gets no
-            # input value.
+            # input value. Most functions will generate some static information but we pass input_obj as well
+            # ass the (output) attributes created so far, just in case something useful can be made with them.
             if callable(input_attr):
-                set_attr(attributes, output_attr, input_attr()) # <- note that "input_attr" called as a function
+                set_attr(attributes, output_attr, input_attr(input_obj, attributes)) # <- note that "input_attr" called as a function
                 continue
 
             # If defined as a Constant object, copy the constant value to the output field
             if isinstance(input_attr, Constant):
+                _log("DEBUG", f"Constant mapped: Set {output_attr=} to {input_attr.const_value}")
                 set_attr(attributes, output_attr, input_attr.const_value)
                 continue
 
             # Delegate -> call the function that stores the value for later use
             if isinstance(output_attr, Delegate):
-                output_attr.func(input_obj, input_attr)  # Wraps any function/closure, but probably: 
+                _log("DEBUG", f"Delegate registered: {output_attr=} for {input_attr=}, storing {input_obj=}")
+                output_attr.func(input_obj, input_attr)  # Wraps any function/closure, but probably:
                 continue
 
             # else: normal mapping input_attr to output_attr:
             # Get input value and copy it, after transforming as necessary
-            set_attr(attributes, output_attr, transform_value_common(mapping_table, getattr_value(input_obj, input_attr),
-                                                                     field_transform))
+            set_attr(attributes,
+                     output_attr,
+                     transform_value_common(mapping_table,
+                                            getattr_value(input_obj,
+                                                          input_attr),
+                                            field_transform))
 
             # Mark this attribute as handled
             done_attrs.add(input_attr)
 
+        # Process default mappings for attributes not already handled by a specific rule.
+        _log("INFO", f"Start processing Default map for {type(input_obj)=}")
+        default_mappings = mapping_table[Default]
 
-        # Second loop: Any attributes that have the _same name_ in the input and output classes are assumed to be
-        # mappable to each other.  Thus, identical names do not need to be listed in the type-specific translation table
-        # unless they need a custom transformation.  So here we can find all matching names and map them (with recursive
-        # transformation, as needed), but we of course skip all attributes that have been handled already by a
-        # type-specific rule (done_attrs).
+        for preparation_function, input_attr, output_attr, field_transform in [eval_mapping(m) for m in default_mappings]:
 
-        # In addition: global_attribute_map defines which attribute names shall be considered the same in all objects.
-
-        global_attribute_map = mapping_table['global_attribute_map']
-
-        # Checking all fields in input object, except fields that were handled and stored in done_attrs
-        for attr, value in vars(input_obj).items():
-
-            if attr in done_attrs:
+            if input_attr in done_attrs:
+                _log("DEBUG", f"Default-map: Skip {input_attr=} because it is already done")
                 continue
 
-            glob_transform = lambda _ : _  # Default is no-op
-
-            # Translate attribute name according to global rules, if defined.
-            # ... and extract the transform function if it's given
-            if attr in global_attribute_map:
-                attr = global_attribute_map.get(attr)
-                if isinstance(attr, tuple):
-                    # Tuple with transformation function
-                    glob_transform = attr[1]
-                    attr = attr[0]
-
-            if dataclass_has_field(to_class, attr):
-                _log("DEBUG", f"Performing global or same-name auto-conversion for {attr=} from {from_class.__name__} to {to_class.__name__}\n")
-                set_attr(attributes, attr, transform_value_common(mapping_table, value, glob_transform))
+            if preparation_function is not None:
+                _log("DEBUG", f"Default-map: preparation function: {preparation_function=}")
+                preparation_function()
                 continue
 
-            _log_if(attr is not None, "WARN", f"Attribute '{attr}' from Input AST:{input_obj.__class__.__name__} was not used in IFEX:{to_class.__name__}")
+            # See explanation in similar code above
+            if output_attr is None:
+                _log("DEBUG", f"{input_attr=} for {type(input_obj)} was mapped to None")
+                field_transform(getattr_value(input_obj, input_attr))
+                done_attrs.add(input_attr)
+                continue
+
+            # See explanation in similar code above
+            if output_attr is Unsupported:
+                _log("DEBUG", f"Default-map: Unsupported from {input_attr=}")
+                val = getattr_value(input_obj, input_attr)
+                _log_if(bool(val) is not False, "ERROR", f"""{type(input_obj)}:{input_obj.name} has an attribute for
+                        '{input_attr}' but that feature is unsupported. ({val=})""")
+                done_attrs.add(input_attr)
+                continue
+
+            # See explanation in similar code above
+            if callable(input_attr):
+                _log("DEBUG", f"Default-map: Callable from {input_attr=}")
+                set_attr(attributes, output_attr, input_attr(input_obj, attributes)) # <- note that "input_attr" called as a function
+                continue
+
+            # See explanation in similar code above
+            if isinstance(input_attr, Constant):
+                _log("DEBUG", f"Default-map: Constant: Set {output_attr=} to {input_attr.const_value}")
+                set_attr(attributes, output_attr, input_attr.const_value)
+                continue
+
+            # Delegate -> call the function that stores the value for later use
+            if isinstance(output_attr, Delegate):
+                _log("DEBUG", f"Default-map: Delegate from {input_attr=}")
+                output_attr.func(input_obj, input_attr)  # Wraps any function/closure, but probably:
+                done_attrs.add(input_attr)
+                continue
+
+            if input_attr not in [ f.name for f in fields(type(input_obj)) ]:
+                continue
+
+            if dataclass_has_field(to_class, output_attr):
+                _log("DEBUG", f"Performing global rule for {input_attr=} from {from_class.__name__} to {to_class.__name__}\n")
+                set_attr(attributes, output_attr, transform_value_common(mapping_table, getattr_value(input_obj, input_attr), field_transform))
+                done_attrs.add(input_attr)
+            else:
+                _log("DEBUG", f"Skipped {output_attr} because dataclass {to_class=} does not have it")
 
 
-        # Both loops done. Attributes now filled with key/values. Instantiate "to_class" object and return it.
+            input_value = getattr_value(input_obj, input_attr)
+            if input_value is None:
+                print(f"DEBUG input_value is None")
+            else:
+                if dataclass_has_field(to_class, output_attr):
+                    _log("DEBUG", f"Performing global rule for {input_attr=} from {from_class.__name__} to {to_class.__name__}\n")
+                    set_attr(attributes, output_attr, transform_value_common(mapping_table, input_value, field_transform))
+                    done_attrs.add(input_attr)
+                else:
+                    _log("DEBUG", f"Skipped {output_attr} because dataclass {to_class=} does not have it")
+
+            _log_if(input_attr not in done_attrs, "WARN", f"Attribute '{input_attr}' from Input AST:{input_obj.__class__.__name__} was not used in IFEX:{to_class.__name__}")
+
+        # Specific and default mappings are done. Attributes now filled with key/values.
+        # Instantiate "to_class" object  and return it.
         _log("DEBUG", f"Creating and returning object of type {to_class} with {attributes=}")
         try:
             obj = to_class(**attributes)
             return obj
+
+        # This happens if we try to create an object with the wrong attributes, or if a mandatory attribute is missing:
         except Exception as e:
             _log("ERROR", f"Could not create object of type {to_class} with {attributes=}.\n(Was mapped from type {from_class=}).  ")
             _log("ERROR", f"Exception is: {e}")
 
-
+    # If we reach this, then no appropriate mapping was found - raise error
     no_rule = f"no translation rule found for object {input_obj} of class {input_obj.__class__.__name__}"
     _log("ERROR", no_rule)
     raise TypeError(no_rule)
