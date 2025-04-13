@@ -19,7 +19,7 @@ import pyfranca.ast as franca
 import re
 
 from models.ifex.ifex_ast_construction import add_constructors_to_ifex_ast_model, ifex_ast_as_yaml
-from transformers.rule_translator import Preparation, Constant, Unsupported
+from transformers.rule_translator import Preparation, Constant, Unsupported, Default
 
 def translate_type_name(francaitem):
     return translate_type(francaitem)
@@ -75,66 +75,64 @@ def assemble_map_type():
 # Tip: This translation table format is described in more detail in rule_translator.py
 franca_to_ifex_mapping = {
 
-        'global_attribute_map':  {
-            # Franca-name   :  IFEX-name
-            'comments' : 'description', # FIXME allow transform also here, e.g. concat comments
-            'extends' : None,  # TODO
-            'flags' : None,
-            'type' : ('datatype', translate_type_name),
-            },
+    Default :  {
+        # Franca-name   :  IFEX-name
+        'comments' : 'description', # FIXME allow transform also here, e.g. concat comments
+        'extends' : None,  # TODO
+        'flags' : None,
+        'type' : ('datatype', translate_type_name),
+        },
 
-        'type_map': {
-            (franca.Interface,         ifex.Interface) : [
-                ('maps', 'typedefs'),
-                ('manages', Unsupported),
-                ],
-            (franca.Package,           ifex.Namespace) : [
-                # TEMPORARY: Translates only the first interface
-                ('interfaces', 'interface', lambda x: x[0]),
-                ('typecollections', 'namespaces'),
-                ],
-            (franca.Method,            ifex.Method) : [
-                ('in_args', 'input'),
-                ('out_args', 'output'),
-                ('namespace', None) ],
-            (franca.Argument,          ifex.Argument) : [
-                ('type', 'datatype', translate_type_name), ],
-            (franca.Enumeration,       ifex.Enumeration) : [
-                Preparation(reset_enumerator_counter),
-                ('enumerators', 'options'),
-                ('extends', Unsupported),
+    (franca.Interface,         ifex.Interface) : [
+        ('maps', 'typedefs'),
+        ('manages', Unsupported),
+        ],
+    (franca.Package,           ifex.Namespace) : [
+        # TEMPORARY: Translates only the first interface
+        ('interfaces', 'interface', lambda x: x[0]),
+        ('typecollections', 'namespaces'),
+        ],
+    (franca.Method,            ifex.Method) : [
+        ('in_args', 'input'),
+        ('out_args', 'output'),
+        ('namespace', None) ],
+    (franca.Argument,          ifex.Argument) : [
+        ('type', 'datatype', translate_type_name), ],
+    (franca.Enumeration,       ifex.Enumeration) : [
+        Preparation(reset_enumerator_counter),
+        ('enumerators', 'options'),
+        ('extends', Unsupported),
 
-                # Franca only describes integer-based Enumerations but IFEX can use any type.
-                # In the translation we hard-code the enumeration datatype to be int32, which ought to
-                # normally work.
-                (Constant('int32'), 'datatype')
-                ],
-            (franca.Enumerator,        ifex.Option) : [
-                ('value', 'value', translate_enumerator_value)
-                ],
-            (franca.TypeCollection,    ifex.Namespace) : [
-                # FIXME - these translations are valid also for Interfaces -> move to global
-                ('arrays', 'typedefs'),
-                ('maps', 'typedefs'),
-                ('enumerations', 'enumerations'),
-                ('structs', 'structs'),
-                ('unions', None),  # TODO - use the variant type on IFEX side, need to check its implementation first
-                ],
-            (franca.Struct,            ifex.Struct) : [
-                ('fields', 'members')
-                ],
-            (franca.StructField,       ifex.Member) : [] ,
-            (franca.Array,             ifex.Typedef) : [],
-            (franca.Typedef,           ifex.Typedef) : [],
-            (franca.Map,               ifex.Typedef) : [
-                ('key_type', None, map_keytype),
-                ('value_type', None, map_valuetype),
-                (assemble_map_type, 'datatype')
-                ],
-            (franca.Attribute,         ifex.Property) : [],
-            (franca.Import,            ifex.Include) : [],
-            }
-        }
+        # Franca only describes integer-based Enumerations but IFEX can use any type.
+        # In the translation we hard-code the enumeration datatype to be int32, which ought to
+        # normally work.
+        (Constant('int32'), 'datatype')
+        ],
+    (franca.Enumerator,        ifex.Option) : [
+        ('value', 'value', translate_enumerator_value)
+        ],
+    (franca.TypeCollection,    ifex.Namespace) : [
+        # FIXME - these translations are valid also for Interfaces -> move to global
+        ('arrays', 'typedefs'),
+        ('maps', 'typedefs'),
+        ('enumerations', 'enumerations'),
+        ('structs', 'structs'),
+        ('unions', None),  # TODO - use the variant type on IFEX side, need to check its implementation first
+        ],
+    (franca.Struct,            ifex.Struct) : [
+        ('fields', 'members')
+        ],
+    (franca.StructField,       ifex.Member) : [] ,
+    (franca.Array,             ifex.Typedef) : [],
+    (franca.Typedef,           ifex.Typedef) : [],
+    (franca.Map,               ifex.Typedef) : [
+        ('key_type', None, map_keytype),
+        ('value_type', None, map_valuetype),
+        (assemble_map_type, 'datatype')
+        ],
+    (franca.Attribute,         ifex.Property) : [],
+    (franca.Import,            ifex.Include) : [],
+}
 
 # --- Map fundamental/built-in types ---
 
