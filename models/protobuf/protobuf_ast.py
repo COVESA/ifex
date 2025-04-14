@@ -34,14 +34,14 @@ class FieldOption:
 class EnumField:
     name: str
     value: str
-    options: Optional[List[Option]] = None
+    options: Optional[List[FieldOption]] = None
 
 @dataclass
 class MapField:
     name: str
     keytype: str
     valuetype: str
-    options: Optional[List[Option]] = None
+    options: Optional[List[FieldOption]] = None
 
 @dataclass
 class Field:
