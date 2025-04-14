@@ -5,7 +5,7 @@
 
 from lark import Lark, logger, Tree, Token
 from models import protobuf as protobuf_model
-from models.protobuf.protobuf_ast import Option, FieldOption, EnumField, Enumeration, MapField, Field, Import, Message, RPC, Service, Proto, StructuredOption
+from models.protobuf.protobuf_ast import Option, FieldOption, EnumField, Enumeration, Field, Import, Message, RPC, Service, Proto, StructuredOption
 import lark
 import os
 import re
@@ -288,6 +288,10 @@ def process_field_option(o):
     constant_value = next_node.value
     return FieldOption(option_name, constant_value)
 
+# MapField is (no longer) a special type in the AST.  Instead it is a field
+# with datatype = "map<A,B>".  However, from the lexer/parser point of view it
+# is noticed as a separate token stream so we may as well process it in a
+# unique function here.
 def process_map_field(f):
 
     # Sanity check
@@ -304,7 +308,7 @@ def process_map_field(f):
     if next_node.type in ['X_BUILTINTYPE', 'DEFINEDTYPE']:
         valuetype = next_node.value
     else:
-        raise Exception(f'Unexpected node type when interpreting field {next_node=}')
+        raise Exception(f'process_map_field: Unexpected node type when interpreting field {next_node=}')
 
     # --- 4 field name
     next_node = f.children.pop(0)
@@ -324,9 +328,8 @@ def process_map_field(f):
 
     # NOTE: The field number follows next, but is discarded until
     # we find a reason to keep it - see comments in design document.
-    return MapField(name = fieldname,
-                 keytype = keytype,
-                 valuetype = valuetype,
+    return Field(name = fieldname,
+                 datatype = "map<" + keytype + "," + valuetype + ">",
                  options = options)
 
 
@@ -447,7 +450,6 @@ def process_message(m):
     # === Create Message object in AST, and add to list ===
     return Message(name = msg_name,
                    fields = ast_fields,
-                   mapfields = ast_mfields,
                    messages = ast_messages,
                    enums = ast_enums)
 

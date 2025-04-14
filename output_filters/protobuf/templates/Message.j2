@@ -29,12 +29,6 @@ message {{ item.name }} {
 {%- endfor %}
 
 {%- endif %}
-{% if item.mapfields %}
-{% for mapfield in item.mapfields %}
-  {{ gen(mapfield) }}
-{%- endfor %}
-
-{%- endif %}
 {% if item.reservations %}
 {% for reserved in item.reservations %}
   {{ gen(reserved) }}

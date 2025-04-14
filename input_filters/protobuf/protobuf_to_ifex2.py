@@ -136,9 +136,8 @@ mapping_table = {
         ('options', None, handle_options),
         ],
 
-        (protobuf.MapField, ifex.Member): [ ],
-        # TODO, go through any missing types
-    }
+    # TODO, go through any missing types
+    
     (protobuf.Enumeration, ifex.Enumeration): [
         ('fields', 'options'),
         ('options', None, handle_options),
@@ -157,7 +156,6 @@ mapping_table = {
         ('enums', Unsupported),
         ('messages', Unsupported),
         ('oneofs', Unsupported),
-        ('mapfields', 'members'),
         ('reservations', Unsupported)
         ],
 
@@ -165,13 +163,6 @@ mapping_table = {
         ('repeated', Unsupported),
         ('optional', Unsupported),
         ('options', None, handle_options),
-        ],
-
-    (protobuf.MapField, ifex.Member): [
-        ('options', None, handle_options),
-        ('keytype', None, map_keytype),
-        ('valuetype', None, map_valuetype),
-        (assemble_map_type, 'datatype'),
         ],
 
     (protobuf.Import, ifex.Include): [

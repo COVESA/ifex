@@ -37,13 +37,6 @@ class EnumField:
     options: Optional[List[FieldOption]] = None
 
 @dataclass
-class MapField:
-    name: str
-    keytype: str
-    valuetype: str
-    options: Optional[List[FieldOption]] = None
-
-@dataclass
 class Field:
     name: str
     datatype: str
@@ -94,7 +87,6 @@ class Message:
     messages: Optional[List["Message"]] = None
     options: Optional[List[Option]] = None
     oneofs: Optional[List[OneOf]] = None
-    mapfields: Optional[List[MapField]] = None
     reservations: Optional[List[Reserved]] = None
 
 @dataclass
