@@ -1,9 +1,9 @@
 {% if item.structuredoptions != None %}
 option ({{ item.name }}) = {
    {% for o in item.structuredoptions %}
-      {{ gen(o) }}
+    {{ o.name }} : {{ o.value }}{{ "" if loop.last else ", " }}
    {% endfor %}
-   }
+  };
 {% else %}
 option {{ item.name }} = {{ gen_str_or_int(item.value) }}
 {%- endif %}
