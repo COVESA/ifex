@@ -1,0 +1,17 @@
+name: Original
+filetype: IFEX Core IDL
+namespaces:
+- name: common.namespace
+  typedefs:
+  - name: VariType
+    datatypes:
+    - int32
+    - uint16
+    - string[]
+  - name: VariType2
+    datatype: variant<int32, uint16>
+  methods:
+  - name: m1
+    input:
+    - name: var
+      datatype: VariType
