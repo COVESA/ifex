@@ -6,8 +6,9 @@ Light-weight support functions for creating an IFEX tree from program code,
 likely to be used in X-to-IFEX model conversions.
 """
 
-# This module supports creating of an IFEX internal tree from python code.  It
-# is likely to be used in a <something>-to-IFEX (model-to-model) conversion.
+# This module supports creating and processing an IFEX internal tree, and many
+# similar models for other IDLs, from python code.  
+# a <something>-to-IFEX (model-to-model) conversion.  
 # It also adds a printout function so that an internal IFEX tree "AST"
 # representation can be printed out in the IFEX Core IDL format (in YAML)
 
@@ -67,6 +68,16 @@ def is_empty(node) -> bool:
         return node == []
     else:
         return node is None
+
+# Note that is_dataclass() is true both for a class and a class instance (object)
+# Hence, checking _also_ that t is type (class instance) is slightly stricter
+def is_ast_class(t) -> bool:
+    return isinstance(t, type) and is_dataclass(t)
+
+# Rudimentary check - we assume what is passed is most likely part of the
+# AST classes, and not some other @dataclass
+def is_ast_type(t) -> bool:
+    return is_dataclass(t)
 
 def is_simple_type(t) -> bool:
     return t in [str, int, float, bool, date, datetime]
