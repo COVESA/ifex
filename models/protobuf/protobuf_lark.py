@@ -588,8 +588,21 @@ def parse_proto_file(grammar_file, proto_file):
 
         # Get parsed content
         tree = p.parse(proto)
+        return process_lark_tree(tree)
 
-        # Return Protobuf AST
+def parse_text(text):
+
+    # Get location of protobuf model - in the same place we find the grammar
+    modeldir=os.path.dirname(protobuf_model.__file__)
+    grammar_file = os.path.join(modeldir, 'protobuf.grammar')
+
+    with open(grammar_file, 'r') as f:
+        grammar = f.read()
+
+        p = Lark(grammar, parser='lalr', debug=True)
+
+        # Get parsed content
+        tree = p.parse(text)
         return process_lark_tree(tree)
 
 
