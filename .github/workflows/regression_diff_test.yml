@@ -53,7 +53,7 @@ jobs:
         run: echo "$GITHUB_CONTEXT" >difftest/github_context.json
 
       - name: Upload files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: difftest
           path: difftest
