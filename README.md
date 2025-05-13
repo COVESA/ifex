@@ -24,7 +24,8 @@ unifying format.
 
 ## Documentation
 
-Please refer to the [documentation](https://covesa.github.io/ifex) for more information.
+Please refer to the [documentation](https://covesa.github.io/ifex) for more information.  
+For updates and deep-dive articles, see [the Wiki](https://github.com/COVESA/ifex/wiki) for this repository.
 
 ## IFEX software tools
 
