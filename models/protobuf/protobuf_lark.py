@@ -288,6 +288,48 @@ def process_field_option(o):
     constant_value = next_node.value
     return FieldOption(option_name, constant_value)
 
+def process_map_field(f):
+
+    # Sanity check
+    assert_rule_match(f, 'mapfield')
+
+    next_node = f.children.pop(0)
+
+    # --- 2 key type ---
+    assert_token(next_node, 'X_BUILTINTYPE')
+    keytype = next_node.value
+
+    # --- 3 value type ---
+    next_node = f.children.pop(0)
+    if next_node.type in ['X_BUILTINTYPE', 'DEFINEDTYPE']:
+        valuetype = next_node.value
+    else:
+        raise Exception(f'Unexpected node type when interpreting field {next_node=}')
+
+    # --- 4 field name
+    next_node = f.children.pop(0)
+    assert_token(next_node, 'IDENT')
+    fieldname = next_node.value
+
+    # --- 5 field number (thrown away, for now)
+    f.children.pop(0)
+
+    # --- 5 field options ---
+    options = []
+    if len(f.children) > 0:
+        next_node = f.children.pop(0)
+        assert_rule_match(next_node, 'fieldoptions')
+        for o in next_node.children:
+            options.append(process_field_option(o))
+
+    # NOTE: The field number follows next, but is discarded until
+    # we find a reason to keep it - see comments in design document.
+    return MapField(name = fieldname,
+                 keytype = keytype,
+                 valuetype = valuetype,
+                 options = options)
+
+
 def process_field(f):
 
     # Sanity check
@@ -382,6 +424,12 @@ def process_message(m):
     for f in fields:
         ast_fields.append(process_field(f))
 
+    # --- 2.2. Map Fields (list) ---
+    fields = get_items_of_type(next_node, 'mapfield')
+    ast_mfields = []
+    for f in fields:
+        ast_mfields.append(process_map_field(f))
+
     # --- 2.3 (Nested) messages
     messages = get_items_of_type(next_node, 'message')
     ast_messages = []
@@ -399,6 +447,7 @@ def process_message(m):
     # === Create Message object in AST, and add to list ===
     return Message(name = msg_name,
                    fields = ast_fields,
+                   mapfields = ast_mfields,
                    messages = ast_messages,
                    enums = ast_enums)
 
