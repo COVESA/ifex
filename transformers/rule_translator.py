@@ -159,11 +159,14 @@ def set_attr(attrs_dict, attr_key, attr_value):
         # If it's a list, we want to add to it instead of overwriting:
         if isinstance(value, list):
             # We don't have lists in lists, but it can happen that we get more than one list
-            if isinstance(attr_value, list):
-                value = value + attr_value
-            else:
-                value.append(attr_value)
-            attrs_dict[attr_key] = value
+            # Don't append empty (None) objects however
+            if attr_value is not None:
+                if isinstance(attr_value, list):
+                    value = value + attr_value
+                else:
+                    value.append(attr_value)
+                _log("DEBUG", f"Appending to list for {attr_key=}: amended list: {value}")
+                attrs_dict[attr_key] = value
             return
 
         # If it's set to None by an earlier step -> just overwrite
