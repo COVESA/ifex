@@ -384,10 +384,12 @@ oneoffield: type fieldname "=" fieldnumber ( "[" fieldoptions "]" )? ";"
 # ---------
 
 # from spec: mapField = "map" "<" keyType "," type ">" mapName "=" fieldNumber [ "[" fieldOptions "]" ] ";"
-mapfield: "map" "<" keytype "," type ">" mapname "=" fieldnumber ("[" fieldoptions "]")? ";"
+mapfield: "map" "<" X_BUILTINTYPE "," type ">" mapname "=" fieldnumber ("[" fieldoptions "]")? ";"
 
 # from spec: keyType = "int32" | "int64" | "uint32" | "uint64" | "sint32" | "sint64" | "fixed32" | "fixed64" | "sfixed32" | "sfixed64" | "bool" | "string"
-keytype: "int32" | "int64" | "uint32" | "uint64" | "sint32" | "sint64" | "fixed32" | "fixed64" | "sfixed32" | "sfixed64" | "bool" | "string"
+# ... so keytype can only be a builtin type?
+# Seems to be the same as X_BUILTINTYPE defined before, so using that instead
+# keytype: "int32" | "int64" | "uint32" | "uint64" | "sint32" | "sint64" | "fixed32" | "fixed64" | "sfixed32" | "sfixed64" | "bool" | "string"
 
 # Reserved
 # --------
