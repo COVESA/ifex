@@ -16,7 +16,7 @@ import dacite, pytest
 import os
 
 from models.ifex.ifex_ast import Argument, AST, Namespace, Interface, Method
-from models.ifex.ifex_ast_construction import ifex_ast_as_yaml
+from models.common.ast_utils import ast_as_yaml
 
 TestPath = os.path.dirname(os.path.realpath(__file__))
 
@@ -116,7 +116,7 @@ class Argument(Argument):
 
 
 def test_simple_types():
-    simple_types = yaml.safe_load(ifex_ast_as_yaml(AST(namespaces=[
+    simple_types = yaml.safe_load(ast_as_yaml(AST(namespaces=[
         Namespace(
             name="namespace1",
             interface=Interface(

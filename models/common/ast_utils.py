@@ -1,11 +1,80 @@
-from models.ifex.ifex_ast_construction import add_constructors_to_ifex_ast_model, ifex_ast_as_yaml, is_ast_type
-from transformers.rule_translator import  _log
-from models.ifex.ifex_ast_introspect import is_optional
-from dataclasses import fields
-from typing import Any, Dict 
-import oyaml
-from collections import OrderedDict
+# SPDX-FileCopyrightText: Copyright (c) 2024 MBition GmbH.
+# SPDX-License-Identifier: MPL-2.0
 
+from collections import OrderedDict
+from dataclasses import fields
+from datetime import datetime, date
+from models.ifex.ifex_ast_introspect import is_optional
+from transformers.rule_translator import  _log
+from typing import Any, Dict 
+import models.common.type_checking_constructor_mixin
+import oyaml
+
+# This module supports creating and processing an IFEX internal tree, and many
+# similar models for other IDLs, from python code.  
+# a <something>-to-IFEX (model-to-model) conversion.  
+# It also adds a printout function so that an internal IFEX tree "AST"
+# representation can be printed out in the IFEX Core IDL format (in YAML)
+
+# Many programs that need to transform to/from IFEX are better off using a input-to-model
+# or model-to-model transformation (build the new AST internally, and *then*
+# print text), as compared to immediately printing IFEX core
+# IDL, or another IDL format as text.
+
+# This code gives primitive but useful support.  It is simply implemented by
+# adding constructor (__init__) functions for the @dataclass node definitions
+# in ifex_ast.py. Object creation was of course already possible because
+# @dataclasses have automatic __init__ functions.  However, using the
+# type_checking_constructor_mixin code, it performs some type-checking of
+# the given inputs, which helps to avoid creating a non-compliant AST model
+
+# With __init__ it is possible to create an object tree in a straight forward
+# and expected way, including some type checks:
+#
+#    from models.ifex.ifex_ast import Namespace, Interface, ...
+#    import models.common.ast_utils
+#
+#    # Initialize support:
+#    ast_utils.add_constructors_to_ast_model()
+#
+#    # Create objects and link them together.
+#    ns = Namespace('mynamespacename', description = 'this is it')
+#    if = Interface('the-interface-node')
+#    ns.interface = if
+#
+#    # (Re)assign member fields on any object
+#    ns.interface.methods = [... method objects...]
+#
+# etc.
+
+
+def add_constructors_to_ast_model(module) -> None:
+    """ Mix in the type-checking constructor support into each of the ifex_ast classes: """
+    for c in [cls for cls in module.__dict__.values() if
+              isinstance(cls, type) and
+              is_dataclass(cls)]:
+        type_checking_constructor_mixin.add_constructor(c)
+
+def is_empty(node) -> bool:
+    if type(node) is str:
+        return node == ""
+    elif type(node) is list:
+        return node == []
+    else:
+        return node is None
+
+# Note that is_dataclass() is true both for a class and a class instance (object)
+# Hence, checking _also_ that t is type (class instance) is slightly stricter
+def is_ast_class(t) -> bool:
+    return isinstance(t, type) and is_dataclass(t)
+
+# Rudimentary check - we assume what is passed is most likely part of the
+# AST classes, and not some other @dataclass
+def is_ast_type(t) -> bool:
+    return is_dataclass(t)
+
+def is_simple_type(t) -> bool:
+    return t in [str, int, float, bool, date, datetime]
 
 # Factoring out some of the boolean checks:
 
@@ -146,7 +215,7 @@ def ast_to_dict(node, debug_context="") -> OrderedDict:
         raise TypeError(f"None-value should not be passed to function, parent debug: {debug_context=}")
 
     # Strings and Ints are directly understood by the YAML output printer so just put them in.
-    if construction.is_simple_type(type(node)):
+    if is_simple_type(type(node)):
         return node
 
     # In addition to dicts, we might have python lists, which will be output as lists in YAML
@@ -168,7 +237,7 @@ def ast_to_dict(node, debug_context="") -> OrderedDict:
 
     for f in fields(node):
         item = getattr(node, f.name)
-        if not construction.is_empty(item):
+        if not is_empty(item):
             ret[f.name] = ast_to_dict(item, debug_context=str(f))
 
     return ret
@@ -194,7 +263,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     # Add the type-checking constructor mixin
-    add_constructors_to_ifex_ast_model()
+    add_constructors_to_ast_model(protobuf)
 
     try:
         # Parse protobuf input and create Protobuf AST
@@ -202,7 +271,7 @@ if __name__ == '__main__':
         print(proto_ast)
 
         # Output as YAML
-        print(ifex_ast_as_yaml(proto_ast))
+        print(ast_as_yaml(proto_ast))
 
         print(f"{find_first_by_name(proto_ast, 'S_UNSPECIFIED')=}")
         print(f"{find_first_by_fields(proto_ast, { 'value' : '4'  })=}")
@@ -212,10 +281,10 @@ if __name__ == '__main__':
         print(f"{find_all_by_fields(proto_ast.messages[0].fields, { 'datatype' : 'int32'  })=}")
         print(f"{find_all_by_fields(proto_ast.messages, { 'datatype' : 'int32'  })=}")
         print(f"{find_first_by_fields(proto_ast.messages, { 'datatype' : 'int32'  })=}")
-        print(f"{find_first_by_name_and_type(proto_ast, "innerinner", protobuf.Field)=}")
-        print(f"{find_first_by_name(proto_ast, "innerinner")=}")
-        print(f"{find_first_by_name_and_type(proto_ast, "innerinner", protobuf.Field)=}")
-        print(f"{find_all_by_name(proto_ast, "innerinner", protobuf.Field)=}")
+        print(f"{find_first_by_name_and_type(proto_ast, 'innerinner', protobuf.Field)=}")
+        print(f"{find_first_by_name(proto_ast, 'innerinner')=}")
+        print(f"{find_first_by_name_and_type(proto_ast, 'innerinner', protobuf.Field)=}")
+        print(f"{find_all_by_name(proto_ast, 'innerinner', protobuf.Field)=}")
 
     except FileNotFoundError:
         _log("ERROR", "File not found")
