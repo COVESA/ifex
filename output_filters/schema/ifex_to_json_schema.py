@@ -16,7 +16,7 @@ Generate JSON Schema equivalent to the python-internal model definition.
 from dataclasses import fields
 from datetime import datetime, date
 
-from models.ifex.ifex_ast_construction import is_simple_type
+from models.common.ast_utils import is_simple_type
 
 from models.ifex.ifex_ast import AST
 from models.ifex.ifex_ast_introspect import actual_type, field_actual_type, field_inner_type, inner_type, is_forwardref, is_list, type_name, field_is_list, field_is_optional, field_referenced_type

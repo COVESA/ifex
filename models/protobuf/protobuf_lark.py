@@ -5,6 +5,7 @@
 
 from lark import Lark, logger, Tree, Token
 from models import protobuf as protobuf_model
+from models.common.ast_utils import add_constructors_to_ast_model
 from models.protobuf.protobuf_ast import Option, FieldOption, EnumField, Enumeration, Field, Import, Message, RPC, Service, Proto, StructuredOption
 import lark
 import os
@@ -43,8 +44,7 @@ import sys
 
 
 # Use protobuf_construction mixin
-import models.protobuf.protobuf_ast_construction as protobuf_ast_construction
-protobuf_ast_construction.add_constructors_to_protobuf_ast_model()
+add_constructors_to_ast_model(protobuf_model)
 
 # Remove lines matching regexp
 def filter_out(s, re):

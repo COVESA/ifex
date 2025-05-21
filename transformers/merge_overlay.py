@@ -7,7 +7,7 @@
 
 from dataclasses import fields, is_dataclass, replace
 from models.ifex.ifex_ast import *
-from models.ifex.ifex_ast_construction import ifex_ast_as_yaml
+from models.common.ast_utils import ast_as_yaml
 from models.ifex.ifex_parser import get_ast_from_yaml_file
 from typing import List, Any, Type
 import copy
@@ -126,11 +126,11 @@ if __name__ == "__main__":
         ast1 = get_ast_from_yaml_file(file1)
         ast2 = get_ast_from_yaml_file(file2)
         merged_ast = merge_asts(ast1, ast2)
-        print(ifex_ast_as_yaml(ast1))
+        print(ast_as_yaml(ast1))
         print("-----------------------------------------")
-        print(ifex_ast_as_yaml(ast2))
+        print(ast_as_yaml(ast2))
         print("-----------------------------------------")
-        print(ifex_ast_as_yaml(merged_ast))
+        print(ast_as_yaml(merged_ast))
         print("=========================================")
     else:
         m1 = Method(name="m1", input=[Argument(name="foo", datatype="int32")])
@@ -154,8 +154,8 @@ if __name__ == "__main__":
         merged_ast = merge_asts(ast1, ast2)
         merged_ast.name = "Merged Result"
 
-        print(ifex_ast_as_yaml(ast1))
+        print(ast_as_yaml(ast1))
         print("-----------------------------------------")
-        print(ifex_ast_as_yaml(ast2))
+        print(ast_as_yaml(ast2))
         print("=========================================")
-        print(ifex_ast_as_yaml(merged_ast))
+        print(ast_as_yaml(merged_ast))

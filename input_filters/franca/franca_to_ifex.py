@@ -18,7 +18,7 @@ import transformers.rule_translator as m2m
 import pyfranca.ast as franca
 import re
 
-from models.ifex.ifex_ast_construction import add_constructors_to_ifex_ast_model, ifex_ast_as_yaml
+from models.common.ast_utils import ast_as_yaml, add_constructors_to_ast_model
 from transformers.rule_translator import Preparation, Constant, Unsupported, Default
 
 def translate_type_name(francaitem):
@@ -209,7 +209,7 @@ if __name__ == '__main__':
 
     # Add the type-checking constructor mixin
     # FIXME Add this back later for strict checking
-    #add_constructors_to_ifex_ast_model()
+    #add_constructors_to_ast_model(ifex)
 
     try:
         # Parse franca input and create franca AST (top node is the Package definition)
@@ -220,7 +220,7 @@ if __name__ == '__main__':
         final_ast = ifex.AST(namespaces = [ifex_ast])
 
         # Output as YAML
-        print(ifex_ast_as_yaml(final_ast))
+        print(ast_as_yaml(final_ast))
 
     except FileNotFoundError:
         log("ERROR: File not found")

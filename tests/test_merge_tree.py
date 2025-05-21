@@ -6,7 +6,7 @@
 # vim: sw=4 et
 
 from models.ifex.ifex_ast import *
-from models.ifex.ifex_ast_construction import ifex_ast_as_yaml
+from models.common.ast_utils import ast_as_yaml
 from models.ifex.ifex_parser import get_ast_from_yaml_file
 from transformers.merge_overlay import *
 import difflib
@@ -24,7 +24,7 @@ def merge(f1, f2):
     ast1 = get_ast_from_yaml_file(file1)
     ast2 = get_ast_from_yaml_file(file2)
     merged_ast = merge_asts(ast1, ast2)
-    return ifex_ast_as_yaml(merged_ast)
+    return ast_as_yaml(merged_ast)
 
 def compare(f1, f2, resultfile):
     generated = merge(f1,f2).splitlines(keepends=True)

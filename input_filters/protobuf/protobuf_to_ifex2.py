@@ -1,4 +1,4 @@
-from models.common.ast_utils import ast_as_yaml, find_all_by_type
+from models.common.ast_utils import , ast_as_yaml, find_all_by_type
 from models.common.type_checking_constructor_mixin import add_constructors_to_ast_model
 from models.ifex.ifex_ast_construction import add_constructors_to_ifex_ast_model, ifex_ast_as_yaml
 from models.protobuf import protobuf_lark
@@ -249,7 +249,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     # Add the type-checking constructor mixin
-    add_constructors_to_ifex_ast_model()
+    add_constructors_to_ast_model(ifex)
 
     try:
         # Parse protobuf input and create Protobuf AST
@@ -260,7 +260,7 @@ if __name__ == '__main__':
         ifex_ast = ifex.AST(namespaces = [proto_to_ifex(proto_ast)])
 
         # Output as YAML
-        print(ifex_ast_as_yaml(ifex_ast))
+        print(ast_as_yaml(ifex_ast))
 
     except FileNotFoundError:
         _log("ERROR", "File not found")

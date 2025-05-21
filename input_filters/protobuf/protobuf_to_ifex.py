@@ -3,7 +3,7 @@
 
 # This file is part of the IFEX project
 
-from models.ifex.ifex_ast_construction import add_constructors_to_ifex_ast_model, ifex_ast_as_yaml
+from models.common.ast_utils import ast_as_yaml
 from models.protobuf.protobuf_lark import get_ast_from_proto_file
 import models.ifex.ifex_ast as ifex
 import models.protobuf.protobuf_ast as pb
@@ -125,16 +125,13 @@ def proto_to_ifex(node):
 if __name__ == '__main__':
 
     # Add the type-checking constructor mixin
-    add_constructors_to_ifex_ast_model()
+    add_constructors_to_ast_model(ifex)
 
     # Parse protobuf input and create Protobuf AST
     proto_ast = get_ast_from_proto_file(sys.argv[1])
-
-    # Add the type-checking constructor mixin
-    add_constructors_to_ifex_ast_model()
 
     # Convert Protobuf AST  to IFEX AST
     ifex_ast = proto_to_ifex(proto_ast)
 
     # Output as YAML
-    print(ifex_ast_as_yaml(ifex_ast))
+    print(ast_as_yaml(ifex_ast))
