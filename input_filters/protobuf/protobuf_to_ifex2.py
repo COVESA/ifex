@@ -1,4 +1,4 @@
-from models.common.ast_utils import , ast_as_yaml, find_all_by_type
+from models.common.ast_utils import ast_as_yaml, find_all_by_type
 from models.common.type_checking_constructor_mixin import add_constructors_to_ast_model
 from models.ifex.ifex_ast_construction import add_constructors_to_ifex_ast_model, ifex_ast_as_yaml
 from models.protobuf import protobuf_lark

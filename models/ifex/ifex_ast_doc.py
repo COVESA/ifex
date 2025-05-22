@@ -12,9 +12,10 @@ itself (the content of the defined @dataclasses)
 """
 
 from dataclasses import fields
+from models.common.ast_utils import walk_type_tree, field_is_list, is_optional, type_name, field_actual_type, field_inner_type
 from models.ifex.ifex_ast import Namespace
-from models.ifex.ifex_ast_introspect import walk_type_tree, field_is_list, is_optional, type_name, field_actual_type, field_inner_type
-import re,itertools
+import re
+import itertools
 
 #
 # Document generation functions
