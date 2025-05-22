@@ -4,23 +4,13 @@ import glob
 from setuptools import setup
 from setuptools import find_packages
 
-from output_filters.templates import TemplateDir
-
-def get_template_files():
-      paths = []
-      paths.extend(glob.glob(f"{TemplateDir.TemplatePath}/*/*", recursive=False))   
-      return paths
-
 setup(name='ifex',
-      version='1.4',
+      version='1.5',
       description='Interface Exchange Framework (IFEX) tools',
       author='',
       author_email='',
       url='https://github.com/COVESA/ifex',
       packages=find_packages(),
-      package_data={
-            'ifex': get_template_files()
-      },
       entry_points='''
             [console_scripts]
             ifexgen=packaging.entrypoints.generator:ifex_generator_run
