@@ -12,14 +12,11 @@ for p in ['pyfranca', 'pyfranca/pyfranca']:
     if p not in sys.path:
         sys.path.append(os.path.join(mydir,p))
 
-import models.ifex.ifex_ast as ifex
+from transformers.rule_translator import Preparation, Constant, Unsupported, Default
 import input_filters.franca.pyfranca.pyfranca as pyfranca
-import transformers.rule_translator as m2m
+import models.ifex.ifex_ast as ifex
 import pyfranca.ast as franca
 import re
-
-from models.common.ast_utils import ast_as_yaml, add_constructors_to_ast_model
-from transformers.rule_translator import Preparation, Constant, Unsupported, Default
 
 def translate_type_name(francaitem):
     return translate_type(francaitem)
@@ -202,6 +199,9 @@ def parse_franca(fidl_file):
 # --- Script entry point ---
 
 if __name__ == '__main__':
+    import transformers.rule_translator as m2m
+    from models.common.ast_utils import ast_as_yaml
+    #from models.common.type_checking_constructor_mixin import add_constructors_to_ast_model
 
     if len(sys.argv) != 2:
         print(f"Usage: python {os.path.basename(__file__)} <filename>")
