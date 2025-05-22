@@ -5,7 +5,7 @@
 
 from lark import Lark, logger, Tree, Token
 from models import protobuf as protobuf_model
-from models.common.ast_utils import add_constructors_to_ast_model
+from models.common.type_checking_constructor_mixin import add_constructors_to_ast_model
 from models.protobuf.protobuf_ast import Option, FieldOption, EnumField, Enumeration, Field, Import, Message, RPC, Service, Proto, StructuredOption
 import lark
 import os

@@ -6,7 +6,6 @@ from dataclasses import fields, is_dataclass
 from datetime import datetime, date
 from transformers.rule_translator import  _log
 from typing import get_args, get_origin, List, Optional, Union, Any, Dict, ForwardRef
-import models.common.type_checking_constructor_mixin
 import oyaml
 
 # This module supports creating and processing an IFEX internal tree, and many
@@ -20,29 +19,6 @@ import oyaml
 # print text), as compared to immediately printing IFEX core
 # IDL, or another IDL format as text.
 
-# This code gives primitive but useful support.  It is simply implemented by
-# adding constructor (__init__) functions for the @dataclass node definitions
-# in ifex_ast.py. Object creation was of course already possible because
-# @dataclasses have automatic __init__ functions.  However, using the
-# type_checking_constructor_mixin code, it performs some type-checking of
-# the given inputs, which helps to avoid creating a non-compliant AST model
-
-# With __init__ it is possible to create an object tree in a straight forward
-# and expected way, including some type checks:
-#
-#    from models.ifex.ifex_ast import Namespace, Interface, ...
-#    import models.common.ast_utils
-#
-#    # Initialize support:
-#    ast_utils.add_constructors_to_ast_model()
-#
-#    # Create objects and link them together.
-#    ns = Namespace('mynamespacename', description = 'this is it')
-#    if = Interface('the-interface-node')
-#    ns.interface = if
-#
-#    # (Re)assign member fields on any object
-#    ns.interface.methods = [... method objects...]
 #
 # etc.
 
@@ -86,22 +62,6 @@ import oyaml
 # strictly mean its Type Indicator.  Since typing in python is dynamic,
 # the actual type of an object could be different (and can be somewhat fungible
 # too in theory, but usually not in this code).
-
-
-def add_constructors_to_ast_model(module) -> None:
-    """ Mix in the type-checking constructor support into each of the ifex_ast classes: """
-    for c in [cls for cls in module.__dict__.values() if
-              isinstance(cls, type) and
-              is_dataclass(cls)]:
-        type_checking_constructor_mixin.add_constructor(c)
-
-def is_empty(node) -> bool:
-    if type(node) is str:
-        return node == ""
-    elif type(node) is list:
-        return node == []
-    else:
-        return node is None
 
 # Note that is_dataclass() is true both for a class and a class instance (object)
 # Hence, checking _also_ that t is type (class instance) is slightly stricter
@@ -202,6 +162,14 @@ def field_referenced_type(f):
 def is_simple_type(t) -> bool:
     return t in [str, int, float, bool, date, datetime]
 
+def is_empty(node) -> bool:
+    if type(node) is str:
+        return node == ""
+    elif type(node) is list:
+        return node == []
+    else:
+        return node is None
+
 # Factoring out some of the boolean checks:
 def type_match(node, type_) -> bool:
     # Pass Any as type == wildcard matches everything...otherwise compare types
@@ -246,7 +214,7 @@ def walk_type_tree(node, process, seen={}):
     name = type_name(node)
     if seen.get(name):
         if VERBOSE:
-            print(f"   note: a field of type {name} was skipped")
+            _log("INFO", f"   note: a field of type {name} was skipped")
         return
 
     seen[name] = True
@@ -440,7 +408,7 @@ if __name__ == '__main__':
     import os
     import sys
     import models.protobuf.protobuf_ast as protobuf
-    from protobuf_to_ifex import proto_to_ifex
+    from models.common.type_checking_constructor_mixin import add_constructors_to_ast_model
     from models.protobuf.protobuf_lark import get_ast_from_proto_file
 
     if len(sys.argv) != 2:

@@ -124,6 +124,8 @@ def proto_to_ifex(node):
 
 if __name__ == '__main__':
 
+    from models.common.type_checking_constructor_mixin import add_constructors_to_ast_model
+
     # Add the type-checking constructor mixin
     add_constructors_to_ast_model(ifex)
 

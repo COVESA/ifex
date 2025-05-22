@@ -1,13 +1,39 @@
 # SPDX-FileCopyrightText: Copyright (c) 2024 MBition GmbH.
 # SPDX-License-Identifier: MPL-2.0
 
+from dataclasses import dataclass, fields
+from models.common.ast_utils import is_dataclass, is_list, actual_type, inner_type, is_optional, field_is_optional, is_any
+from typing import get_type_hints, List, Optional, Any
+
 """
 This module adds a type-checking constructor to dataclass definitions if they have type hints using the python typing module.
 """
 
-from dataclasses import dataclass, fields
-from models.common.ast_utils import is_list, actual_type, inner_type, is_optional, field_is_optional, is_any
-from typing import get_type_hints, List, Optional, Any
+# This code gives primitive but useful support.  It is simply implemented by
+# adding constructor (__init__) functions for the @dataclass node definitions
+# in ifex_ast.py or similar for other ASTs. Object creation was of course
+# already possible because @dataclasses have automatic __init__ functions.
+#
+# However, using the type_checking_constructor_mixin code, it performs some
+# type-checking of the given inputs, which helps to avoid creating a
+# non-compliant AST model
+
+# With __init__ it is possible to create an object tree in a straight forward
+# and expected way, including some type checks:
+#
+#    from models.ifex.ifex_ast import Namespace, Interface, ...
+#    import models.common.ast_utils
+#
+#    # Initialize support:
+#    ast_utils.add_constructors_to_ast_model()
+#
+#    # Create objects and link them together.
+#    ns = Namespace('mynamespacename', description = 'this is it')
+#    if = Interface('the-interface-node')
+#    ns.interface = if
+#
+#    # (Re)assign member fields on any object
+#    ns.interface.methods = [... method objects...]
 
 def is_correct_type(value, _type):
     if type(value) is list and is_list(_type):
@@ -25,6 +51,15 @@ def is_correct_type(value, _type):
         return True
     else:
         return type(value) == actual_type(_type)
+
+
+def add_constructors_to_ast_model(module) -> None:
+    """ Mix in the type-checking constructor support into each of the ifex_ast classes: """
+    for c in [cls for cls in module.__dict__.values() if
+              isinstance(cls, type) and
+              is_dataclass(cls)]:
+        add_constructor(c)
+
 
 
 def add_constructor(cls):
