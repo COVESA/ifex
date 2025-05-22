@@ -6,8 +6,8 @@ This module adds a type-checking constructor to dataclass definitions if they ha
 """
 
 from dataclasses import dataclass, fields
+from models.common.ast_utils import is_list, actual_type, inner_type, is_optional, field_is_optional, is_any
 from typing import get_type_hints, List, Optional, Any
-from models.ifex.ifex_ast_introspect import is_list, actual_type, inner_type, is_optional, field_is_optional, is_any
 
 def is_correct_type(value, _type):
     if type(value) is list and is_list(_type):
