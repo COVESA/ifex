@@ -1,7 +1,5 @@
 from models.common.ast_utils import ast_as_yaml, find_all_by_type
 from models.common.type_checking_constructor_mixin import add_constructors_to_ast_model
-from models.ifex.ifex_ast_construction import add_constructors_to_ifex_ast_model, ifex_ast_as_yaml
-from models.protobuf import protobuf_lark
 from models.protobuf.protobuf_lark import get_ast_from_proto_file
 from transformers.rule_translator import Preparation, Constant, Unsupported, _log, Default
 import models.ifex.ifex_ast as ifex
@@ -77,18 +75,15 @@ def map_name(x):
 keytype = "UNDEF"
 def map_keytype(x):
     global keytype
-    print(f"HERE keytype={x=}")
     keytype = translate_type_name(x)
 
 valuetype = "UNDEF"
 def map_valuetype(x):
     global valuetype
-    print(f"HERE valuetype={x=}")
     valuetype = translate_type_name(x)
 
 def assemble_map_type(input_obj, output_obj):
     global valuetype, keytype
-    print(f"HERE assemble map_type={keytype=}{valuetype=}")
     return f"map<{keytype},{valuetype}>"
 
 def concat_comments(list):
