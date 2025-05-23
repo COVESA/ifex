@@ -106,6 +106,12 @@ def find_first_by_name(node, name: str, recursive: bool = True) -> Any:
 def find_all_by_name(node, name: str, recursive: bool = True) -> list:
     return find_all_impl(node, lambda node: name_match(node, name), recursive)
 
+def find_first_by_type(node, type_: str, recursive: bool = True) -> Any:
+    return find_first_impl(node, lambda node: type_match(node, type_), recursive)
+
+def find_all_by_type(node, type_: str, recursive: bool = True) -> list:
+    return find_all_impl(node, lambda node: type_match(node, type_), recursive)
+
 def find_first_by_name_and_type(node, name, type_, recursive: bool = True) -> Any:
     return find_first_impl(node, lambda node: type_and_name_match(node, name, type_), recursive)
 
