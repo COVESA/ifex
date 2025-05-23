@@ -446,6 +446,7 @@ def transform(mapping_table, input_obj):
                 _log("DEBUG", f"Performing global rule for {input_attr=} from {from_class.__name__} to {to_class.__name__}\n")
                 set_attr(attributes, output_attr, transform_value_common(mapping_table, getattr_value(input_obj, input_attr), field_transform))
                 done_attrs.add(input_attr)
+                continue
             else:
                 _log("DEBUG", f"Skipped {output_attr} because dataclass {to_class=} does not have it")
 
