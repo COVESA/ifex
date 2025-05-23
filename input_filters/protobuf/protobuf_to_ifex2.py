@@ -1,3 +1,5 @@
+from models.common.ast_utils import ast_as_yaml, find_all_by_type
+from models.common.type_checking_constructor_mixin import add_constructors_to_ast_model
 from models.ifex.ifex_ast_construction import add_constructors_to_ifex_ast_model, ifex_ast_as_yaml
 from models.protobuf import protobuf_lark
 from models.protobuf.protobuf_lark import get_ast_from_proto_file
@@ -124,7 +126,10 @@ mapping_table = {
         ('messages', 'structs'),
         ('services', 'interface', pick_first),
         ('options', None, handle_options),
-    ],
+        # We could map 'enums' to 'enumerations' here - they belong in the
+        # Namespace, but it is not included here since we collect up *all*
+        # enums later in the code.
+       ],
     (protobuf.Service, ifex.Interface): [
         ('rpcs', 'methods'),
         ('options', None, handle_options),
@@ -153,7 +158,7 @@ mapping_table = {
     (protobuf.Message, ifex.Struct): [
         ('fields', 'members'),
         ('options', None, handle_options),
-        ('enums', Unsupported),
+        # message-embedded enums are handled separately since they don't fit into the Struct concept
         ('messages', Unsupported),
         ('oneofs', Unsupported),
         ('reservations', Unsupported)
@@ -206,12 +211,33 @@ def Messages_to_Structs(proto_messages):
 # -------------------------------------------------------------------
 
 # Convert Protobuf AST to IFEX AST
-def proto_to_ifex(node):
+def proto_to_ifex(proto):
 
-    if len(node.services) > 1:
+    if len(proto.services) > 1:
         print("UNSUPPORTED: multiple services -> multiple interfaces")
 
-    return m2m.transform(mapping_table, node)
+    # Note that table mapping creates a ifex.Namespace node as root
+    top_namespace = m2m.transform(mapping_table, proto)
+
+    # Collect enumerations separately, because they don't match
+    # the table-based setup. Then convert them to IFEX enums.
+
+    proto_enums = find_all_by_type(proto, protobuf.Enumeration)
+
+    # NOTE: If enumerations are defined inside a message
+    # (protobuf IDL is a silly language that enables using a
+    # "message" as a namespace)
+    # ... then we could prepend the message name to the
+    # enumeration name to make it unique in case that this
+    # namespace scope matters. For now, we'll keep it simple and
+    # assume enumeration names are unique.  Fix this later if it
+    # is necessary.
+
+    enum_list = [m2m.transform(mapping_table, e) for e in proto_enums]
+
+    # FIXME Where to place? For now, let's assume they belong to the top level protobuf package, which has become the toplevel IFEX namespace
+    top_namespace.enumerations = enum_list
+    return top_namespace
 
 
 # --- Script entry point ---
