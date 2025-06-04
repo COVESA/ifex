@@ -5,6 +5,7 @@
 
 from lark import Lark, logger, Tree, Token
 from models import protobuf as protobuf_model
+from models.common.ast_utils import ast_as_yaml
 from models.common.type_checking_constructor_mixin import add_constructors_to_ast_model
 from models.protobuf.protobuf_ast import Option, FieldOption, EnumField, Enumeration, Field, Import, Message, RPC, Service, Proto, StructuredOption
 import lark
@@ -749,19 +750,5 @@ def get_ast_from_proto_file(protofile: str) -> Proto:
 
 # TEST CODE ONLY ------------------------------------------
 if __name__ == '__main__':
-
-    # Test matcher function
-    x = lark.Tree(lark.Token('RULE','foo'),[lark.Token('x','y')])
-    print(f"{matcher(x, lark.Tree(lark.Token('RULE','foo'), [lark.Token('x','y')]))=}")
-
-    x = lark.Tree(lark.Token('RULE','foo'),[lark.Token('x','WRONG')])
-    print(f"{matcher(x, lark.Tree(lark.Token('RULE','foo'), [lark.Token('x','*')]))=}")
-
-    x = lark.Tree(lark.Token('RULE','foo'),[])
-    print(f"{matcher(x, lark.Tree(lark.Token('RULE','foo'), []))=}")
-
-    x = lark.Tree(lark.Token('RULE','something'),[])
-    print(f"{matcher(x, lark.Tree(lark.Token('RULE','notmatching'), []))=}")
-
-    ast = get_ast_from_proto_file(proto_file = sys.argv[1])
-    print(ast)
+    ast = get_ast_from_proto_file(protofile = sys.argv[1])
+    print(ast_as_yaml(ast))
