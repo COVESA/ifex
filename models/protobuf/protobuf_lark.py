@@ -163,6 +163,12 @@ def assert_rule_match_any(tree, grammar_rule_names):
 def assert_token(node, token_type, data_match='*'):
     assert_match(node, Token(token_type, data_match))
 
+# Assert that node is a Token of *at least one* of the named types
+def assert_token_any(node, token_types, data_match='*'):
+    if not any(matcher(node, Token(y, "*")) for y in token_types):
+        node_string = truncate_string(f"{node!r}")
+        raise Exception(f"PROBLEM: Failed expected token type(s):\n        - wanted one of {token_types}\n        - item is: {node_string}")
+
 def is_literal_type(node):
     return (is_token(node) and
             node.type in ['INT', 'FLOATLIT', 'DECIMALLIT', 'OCTALLIT', 'HEXLIT', 'BOOLLIT', 'X_CHARSTRING', 'IDENT'])
@@ -212,11 +218,14 @@ def process_rpc(r):
     return_param = next_node.value
 
     # --- 4. Options? ---
+    rpc_options = get_items_of_type(r, 'option')
 
     options = []
-    if len(r.children) > 0:
-        option_node = r.children.pop(0)
-        options.append(process_option(option_node))
+    for o in rpc_options:
+        assert_rule_match(o, 'option')
+        od = o.children.pop(0)
+        assert_rule_match(od, 'optiondef')
+        options.append(process_option(od))
 
     # === Create RPC object in AST, and add to list ===
     return RPC(name = rpc_name,
@@ -227,44 +236,70 @@ def process_rpc(r):
                input_stream = input_stream,
                return_stream = return_stream)
 
-# NOTE: As of now the grammar uses two different types of option definitions
-# (option and valueoption) so the node test at the beginning is accordingly,
-# but the rest of the token stream is identical and the meaning of options is
-# the same, or extremely similar, so this function processes all options, for
-# any type of object into an Option AST node.
+# NOTE: Options at top level and for fields and enums etc, are now unified
+# This function expects the actual optiondef part.
 def process_option(o):
 
     # Sanity check
-    assert_rule_match_any(o, ['option', 'valueoption', 'enumoption'])
+    assert_rule_match(o, 'optiondef')
 
     # 1. Option Name
     next_node = o.children.pop(0)
-    assert_token(next_node, 'OPTIONNAME')
-    # ... remove parens from name - should we do that here, or in later processing?
+    assert_token_any(next_node, ['OPTIONNAME', 'FULLIDENT'])
     option_name = next_node.value.replace('(','').replace(')','')
 
     # 2. Option Value
-    # ... constant rule is inlined, so not a composite node.
-    next_node = o.children.pop(0)
-    if is_literal_type(next_node):
-        constant_value = next_node.value
-    elif rule_match(next_node, 'structuredconstant'):
-       if len(next_node.children) > 0:
-          next_node = next_node.children.pop(0)
-          assert_rule_match(next_node, 'keyvalmappings')
-          options = []
-          for kv in next_node.children:
-              assert(len(kv.children) > 0)
-              key_node = kv.children.pop(0)
-              assert_token(key_node, 'IDENT')
-              keyname = key_node.value
-              value_node = kv.children.pop(0)
-              assert_is_literal_type(value_node)
-              options.append(StructuredOption(keyname, value=value_node.value))
-          return Option(name=option_name, structuredoptions=options)
 
+    # Here is a weird special case where a keyval mapping can be empty.  E.g. [some_option = {}]
+    # The grammar currently set up so that it produces no tokens at all for the
+    # keyvalmappings, so we only notice it by having an empty token stream for the option value:
+    if len(o.children) >= 1:
+        next_node = o.children.pop(0)
     else:
-        raise Exception(f'Unexpected node type when interpreting option {next_node=}, parent object: {o=}')
+        # It must be a structured option (keyvalmappings) with no values provided
+        return Option(option_name, value=None, structuredoptions=[])
+
+    assert_rule_match_any(next_node, ['constant', 'keyvalmappings'])
+    rule = next_node.data
+    if rule.value == 'constant':
+        value_node = next_node.children.pop(0)
+        assert_is_literal_type(value_node)
+        return Option(option_name, value=value_node.value, structuredoptions=None)
+ 
+    # Structureconstant aka keyvalmappings
+    else:
+        assert_rule_match(next_node, 'keyvalmappings')
+        keyvals = []
+        for m in next_node.children:
+            assert_rule_match(m, 'keyvalmapping')
+            mappings = m.children
+            if rule_match(mappings[0], 'nested_enum'):
+                pass # FIXME Not implemented for now
+                # Nothing appended to keyvals
+            else:
+                assert(len(mappings) == 2)  # key, and value
+                assert_token(m.children[0], 'IDENT') # Name (key) is always an IDENT
+                # ... but the value m.children[1] can be IDENT or constant of various types.  Not checked for now
+                key = m.children.pop(0).value
+                value_rule = m.children.pop(0)
+                assert_rule_match(value_rule, 'constant')
+                rule = value_rule.data
+                if rule.value == 'constant':
+                    value_node = value_rule.children.pop(0)
+                    if rule_match(value_node, 'arrayconstant'):
+                        for a in value_node.children:
+                            assert_rule_match(a, 'constant') # Presumably this should be recursive, but for now, no further nesting of arrays supported
+                            value_node = a.children.pop(0)  # This is now an IDENT, or a charstring or some other constant
+                            value = value_node.value
+                    else:
+                        pass # value_node is already an end token
+                else: 
+                    error_message = f"Expected simple constant assigned to key-value mapping, while processing option (nested key-value mappings unsupported!) option node: {o=}, contains unexpected {value_node=}"
+                    raise Exception(error_message)
+
+                keyvals.append(StructuredOption(key, value=value_node.value))
+
+        return Option(option_name, value=None, structuredoptions=keyvals)
 
     return Option(option_name, value=constant_value)
 
@@ -284,9 +319,27 @@ def process_field_option(o):
     # 2. Option Value
     next_node = o.children.pop(0)
     # ... constant rule is inlined, so not a composite node.
-    assert_is_literal_type(next_node)
-    constant_value = next_node.value
-    return FieldOption(option_name, constant_value)
+    if is_literal_type(next_node):
+       option_value = next_node.value
+       return FieldOption(name=option_name, value=option_value, structuredoptions=None)
+    else:
+       # Is a structured constant which is inlined, so we find a keyvalmappings
+       assert_rule_match(next_node, 'keyvalmappings')
+
+       keyvals = []
+       for m in next_node.children:
+           assert_rule_match(m, 'keyvalmapping')
+           assert(len(m.children) == 2)  # key, and value
+           assert_token(m.children[0], 'IDENT') # Name (key) is always an IDENT
+           # ... but the value m.children[1] can be IDENT or constant of various types.  Not checked for now
+           key = m.children[0].value
+           value = m.children[1].value
+           #assert_is_literal_type(value)
+           keyvals.append(StructuredOption(key, value=value))
+           # Type of the keyval in AST is a 2-tuple
+
+       # FIXME - check if we can just use Option type for all options, including field option
+       return FieldOption(name=option_name, value=None, structuredoptions=keyvals)
 
 # MapField is (no longer) a special type in the AST.  Instead it is a field
 # with datatype = "map<A,B>".  However, from the lexer/parser point of view it
@@ -305,7 +358,7 @@ def process_map_field(f):
 
     # --- 3 value type ---
     next_node = f.children.pop(0)
-    if next_node.type in ['X_BUILTINTYPE', 'DEFINEDTYPE']:
+    if next_node.type in ['X_BUILTINTYPE', 'IDENT']:
         valuetype = next_node.value
     else:
         raise Exception(f'process_map_field: Unexpected node type when interpreting field {next_node=}')
@@ -324,7 +377,8 @@ def process_map_field(f):
         next_node = f.children.pop(0)
         assert_rule_match(next_node, 'fieldoptions')
         for o in next_node.children:
-            options.append(process_field_option(o))
+            #options.append(process_field_option(o))
+            options.append(process_option(o))
 
     # NOTE: The field number follows next, but is discarded until
     # we find a reason to keep it - see comments in design document.
@@ -334,6 +388,8 @@ def process_map_field(f):
 
 
 def process_field(f):
+
+    details=""
 
     # Sanity check
     assert_rule_match(f, 'field')
@@ -352,10 +408,10 @@ def process_field(f):
         next_node = f.children.pop(0) # Skip to next token
 
     # --- 2 field type ---
-    if next_node.type in ['X_BUILTINTYPE', 'DEFINEDTYPE']:
+    if next_node.type in ['X_BUILTINTYPE', 'IDENT']:
         fieldtype = next_node.value
     else:
-        raise Exception(f'Unexpected node type when interpreting field {details=}')
+        raise Exception(f'Unexpected node type when interpreting field {details=}\nnode was: {next_node=}')
 
     # --- 3 field name ---
     next_node = f.children.pop(0)
@@ -371,7 +427,8 @@ def process_field(f):
         next_node = f.children.pop(0)
         assert_rule_match( next_node, 'fieldoptions')
         for o in next_node.children:
-            options.append(process_field_option(o))
+            #options.append(process_field_option(o))
+            options.append(process_option(o))
 
     # NOTE: The field number follows next, but is discarded until
     # we find a reason to keep it - see comments in design document.
@@ -398,10 +455,16 @@ def process_service(s):
         ast_rpcs.append(process_rpc(r))
 
     # 3. In-service features: Option
+
+    # --- 4. Options? ---
     service_options = get_items_of_type(s, 'option')
+
     ast_service_options = []
     for o in service_options:
-        ast_service_options.append(process_option(o))
+        assert_rule_match(o, 'option')
+        od = o.children.pop(0)
+        assert_rule_match(od, 'optiondef')
+        ast_service_options.append(process_option(od))
 
     # === Create Service object in AST, and add to list ===
     return Service(name = name,
@@ -409,6 +472,8 @@ def process_service(s):
                    options = ast_service_options)
 
 def process_message(m):
+
+    details=""
 
     # Sanity check
     assert_rule_match(m, 'message')
@@ -491,8 +556,6 @@ def process_imports(i):
     return Import(path = path,
                   weak = weak,
                   public = public)
-
-
 def process_enums(e):
 
     # Sanity check
@@ -525,8 +588,11 @@ def process_enums(e):
         # 1.3 enum options
         ast_enum_value_options = []
         while len(f.children) > 0:
-            option_node = f.children.pop(0)
-            ast_enum_value_options.append(process_option(option_node))
+            options_node = f.children.pop(0)
+            assert_rule_match(options_node, 'fieldoptions')
+            for o in options_node.children:
+                assert_rule_match(o, 'optiondef')
+                ast_enum_value_options.append(process_option(o))
 
         ast_fields.append(EnumField(name = field_name,
                                     value = value,
@@ -535,10 +601,15 @@ def process_enums(e):
                                     options = ast_enum_value_options))
 
     # 2. Options (on the enum itself, not the enum value)
-    options = get_items_of_type(next_node, 'enumoption')
+    options = get_items_of_type(next_node, 'option')
     ast_options = []
     for o in options:
-        ast_options.append(process_option(o))
+        # Node of option type -> process the embedded optiondef
+        # Should be one child of type optiondef here
+        assert(len(o.children) == 1)
+        optiondef_node = o.children.pop(0)
+        assert_rule_match(optiondef_node, 'optiondef')
+        ast_options.append(process_option(optiondef_node))
 
     # 3. TODO: Reservations
 
@@ -593,7 +664,12 @@ def process_lark_tree(root):
     options = get_items_of_type(root, 'option')
     ast_options = []
     for o in options:
-        ast_options.append(process_option(o))
+        # Node of option type -> process the embedded optiondef
+        # Should be one child of type optiondef here
+        assert(len(o.children) == 1)
+        optiondef_node = o.children.pop(0)
+        assert_rule_match(optiondef_node, 'optiondef')
+        ast_options.append(process_option(optiondef_node))
 
     # 6. Top-level features: SYNTAX -> ignored (always = 'proto3')
 
