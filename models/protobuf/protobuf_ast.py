@@ -6,7 +6,7 @@
 # Node types to represent a Protobuf AST, similar to ifex_ast.py
 
 from dataclasses import dataclass
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Tuple
 
 @dataclass
 class StructuredOption:
@@ -28,7 +28,8 @@ class Option:
 @dataclass
 class FieldOption:
     name: str
-    value: str
+    value: Optional[str] = None
+    structuredoptions: Optional[List[StructuredOption]] = None
 
 @dataclass
 class EnumField:
