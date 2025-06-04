@@ -149,17 +149,8 @@ IDENT: /[A-Za-z0-9_.]+/
 # from spec: rpcName = IDENT
 ?rpcname: IDENT
 
-# NOTE: I don't think we can distinguish between message and enum
-# types atm.  The syntax is the same, and they are used in
-# similar/same places?  If required, cross referencing the enumname
-# with a definition ('enum' rule/object) seems to be needed
-# And similarly messagename as used in a 'message' definition.
-
-# ...so we may as well inline them
-
 # from spec: messageType = [ "." ] { ident "." } messageName
 # Lark: Changed into a single regexp for easier processing
-# ?messagetype:  "."? (IDENT ".")* messagename
 MESSAGETYPE: /\.?([A-Za-z0-9_]+\.)*([A-Za-z0-9_]+)/
 
 # from spec: enumType = [ "." ] { ident "." } enumName
@@ -193,17 +184,7 @@ HEXLIT.2: /-?0x[0-9A-Fa-f]+/
 
 # from spec: floatLit = [-] ( decimals "." [ decimals ] [ exponent ] | decimals exponent | "."decimals [ exponent ] ) | "inf" | "nan"
 # exponent: ("e" | "E")? ("+" | "-")? decimals
-# Lark: Split into a few regexps to keep complexity down.
-# (still, the original EBNF looks strange - is it really correct?)
-#floatlit.1: FLOATLIT1 | FLOATLIT2 | FLOATLIT3 | FLOATLIT4
-#FLOATLIT1.5: /-?[0-9]+\.([0-9]*[eE][+-]?[0-9]+)/
-#FLOATLIT2.4: /-?\.[0-9]*([eE]?[+-]?[0-9]+)?/
-#FLOATLIT3.3: /-?[0-9]+\.[0-9]+/
-# The spec seem to allow also this format starting with "." but no decimals following it
-#FLOATLIT4.2: /inf|nan/
-
-# Combine the regexes, let's see if it works:
-#FLOATLIT.1: /-?[0-9]+\.([0-9]*[eE][+-]?[0-9]+)?|-?\.[0-9]*([eE]?[+-][0-9]+)?|inf|nan/
+# Trying as one single regex
 FLOATLIT.1: /-?[0-9]+[0-9e\-\.]*|-?inf|-?nan/
 
 # from spec: decimals  = [-] decimalDigit { decimalDigit }
@@ -270,17 +251,16 @@ unicodelongescape: "\\U" ("000" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT | "
 # from spec:  constant = fullIdent | ( [ "-" | "+" ] intLit ) | ( [ "-" | "+" ] floatLit ) | strLit | boolLit | messageValue
 # comment: The spec looks buggy because intLit already allows for a - sign in front of it, so why not allow a + sign on all intlits also?
 # => We deviate from spec slightly here, because a prefixed "+" is unlikely to happen in input anyway:
-# comment2: Why can't a constant be a Hexadecimal literal??
 constant: INT | BOOLLIT | FLOATLIT | HEXLIT | fullident | strlitsingle | intlit | messagevalue | arrayconstant
 
-# Another not clearly documented type - found in one of the unit tests.  The
-# value of a keyval is here an array of values who also happen to be enums:
-# For now, assuming any constant expression is allowed
-#
-# string test_direct_message_enum = 22
-#      [(proto2_unittest.test_nested_message_enum) = {
-#        direct_enum: [ TEST_NO_REDACT, TEST_REDACTABLE ]
-#      }];
+# Another not clearly documented type - found in one of the unit tests.  #
+#     string test_direct_message_enum = 22
+#          [(proto2_unittest.test_nested_message_enum) = {
+#            direct_enum: [ TEST_NO_REDACT, TEST_REDACTABLE ]
+#          }];
+# The value of a keyval is here an array of values who also happen to be enums:
+# For now, adding an array handling and assuming any constant expression is
+# allowed inside the array
 arrayconstant: "[" constant ("," constant)* "]"
 
 # from spec: strLit = strLitsingle { strLitsingle }
@@ -323,12 +303,10 @@ package: "package" FULLIDENT ";"
 # Option
 # ------
 
-# Option can be set to = a constant, but it also seems to allow a braced
-# structure like:  {  id : value, id2 : value 2 } This seems to be not
-# reflected in the specification for option, but is presumably seen as a general
-# allowed value type - but it seems to be not explicit in the definition of a constant
-# either?
-# We treat it separately in the model as a "structuredconstant" (now replaced with "{" keyvalmappings "}")
+# Option can be set to = a constant, but it also allows a braced structure like:  {  id : value, id2 : value 2 } This
+# seems to be not reflected in the specification for option, but is presumably seen as a general allowed value type -
+# but it seems to be not explicit in the definition of a constant either? We treat it separately in the model as a
+# "structuredconstant" (now replaced with "{" keyvalmappings "}")
 option: "option" optiondef ";"
 optiondef: (OPTIONNAME | bracedfullident) "=" (constant | "{" keyvalmappings? "}" )
 
