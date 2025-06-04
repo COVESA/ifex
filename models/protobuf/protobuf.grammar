@@ -123,12 +123,10 @@ HEXDIGIT: /[0-9A-Fa-f]/
 
 # from spec: ident = letter { letter | decimaldigit | "_" }
 # Lark: Simplified to a plain regexp
-IDENT: /[A-Za-z0-9_]+/
+IDENT: /[A-Za-z0-9_.]+/
 
 # from spec: fullIdent = IDENT { "." IDENT }
 ?fullident: IDENT ( "." IDENT )*
-# Lark: Also, a simpler version using a single regexp
-FULLIDENT: /[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)*/
 
 # from spec: messageName = IDENT
 ?messagename.1: IDENT
@@ -167,7 +165,6 @@ MESSAGETYPE: /\.?([A-Za-z0-9_]+\.)*([A-Za-z0-9_]+)/
 # from spec: enumType = [ "." ] { ident "." } enumName
 ?enumtype.1: "."? (IDENT ".")* enumname
 ENUMTYPE: /\.?([A-Za-z0-9_]+\.)*([A-Za-z0-9_]+)/
-DEFINEDTYPE: /\.?([A-Za-z0-9_]+\.)*([A-Za-z0-9_]+)/
 
 # Integer Literals
 # ----------------
@@ -189,7 +186,7 @@ OCTALLIT.1: /-?0[0-7]*/
 
 # from spec: hexLit = [-] "0" ( "x" | "X" ) hexDigit { hexDigit }
 # Lark: Simplified to a plain regexp
-HEXLIT.1: /-?0x[0-9A-Fa-f]+/
+HEXLIT.2: /-?0x[0-9A-Fa-f]+/
 
 # Floating-point Literals
 # -----------------------
@@ -206,7 +203,8 @@ HEXLIT.1: /-?0x[0-9A-Fa-f]+/
 #FLOATLIT4.2: /inf|nan/
 
 # Combine the regexes, let's see if it works:
-FLOATLIT.1: /-?[0-9]+\.([0-9]*[eE][+-]?[0-9]+)?|-?\.[0-9]*([eE]?[+-][0-9]+)?|inf|nan/
+#FLOATLIT.1: /-?[0-9]+\.([0-9]*[eE][+-]?[0-9]+)?|-?\.[0-9]*([eE]?[+-][0-9]+)?|inf|nan/
+FLOATLIT.1: /-?[0-9]+[0-9e\-\.]*|-?inf|-?nan/
 
 # from spec: decimals  = [-] decimalDigit { decimalDigit }
 # Lark: Simplified to a plain regexp
@@ -226,14 +224,22 @@ exponent: ("e" | "E") ("+" | "-")? decimals
 BOOLLIT.1: /true|false/
 
 # String Literals 
+# --------------
+
+# NOTE: Tricky unit test - escaped quotes.
+# This is not yet fully supported
+#    default =
+#        "\0\001\a\b\f\n\r\t\v\\\'\"\xfe"
+#  ];
 
 # from spec: charValue = hexEscape | octEscape | charEscape | unicodeEscape | unicodeLongEscape | /[^\0\n\\]/
 # Not sure what the intention is with the regexp at the end.
 # It looks like it matches NOT null, NOT newline and NOT backslash?
 # ... but this rule needs the ability to match any string as far as
-# I can see => hence changed to X_CHARSTRINGVAL pattern instead
-?charvalue: hexescape | octescape | charescape | unicodeescape | unicodelongescape | X_CHARSTRING
+# I can see => hence changed to X_CHARSTRING pattern instead
+?charvalue: hexescape | octescape | charescape | unicodeescape | unicodelongescape | X_CHARSTRING 
 X_CHARSTRING: /[^\0\n\\"]+/
+
 
 # from spec: hexEscape = '\' ( "x" | "X" ) hexDigit [ hexDigit ]
 # comment: Is it correct to only allow max two digits?
@@ -265,16 +271,23 @@ unicodelongescape: "\\U" ("000" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT | "
 # comment: The spec looks buggy because intLit already allows for a - sign in front of it, so why not allow a + sign on all intlits also?
 # => We deviate from spec slightly here, because a prefixed "+" is unlikely to happen in input anyway:
 # comment2: Why can't a constant be a Hexadecimal literal??
-?constant: INT | BOOLLIT | FLOATLIT | HEXLIT | fullident | strlitsingle | intlit | messagevalue
+constant: INT | BOOLLIT | FLOATLIT | HEXLIT | fullident | strlitsingle | intlit | messagevalue | arrayconstant
 
-#STRLITSINGLE: /"[A-Za-z0-9_.]+"|'[A-Za-z0-9_.]+'/
+# Another not clearly documented type - found in one of the unit tests.  The
+# value of a keyval is here an array of values who also happen to be enums:
+# For now, assuming any constant expression is allowed
+#
+# string test_direct_message_enum = 22
+#      [(proto2_unittest.test_nested_message_enum) = {
+#        direct_enum: [ TEST_NO_REDACT, TEST_REDACTABLE ]
+#      }];
+arrayconstant: "[" constant ("," constant)* "]"
 
 # from spec: strLit = strLitsingle { strLitsingle }
 ?strlit: strlitsingle+
 
 # from spec: strLitsingle = ( "'" { charValue } "'" ) |  ( '"' { charValue } '"' )
-?strlitsingle: "'" charvalue "'" | "\"" charvalue "\""
-
+?strlitsingle: "'" charvalue* "'" | "\"" charvalue* "\""
 
 # from spec: "MessageValue is defined in the Text Format Language Specification.  "
 # from text format spec: MessageValue = "{", Message, "}" | "<", Message, ">" ;
@@ -284,8 +297,8 @@ unicodelongescape: "\\U" ("000" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT | "
 # ------
 
 # from spec: syntax = "syntax" "=" ("'" "proto3" "'" | '"' "proto3" '"') ";"
-# comment: We only support spec version 3 here, (and for that
-# version only the string "proto3" is allowed)
+# comment: We will likely only support spec version 3 in tools, but just to
+# parse without failure, we allow some more here
 syntax: "syntax" "=" ("'" | "\"") ("proto3" | "proto2")  ("'" | "\"") ";"
 
 # Edition
@@ -312,33 +325,52 @@ package: "package" FULLIDENT ";"
 
 # Option can be set to = a constant, but it also seems to allow a braced
 # structure like:  {  id : value, id2 : value 2 } This seems to be not
-# reflected in the specification for option?  (and also not in the
-# specification for a constant)?
-# Similarly messageValue does not seem to cover this so... adding something
-# called "structuredconstant" as an alternative.  I have seen this
-# structuredconstant only as a service option but assume it is possible to use
-# wherever an option is used, and possibly(?) wherever a constant can be used.
-# For the moment, we keep it for Option only.
+# reflected in the specification for option, but is presumably seen as a general
+# allowed value type - but it seems to be not explicit in the definition of a constant
+# either?
+# We treat it separately in the model as a "structuredconstant" (now replaced with "{" keyvalmappings "}")
+option: "option" optiondef ";"
+optiondef: (OPTIONNAME | bracedfullident) "=" (constant | "{" keyvalmappings? "}" )
 
-option: "option" ( OPTIONNAME | bracedfullident) "=" (constant ";" | structuredconstant)
-bracedfullident: "(" "."? FULLIDENT ")"
-structuredconstant: "{" (keyvalmappings) "}"
-keyvalmappings: keyvalmapping ("," keyvalmapping)*
-keyvalmapping: IDENT ":" constant
+?bracedfullident: "(" "."? FULLIDENT ")"
+
+# Even more spec ambiguity for protobuf!#$#@##$@
+# so... clearly the keyval mappings are intended to be but within Google's own
+# unit-test files, there are keyval mappings inside of an option, which does not have the comma!
+# Is it supposed to be a failing test?  It doesn't appear that way at all.
+# ==> Making the comma optional therefore.
+keyvalmappings: keyvalmapping (","? keyvalmapping)*
+keyvalmapping: (IDENT ":" constant) | nested_enum
+
+# Another unit-test... where and how is this documented as valid?
+# I am not entirely sure what it is intended to mean
+#
+# string test_nested_message_enum = 23
+#      [(proto2_unittest.test_nested_message_enum) = {
+#        nested_enum { redactable_enum: [ TEST_NO_REDACT, TEST_REDACTABLE ] }
+#      }];
+# It is apparently a field option whose value is a ... I'm not sure what it is!?
+# It has a name nested_enum but what follows is a keyval mapping
+# It's almost like nested_enum is used as a type for the expression but it is
+# not defined as a type in the file.
+# In this terminology, what is in this grammar called a key-val mapping is in fact ... an "enum"?
+nested_enum: IDENT "{" keyvalmappings? "}"
+
 
 # According to spec, but this looks weird -> using regexp OPTIONNAME for now
 # optionName: ( IDENT | bracedFullIdent ) ( "."? ( IDENT | BRACEDFULLIDENT ))?
+# How does this ^^^ match the unit test they include vvv?
+#    bytes value = 3 [features.(pb.cpp).string_type = CORD];
 
-#
-# Lark alternative:
-#?optionname: optionnamepart ( "." optionnamepart )*
-#?optionnamepart: IDENT | "(" "."? fullident ")"
-#
 # Lark final: optionname combined to a single regexp for easier processing
-OPTIONNAME: /[A-Za-z0-9_]+|
-             \([A-Za-z0-9_]+\)|
-             \(\.?([A-Za-z0-9_]+\.)*[A-Za-z0-9_]+\)
-            /x
+# FIXME Needs some cleanup because apparently parentheses are also allowed inside expressions...?
+# One Proto unit test includes, this: 
+#             bytes value = 3 [features.(pb.cpp).string_type = CORD];
+# The straight forward approach is to just allow the parens, but then we later
+# we may also remove bracedfullident rule, or other cleanup
+FULLIDENT: /[A-Za-z0-9_\(\)]+(\.[A-Za-z0-9_\(\)]+)*/
+OPTIONNAME: /[A-Za-z0-9_\(\)]+(\.[A-Za-z0-9_\(\)]+)*/
+
 
 # Fields
 # ------
@@ -346,8 +378,8 @@ OPTIONNAME: /[A-Za-z0-9_]+|
 # from spec: type = "double" | "float" | "int32" | "int64" | "uint32" | "uint64" | "sint32" | "sint64" | "fixed32" | "fixed64" | "sfixed32" | "sfixed64" | "bool" | "string" | "bytes" | messagetype | enumtype
 # comment: We have to capture the actual type that is used - easiest is to match them with regexp.  It's not enough since we also have composite rules messagetype and enumtype to take care of - so an extra X_BUILTINTYPE added, and it is also prioritized (.1) over messagetype which might otherwise match
 # NOTE: 'messagetype' and 'enumtype' are defined identically, and also only used to define 'type' here.
-# Therefore, it is easier to combine them => let's call it DEFINEDTYPE
-?type: X_BUILTINTYPE | DEFINEDTYPE
+# Therefore, it is easier to combine them => let's call it DEFINEDTYPE, but it's the same as IDENT so...
+?type: X_BUILTINTYPE | IDENT
 X_BUILTINTYPE.1: /(double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)/
 
 # from spec: fieldNumber = intLit;
@@ -366,10 +398,7 @@ X_REPEATED: "repeated"
 X_OPTIONAL: "optional"
 
 # from spec: fieldOptions = fieldOption { ","  fieldOption }
-fieldoptions: valueoption ( ","  valueoption )*
-
-# from spec: fieldOption = optionName "=" constant
-valueoption: OPTIONNAME "=" constant
+fieldoptions: optiondef ( ","  optiondef )*
 
 # Oneof and Oneof Field
 # ---------------------
@@ -388,8 +417,12 @@ mapfield: "map" "<" X_BUILTINTYPE "," type ">" mapname "=" fieldnumber ("[" fiel
 
 # from spec: keyType = "int32" | "int64" | "uint32" | "uint64" | "sint32" | "sint64" | "fixed32" | "fixed64" | "sfixed32" | "sfixed64" | "bool" | "string"
 # ... so keytype can only be a builtin type?
-# Seems to be the same as X_BUILTINTYPE defined before, so using that instead
-# keytype: "int32" | "int64" | "uint32" | "uint64" | "sint32" | "sint64" | "fixed32" | "fixed64" | "sfixed32" | "sfixed64" | "bool" | "string"
+# This seems to be the same as X_BUILTINTYPE defined before, so using that instead
+
+
+# =====================
+# Top Level Definitions
+# =====================
 
 # Reserved
 # --------
@@ -397,11 +430,12 @@ mapfield: "map" "<" X_BUILTINTYPE "," type ">" mapname "=" fieldnumber ("[" fiel
 # from spec: reserved = "reserved" ( ranges | strFieldNames ) ";"
 reserved: "reserved" ( ranges | strfieldnames ) ";"
 
+
 # from spec: ranges = range { "," range }
 ?ranges: range ( "," range )*
 
 # from spec: range =  intLit [ "to" ( intLit | "max" ) ]
-range:  intlit ( "to" ( intlit | X_MAX ) )?
+range:  constant ( "to" ( constant | X_MAX ) )?
 X_MAX: "max" 
 
 # from spec: strFieldNames = strFieldName { "," strFieldName }
@@ -410,8 +444,16 @@ X_MAX: "max"
 # from spec: strFieldName = "'" fieldName "'" | '"' FieldName '"'
 ?strfieldname: ("'" | "\"") fieldname ("'" | "\"")
 
-# Top Level Definitions
-# ---------------------
+# Extensions
+# ----------
+
+# from spec: enumValueOption = optionName "=" constant
+# Lark: Reuse 'valueoption' (defined above) as common for fieldoption and enumvalueoption
+#
+# Extensions (mostly unsupported feature, but we can parse it at least without error)
+# Looks like it's similar to reserved syntax
+extensions: "extensions" ( ranges | strfieldnames ) ? ("[" fieldoptions "]")? ";"
+
 
 # Enum Definition
 # ---------------
@@ -420,28 +462,22 @@ X_MAX: "max"
 enum: "enum" enumname enumbody
 
 # from spec: enumBody = "{" { option | enumField | emptystatement | reserved } "}"
-enumbody: "{" ( enumfield | reserved | enumoption )* "}"
-
-# NOTE: Something buggy when using the current option definition, creating a new one for option-in-enum here
-?enumoption: "option" OPTIONNAME "=" constant ";"
+enumbody: "{" option? ( enumfield | reserved )* "}"
 
 # from spec: enumField = IDENT "=" [ "-" ] intLit [ "[" enumValueOption { ","  enumValueOption } "]" ]";"
 # comment: As noted before, intlit already allows for a "-" minus sign so not sure why it is included here again.
 # enumfield: IDENT "=" "-"? intlit ( "[" enumvalueoption ( ","  enumvalueoption )* "]" )? ";"
 # Lark optimization: enumvalueoption and fieldoptions look the same - just reuse a common rule "valueoption"
-enumfield: IDENT "=" "-"? intlit ( "[" valueoption ( ","  valueoption )* "]" )? ";"
-
-# from spec: enumValueOption = optionName "=" constant
-# Lark: Reuse 'valueoption' (defined above) as common for fieldoption and enumvalueoption
+enumfield: IDENT "=" "-"? intlit ( "[" fieldoptions "]" )? ";"
 
 # Message Definition
 # ------------------
 
 # from spec: message = "message" messageName messageBody
-message: "message" messagename messagebody
+message: ("message" | "extend") messagename messagebody
 
 # from spec: messageBody = "{" { field | enum | message | option | oneof | mapField | reserved | emptyStatement } "}"
-messagebody: "{" ( field | enum | message | option | oneof | mapfield | reserved | emptystatement )* "}"
+messagebody: "{" ( field | enum | message | option | oneof | mapfield | reserved | emptystatement | extensions)* "}"
 
 # Service Definition
 # ------------------
