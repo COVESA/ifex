@@ -285,20 +285,28 @@ def process_option(o):
                 value_rule = m.children.pop(0)
                 assert_rule_match(value_rule, 'constant')
                 rule = value_rule.data
+                arr = []
                 if rule.value == 'constant':
                     value_node = value_rule.children.pop(0)
                     if rule_match(value_node, 'arrayconstant'):
                         for a in value_node.children:
                             assert_rule_match(a, 'constant') # Presumably this should be recursive, but for now, no further nesting of arrays supported
                             value_node = a.children.pop(0)  # This is now an IDENT, or a charstring or some other constant
-                            value = value_node.value
+                            arr.append(value_node.value)
+                        value = arr
                     else:
-                        pass # value_node is already an end token
-                else: 
+                        if is_literal_type(value_node):
+                            # value_node is already an end token
+                            value = value_node.value  # Plain value
+                        else:
+                            # Otherwise ought to be strlit (consider inlining this token for simpler logic?)
+                            assert_rule_match(value_node, 'strlit')
+                            value = value_node.children[0].value
+                else:
                     error_message = f"Expected simple constant assigned to key-value mapping, while processing option (nested key-value mappings unsupported!) option node: {o=}, contains unexpected {value_node=}"
                     raise Exception(error_message)
 
-                keyvals.append(StructuredOption(key, value=value_node.value))
+                keyvals.append(StructuredOption(key, value=value))
 
         return Option(option_name, value=None, structuredoptions=keyvals)
 
