@@ -99,6 +99,13 @@ def concat_comments(list):
 def get_description(input_obj, output_attributes_so_far):
     return "Default text: This is " + output_attributes_so_far.get('name')
 
+# In case package is undefined, the Namespace will get a default name because a name is required
+def set_default_package_name(obj):
+    if obj is None:
+        return "_"
+    else:
+        return obj
+
 mapping_table = {
 
    # (Proto node type, IFEX node type)
@@ -113,7 +120,7 @@ mapping_table = {
 
     (protobuf.Proto, ifex.Namespace): [
         #('imports', 'includes'),
-        ('package', 'name'),
+        ('package', 'name', set_default_package_name),
         ('messages', 'structs'),
         ('services', 'interface', pick_first),
         ('options', None, handle_options),
