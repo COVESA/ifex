@@ -185,7 +185,7 @@ HEXLIT.2: /-?0x[0-9A-Fa-f]+/
 # from spec: floatLit = [-] ( decimals "." [ decimals ] [ exponent ] | decimals exponent | "."decimals [ exponent ] ) | "inf" | "nan"
 # exponent: ("e" | "E")? ("+" | "-")? decimals
 # Trying as one single regex
-FLOATLIT.1: /-?[0-9]+[0-9e\-\.]*|-?inf|-?nan/
+FLOATLIT.1: /-?[0-9]+[0-9eE\-\.]*|-?inf|-?nan/
 
 # from spec: decimals  = [-] decimalDigit { decimalDigit }
 # Lark: Simplified to a plain regexp
@@ -251,7 +251,7 @@ unicodelongescape: "\\U" ("000" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT | "
 # from spec:  constant = fullIdent | ( [ "-" | "+" ] intLit ) | ( [ "-" | "+" ] floatLit ) | strLit | boolLit | messageValue
 # comment: The spec looks buggy because intLit already allows for a - sign in front of it, so why not allow a + sign on all intlits also?
 # => We deviate from spec slightly here, because a prefixed "+" is unlikely to happen in input anyway:
-constant: INT | BOOLLIT | FLOATLIT | HEXLIT | fullident | strlitsingle | intlit | messagevalue | arrayconstant
+constant: INT | BOOLLIT | FLOATLIT | HEXLIT | fullident | strlit | intlit | messagevalue | arrayconstant
 
 # Another not clearly documented type - found in one of the unit tests.  #
 #     string test_direct_message_enum = 22
@@ -316,8 +316,8 @@ optiondef: (OPTIONNAME | bracedfullident) "=" (constant | "{" keyvalmappings? "}
 # so... clearly the keyval mappings are intended to be but within Google's own
 # unit-test files, there are keyval mappings inside of an option, which does not have the comma!
 # Is it supposed to be a failing test?  It doesn't appear that way at all.
-# ==> Making the comma optional therefore.
-keyvalmappings: keyvalmapping (","? keyvalmapping)*
+# ==> Making the comma optional therefore.  Also, a trailing comma seems to be accepted in tests...
+keyvalmappings: keyvalmapping (","? keyvalmapping)* ","?
 keyvalmapping: (IDENT ":" constant) | nested_enum
 
 # Another unit-test... where and how is this documented as valid?
