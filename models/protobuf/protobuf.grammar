@@ -368,12 +368,13 @@ X_BUILTINTYPE.1: /(double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|
 # ------------
 
 # from spec: field = [ "repeated" ] type fieldName "=" fieldNumber [ "[" fieldOptions "]" ] ";"
-field: X_OPTIONAL? X_REPEATED? type fieldname "=" fieldnumber ( "[" fieldoptions "]" )?  ";"
+field: X_REQUIRED? X_OPTIONAL? X_REPEATED? type fieldname "=" fieldnumber ( "[" fieldoptions "]" )?  ";"
 X_REPEATED: "repeated"
 # comment: Weirdly the "optional" keyword is (as of this time) not mentioned in the
 # syntax rules for fields in the proto3 spec.  It is however implied byt the
 # separate chapter named "Field Presence".
 X_OPTIONAL: "optional"
+X_REQUIRED: "required"
 
 # from spec: fieldOptions = fieldOption { ","  fieldOption }
 fieldoptions: optiondef ( ","  optiondef )*
