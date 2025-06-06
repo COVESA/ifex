@@ -43,6 +43,7 @@ class Field:
     datatype: str
     repeated: Optional[bool] = False
     optional: Optional[bool] = False
+    required: Optional[bool] = False
     options: Optional[List[FieldOption]] = None
 
 @dataclass
