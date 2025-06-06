@@ -1,0 +1,85 @@
+/*
+ * Copyright 2023 GM Global Technology Operations LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
+syntax = "proto3";
+
+package common;
+
+option java_package = "org.covesa.uservice.common";
+option java_multiple_files = true;
+
+// ================= Start messages ================================
+
+// Provides the standard health state interface for various components in the
+// vehicle.
+// The standard health state include a remaining life of the component expressed
+// in percentage and an enumerated health state.
+// Note that not all the enumerated states apply to all components. The user of
+// this message should specify which state is applicable.
+//
+message HealthState {
+  // Provides the health state of the component.
+  //
+  int32 first_one = 0;
+
+  enum State {
+    // This value should not be used.
+    S_UNSPECIFIED = 0;
+
+    // Component in OK health state based on estimated remaining life.
+    S_OK = 1;
+
+    // Component remaining life is low and service should be performed soon.
+    S_SERVICE_SOON = 2;
+
+    // Component remaining life is very low and service should be performed
+    // right away.
+    S_SERVICE_NOW = 3;
+
+    // Component health monitoring function is disabled.
+    S_DISABLED = 4;
+
+    // Faults detected within the system and health monitoring function is not
+    // working as intended.
+    S_FAULT_PRESENT = 5;
+
+    // Health monitoring function is not supported on the vehicle, including the
+    // remaining life.
+    S_UNSUPPORTED = 6;
+
+    innerinner = 7;
+
+  }
+  message InnerMsg {
+    int32 inner = 0;
+    message InnerInnerMsg {
+      int32 innerinner = 1;
+    }
+  }
+  message InnerMsg2 {
+    int32 inner = 3;
+    message InnerInnerMsg {
+      string innerinner = 4; // Different type
+    }
+  }
+
+  // The remaining useful life of the component, 0-100 percent
+  // where 100 means full life remaining and 0 means no life remaining.
+  optional int32 remaining_life = 1;
+
+  // The health state of the component. See enum values table.
+  State state = 2;
+}
