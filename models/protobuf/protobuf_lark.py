@@ -702,37 +702,24 @@ def process_lark_tree(root):
 
 # Main entry point - pass grammar file and proto file:
 
+def filter_comments(text):
+    # Remove comment-lines
+    text = filter_out(text, re.compile('^ *[/][/]'))
+
+    # Remove comments at end of line
+    text = filter_out_partial(text, r'//.*$')
+
+    # Remove multi-line comments
+    text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
+
+    return text
+
+
 def read_proto_file(proto_file) -> str:
     with open(proto_file, 'r') as f:
         proto = f.read()
+        return filter_comments(proto)
 
-        # Remove comment-lines
-        proto = filter_out(proto, re.compile('^ *[/][/]'))
-
-        # Remove comments at end of line
-        proto = filter_out_partial(proto, r'//.*$')
-
-        # Remove multi-line comments
-        return re.sub(r"/\*.*?\*/", "", proto, flags=re.DOTALL)
-
-
-def parse_proto_file(grammar_file, proto_file):
-    """
-    Tries to parse proto/grpc into a python dictionary
-    :param string: String containing text in .proto format
-    :return: Dictionary
-    """
-
-    with open(grammar_file, 'r') as f:
-        grammar = f.read()
-
-        proto = read_proto_file(proto_file)
-
-        p = Lark(grammar, parser='lalr', debug=True)
-
-        # Get parsed content
-        tree = p.parse(proto)
-        return process_lark_tree(tree)
 
 def parse_text(text):
 
@@ -746,8 +733,9 @@ def parse_text(text):
         p = Lark(grammar, parser='lalr', debug=True)
 
         # Get parsed content
-        tree = p.parse(text)
-        return process_lark_tree(tree)
+        tree = p.parse(filter_comments(text))
+        proto = process_lark_tree(tree)
+        return proto
 
 
 # Convenience function - grammar file can be derived from parser module directory
@@ -758,10 +746,8 @@ def get_ast_from_proto_file(protofile: str) -> Proto:
     :return: Protobuf/gRPC abstract syntax tree
     """
 
-    # Get location of protobuf model - in the same place we find the grammar
-    modeldir=os.path.dirname(protobuf_model.__file__)
-    grammar_file = os.path.join(modeldir, 'protobuf.grammar')
-    return parse_proto_file(grammar_file, protofile)
+    text = read_proto_file(protofile)
+    return parse_text(text)
 
 
 # TEST CODE ONLY ------------------------------------------
