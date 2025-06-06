@@ -354,7 +354,7 @@ def transform(mapping_table, input_obj):
 
             if output_attr is Unsupported:
                 value = getattr_value(input_obj, input_attr)
-                _log_if(bool(value) is not False, "ERROR", f"{type(input_obj)}:{input_obj.name} has an attribute for '{input_attr}' but that feature is unsupported. ({value=})")
+                _log_if(bool(value) is not False, "WARN", f"{type(input_obj)}:{input_obj.name} has an attribute for '{input_attr}' but that feature is unsupported. ({value=})")
                 continue
 
             # If the input_attr is set to a function instead of an attribute name, then the result of calling the
