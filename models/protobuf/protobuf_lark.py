@@ -416,6 +416,12 @@ def process_field(f):
         optional = True
         next_node = f.children.pop(0) # Skip to next token
 
+    # --- 1.2 required ---
+    required = False
+    if next_node.type == 'X_REQUIRED':
+        required = True
+        next_node = f.children.pop(0) # Skip to next token
+
     # --- 2 field type ---
     if next_node.type in ['X_BUILTINTYPE', 'IDENT']:
         fieldtype = next_node.value
@@ -436,8 +442,9 @@ def process_field(f):
         next_node = f.children.pop(0)
         assert_rule_match( next_node, 'fieldoptions')
         for o in next_node.children:
-            #options.append(process_field_option(o))
+            assert_rule_match(o, 'optiondef') 
             options.append(process_option(o))
+
 
     # NOTE: The field number follows next, but is discarded until
     # we find a reason to keep it - see comments in design document.
@@ -445,6 +452,7 @@ def process_field(f):
                  datatype = fieldtype,
                  repeated = repeated,
                  optional = optional,
+                 required = required,
                  options = options)
 
 def process_service(s):
