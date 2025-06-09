@@ -6,7 +6,7 @@
 # Node types to represent a Protobuf AST, similar to ifex_ast.py
 
 from dataclasses import dataclass
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Tuple
 
 @dataclass
 class StructuredOption:
@@ -28,20 +28,14 @@ class Option:
 @dataclass
 class FieldOption:
     name: str
-    value: str
+    value: Optional[str] = None
+    structuredoptions: Optional[List[StructuredOption]] = None
 
 @dataclass
 class EnumField:
     name: str
     value: str
-    options: Optional[List[Option]] = None
-
-@dataclass
-class MapField:
-    name: str
-    keytype: str
-    valuetype: str
-    options: Optional[List[Option]] = None
+    options: Optional[List[FieldOption]] = None
 
 @dataclass
 class Field:
@@ -49,6 +43,7 @@ class Field:
     datatype: str
     repeated: Optional[bool] = False
     optional: Optional[bool] = False
+    required: Optional[bool] = False
     options: Optional[List[FieldOption]] = None
 
 @dataclass
@@ -94,7 +89,6 @@ class Message:
     messages: Optional[List["Message"]] = None
     options: Optional[List[Option]] = None
     oneofs: Optional[List[OneOf]] = None
-    mapfields: Optional[List[MapField]] = None
     reservations: Optional[List[Reserved]] = None
 
 @dataclass

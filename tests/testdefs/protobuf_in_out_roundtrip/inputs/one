@@ -1,0 +1,20 @@
+package common;
+
+option java_package = "org.covesa.uservice.common";
+
+option java_multiple_files = "true";
+
+message HealthState { enum State { S_UNSPECIFIED = 0;
+    S_OK = 1; S_SERVICE_SOON = 2;
+    S_SERVICE_NOW = 3;
+    S_DISABLED = 4;
+    S_FAULT_PRESENT = 5; S_UNSUPPORTED = 6;
+}
+
+  optional int32 remaining_life = 0;
+  State state = 0;
+
+
+}
+
+
