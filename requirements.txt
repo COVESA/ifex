@@ -17,3 +17,4 @@ jsonschema>=4.20
 lark==1.1.9
 setuptools
 ply>=3.11
+inflection>=0.5.1
