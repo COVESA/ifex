@@ -13,6 +13,20 @@ syntax = "proto3";
 {% set x=typedefs.__setitem__("uint16", "uint32") %}
 {% set x=typedefs.__setitem__("boolean", "bool") %}
 
+{# Macro to convert IFEX types to protobuf, handling arrays #}
+{% macro convert_type(datatype) -%}
+  {%- if datatype in typedefs -%}
+    {%- set base_type = typedefs[datatype] -%}
+  {%- else -%}
+    {%- set base_type = datatype -%}
+  {%- endif -%}
+  {%- if base_type.endswith('[]') -%}
+    repeated {{ base_type[:-2]|replace(".", "_") }}
+  {%- else -%}
+    {{ base_type|replace(".", "_") }}
+  {%- endif -%}
+{%- endmacro %}
+
 package swdv.{{item.name}};
 
 // Generic result message
@@ -49,12 +63,7 @@ enum {{t.name}} {
           {# Cannot use dots in names #}
 message {{x.name}} {
           {% for m in x.members %}
-             {% if m.datatype in  typedefs %}
-               {% set type = typedefs[m.datatype] %}
-             {% else %}
-               {% set type = m.datatype %}
-             {% endif %}
-  {{type|replace(".", "_")}} {{ m.name }} = {{ loop.index }};
+  {{ convert_type(m.datatype) }} {{ m.name }} = {{ loop.index }};
           {% endfor %}
 }
 
@@ -63,23 +72,13 @@ message {{x.name}} {
 // IFEX Method {{x.name}}
 message {{ x.name }}_request {
          {% for x in x.input %}
-           {% if x.datatype in  typedefs %}
-             {% set type = typedefs[x.datatype] %}
-           {% else %}
-             {% set type = x.datatype %}
-           {% endif %}
-  {{type|replace(".", "_")}} {{ x.name }} = {{ loop.index }};
+  {{ convert_type(x.datatype) }} {{ x.name }} = {{ loop.index }};
          {% endfor %}
 }
 
 message {{ x.name }}_response {
          {% for x in x.output %}
-           {% if x.datatype in  typedefs %}
-             {% set type = typedefs[x.datatype] %}
-           {% else %}
-             {% set type = x.datatype %}
-           {% endif %}
-  {{type|replace(".", "_")}} {{ x.name }} = {{ loop.index }};
+  {{ convert_type(x.datatype) }} {{ x.name }} = {{ loop.index }};
          {% endfor %}
 }
 
@@ -94,12 +93,7 @@ service {{ x.name }}_service {
       {# Limitation: for now just creating a message #}
 message {{ x.name }} {
          {% for x in x.input %}
-           {% if x.datatype in  typedefs %}
-             {% set type = typedefs[x.datatype] %}
-           {% else %}
-             {% set type = x.datatype %}
-           {% endif %}
-  {{type|replace(".", "_")}} {{ x.name }} = {{ loop.index }};
+  {{ convert_type(x.datatype) }} {{ x.name }} = {{ loop.index }};
          {% endfor %}
 }
 
@@ -108,12 +102,7 @@ message {{ x.name }} {
       {% for x in n.properties %}
 // IFEX Property {{x.name}}
 message {{ x.name }}_value {
-        {% if x.datatype in typedefs %}
-          {% set type = typedefs[x.datatype] %}
-        {% else %}
-          {% set type = x.datatype %}
-        {% endif %}
-  {{type|replace(".", "_")}} value = 1;
+  {{ convert_type(x.datatype) }} value = 1;
 }
 
 // To request value in read operation
