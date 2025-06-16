@@ -22,6 +22,14 @@ capable interface description approach available. However, using the
 translation tools does not in itself require accepting the IFEX "IDL" as the
 unifying format.
 
+## License and Contributions
+
+- The code is provided under the license listed in the file LICENSE, unless otherwise stated in each section or file.
+
+- Contributions to the project are accepted under the terms of the license applicable to each file, pursuant to the standard Developer Certificate of Origin (DCO) used in Linux Kernel development and elsewhere (see DCO.txt or https://developercertificate.org).  Contributors are expected to familiarize themselves with the DCO, and to add Signed-Off-By: lines to their commits to reiterate that the contribution is made according to the statements in the DCO.
+
+- Contribution proposals can be made as Pull-Requests or Issues in the main project repository.
+
 ## Documentation
 
 Please refer to the [documentation](https://covesa.github.io/ifex) for more information.  
