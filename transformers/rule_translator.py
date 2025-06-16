@@ -310,6 +310,11 @@ def transform(mapping_table, input_obj):
         # if not Default then we can assume it's a type-pair, so we can destructure it:
         (from_class, to_class) = key
 
+        # If mapped to None -> skip this type of input object entirely
+        if to_class is None:
+            _log("DEBUG", f"NOTE: None-mapping found for {from_class=}")
+            return None
+
         # Use linear-search in mapping table until we find something matching input object.
         # Since the translation table is reasonably short, it should be OK for now.
         if from_class != input_obj.__class__:
@@ -379,12 +384,12 @@ def transform(mapping_table, input_obj):
 
             # else: normal mapping input_attr to output_attr:
             # Get input value and copy it, after transforming as necessary
-            set_attr(attributes,
-                     output_attr,
-                     transform_value_common(mapping_table,
-                                            getattr_value(input_obj,
-                                                          input_attr),
-                                            field_transform))
+
+            value = transform_value_common(mapping_table, getattr_value(input_obj, input_attr), field_transform)
+
+            # Set attribute unless the result was None (or sometimes due to list handling, a *list* of None values)
+            if value != None and (isinstance(value, list) and not all([x == None for x in value])):
+                set_attr(attributes, output_attr, value)
 
             # Mark this attribute as handled
             done_attrs.add(input_attr)
@@ -476,7 +481,9 @@ def transform(mapping_table, input_obj):
             _log("ERROR", f"Could not create object of type {to_class} with {attributes=}.\n(Was mapped from type {from_class=}).  ")
             _log("ERROR", f"Exception is: {e}")
 
-    # If we reach this, then no appropriate mapping was found - raise error
+    # If we reach this, then no appropriate mapping was found. There *may* be some legitimate reasons for this, but
+    # ideally the system should now allow mapping a type to "None" in the table - thus we expect all types to be mapped
+    # and make note if they are not.
     no_rule = f"no translation rule found for object {input_obj} of class {input_obj.__class__.__name__}"
-    _log("ERROR", no_rule)
+    _log("WARN", no_rule)
     raise TypeError(no_rule)
