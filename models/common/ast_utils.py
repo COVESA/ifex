@@ -307,20 +307,25 @@ def find_all_impl(node: Any, match_function: callable, recursive: bool = True) -
 
     # TODO - flip logic around here, check for list first, check if
     # is_ast_type() and only then run fields(). Then do recursive check
-    if recursive:
+    if recursive and is_ast_type(node):
         _log("DEBUG", f"Recursive find: Iterate over fields in {node=}")
-        for field in fields(node):
+
+        # Quite commonly a wrong node value, like None can appear here
+        # For development purposes: let's catch the exception and give
+        # more context.
+        try:
+            fields_ = fields(node)
+        except Exception as e:
+            _log("ERROR", f"find_all_impl: Exception caught when looking for fields in {node=} {type(node)=}:\nException text:\n{str(e)}")
+            fields_ = []
+
+        for field in fields_:
             value = getattr(node, field.name)
             if isinstance(value, list):
                 for item in value:
                     results.extend(find_all_impl(item, match_function, recursive))
             elif is_ast_type(value):
                 results.extend(find_all_impl(value, match_function, recursive))
-    else:
-        for field in fields(node):
-            value = getattr(node, field.name)
-            if match_function(value):
-                results.append(value)
 
     return results
 
