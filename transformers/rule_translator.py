@@ -481,7 +481,9 @@ def transform(mapping_table, input_obj):
             _log("ERROR", f"Could not create object of type {to_class} with {attributes=}.\n(Was mapped from type {from_class=}).  ")
             _log("ERROR", f"Exception is: {e}")
 
-    # If we reach this, then no appropriate mapping was found - raise error
+    # If we reach this, then no appropriate mapping was found. There *may* be some legitimate reasons for this, but
+    # ideally the system should now allow mapping a type to "None" in the table - thus we expect all types to be mapped
+    # and make note if they are not.
     no_rule = f"no translation rule found for object {input_obj} of class {input_obj.__class__.__name__}"
-    _log("ERROR", no_rule)
+    _log("WARN", no_rule)
     raise TypeError(no_rule)
