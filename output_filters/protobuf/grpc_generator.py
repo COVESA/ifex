@@ -14,6 +14,10 @@ def gen_str_or_int(item):
     else:
         return '"' + item + '"'  # Quoted string
 
+def proto_to_text(proto_ast: protobuf_ast.Proto) -> str:
+    template_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "templates")
+    return ast_to_text(proto_ast, template_dir)
+
 
 def ast_to_text(proto_ast: protobuf_ast.Proto, template_dir) -> str:
     # Set up Jinja environment - collect templates that match the names of the
