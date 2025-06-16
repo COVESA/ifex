@@ -16,7 +16,7 @@ License: Creative Commons Attribution 4.0 International
 License (CC-BY-4.0), described [here](https://creativecommons.org/licenses/by/4.0/)
 
 <!-- Heading and TOC -->
-Documentation generated from: c62f4aa04c265fccb8c7807808e869a7c3ea6098
+Documentation generated from: e7e894244ab19a3aa8a67f77669bab09116faf0c
 
 - [FEATURES](#features)  
     - [Features that are not included _in the core IDL_, but worth describing](#features-that-are-not-included-in-the-core-idl-but-worth-describing)  
