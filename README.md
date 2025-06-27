@@ -42,7 +42,7 @@ interface descriptions and code-generation.  Other programs generate the IFEX
 interface model/language-specification and other documentation.
 
 The implementations are primarily written in python and using some preferred
-technologies, such as the [Jinja2 templating language](https://jinja.palletsprojects.com) 
+technologies, such as the [Jinja2 template language](https://jinja.palletsprojects.com) 
 ([(alt.  link)](https://jinja2docs.readthedocs.io/en/stable/)).
 
 ## Project Structure
@@ -68,6 +68,8 @@ technologies, such as the [Jinja2 templating language](https://jinja.palletsproj
 │   ├──    ... in other words "print out this AST" type of function
 │   ├── JSON-schema generation
 │   ├── Jinja templates exist here
+├── layer_types
+│   ├── Framework for Layers, and separate dirs for each Layer Type definition
 ├── models
 │   ├── Separate dirs for each supported interface description model
 │   ├── The internal models (a.k.a. AST definition) for IFEX and other languages

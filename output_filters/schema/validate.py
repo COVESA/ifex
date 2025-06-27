@@ -56,3 +56,5 @@ except jsonschema.exceptions.ValidationError as e:
                 print(f'{node}->')
     print(f"ERROR: {e.message}")
     print("\n(Numbers indicate the item number in a list of items.)")
+
+sys.exit(1)

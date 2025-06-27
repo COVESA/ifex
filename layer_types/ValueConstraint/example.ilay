@@ -1,0 +1,31 @@
+namespaces:
+  - name: _
+    interface:
+      name: MyTimedProperties
+      methods:
+        - name: special_method
+          input:
+          - name: important_value
+            min_value: -4.714
+            max_value: -4.512
+          output:
+            # Example '*' wildcard = match all names. Constrain all output parameters 
+            # to < 400 (obviously this assumes they are all number types)
+            - name: '*'
+              min_value: 400
+          returns:
+            - name: constrainted_return_value
+              min_value: 1
+              max_value: 2
+      events:
+        - name: temp_alert
+          input:
+            # Example: Name not specified => Match *all* input arguments with the Temperature
+            - datatype: Temperature
+              min_value: -273.15
+
+      properties:
+        - name: '*'
+          min_value: 2ms
+          max_value: 10ms
+          action: log

@@ -1,0 +1,9 @@
+namespaces:
+  - name: _
+    interface:
+      - name: DataLayer
+        properties:
+          - name: this
+            type: string
+          - name: that
+            type: int32

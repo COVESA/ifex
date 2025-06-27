@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IFEX Layer ValueConstraint, v0.1",
+  "description": "This Layer Type defines value-range constraints on exchanged values.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "major_version": {
+      "type": "integer"
+    },
+    "minor_version": {
+      "type": "integer"
+    },
+    "filetype": {
+      "type": "string"
+    },
+    "schema": {
+      "type": "string"
+    },
+    "namespaces": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Namespace"
+      }
+    }
+  },
+  "required": ["namespaces"],
+  "additionalProperties": false,
+  "definitions": {
+    "ValueConstraintFields": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "datatype": {
+          "type": "string"
+        },
+        "min_value": {
+          "type": ["string", "number"]
+        },
+        "max_value": {
+          "type": ["string", "number"]
+        },
+        "action": {
+          "type": "string"
+        }
+      },
+      "anyOf": [
+        {
+          "required": ["name"]
+        },
+        {
+          "required": ["datatype"]
+        }
+      ],
+      "additionalProperties": false
+    },
+    "Namespace": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Event"
+          }
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Method"
+          }
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ValueConstraintFields"
+          }
+        },
+        "namespaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Namespace"
+          }
+        },
+        "interface": {
+          "type": "object",
+          "$ref": "#/definitions/Interface"
+        }
+      },
+      "required": [
+        "name",
+        "interface"
+      ],
+      "additionalProperties": false
+    },
+    "Interface": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Event"
+          }
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Method"
+          }
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ValueConstraintFields"
+          }
+        },
+        "namespaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Namespace"
+          }
+        }
+      },
+      "required": [ "name" ],
+      "additionalProperties": false
+    },
+    "Method": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ValueConstraintFields"
+          }
+        },
+        "input": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ValueConstraintFields"
+          }
+        },
+        "output": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ValueConstraintFields"
+          }
+        },
+        "returns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ValueConstraintFields"
+          }
+        }
+      },
+      "required": [ "name" ],
+      "additionalProperties": false
+    },
+    "Event": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "input": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ValueConstraintFields"
+          }
+        }
+      },
+      "required": [ "name" ],
+      "additionalProperties": false
+    }
+  }
+}
+
