@@ -6,12 +6,12 @@
 # vim: sw=4 et
 
 from dataclasses import fields, is_dataclass, replace
-from models.ifex.ifex_ast import *
 from models.common.ast_utils import ast_as_yaml
+from models.ifex.ifex_ast import *
 from models.ifex.ifex_parser import get_ast_from_yaml_file
+from transformers.rule_translator import _log
 from typing import List, Any, Type
 import copy
-
 
 def is_removal(name):
     """Check very simple rule:  Starts with '-' (minus) if it is a removal, '+' or none at all means adding"""
@@ -35,7 +35,7 @@ def merge_field_list(list1: List[str], list2: List[str]) -> List[str]:
                 merged.remove(name)
             else:
                 # FIXME use better reporting
-                print(f"*** Warning: Overlay wants to remove {name=} but it didn't exist before")
+                _log("WARN", f"*** Warning: Overlay wants to remove {name=} but it didn't exist before")
         else:
             # Add to set even if it exists
             merged.add(name)
@@ -57,7 +57,7 @@ def merge_object_lists(list1: List[Any], list2: List[Any]) -> List[Any]:
                 del merged[name]
             else:
                 # FIXME use better reporting
-                print(f"*** Warning: Overlay wants to remove {name=} but it didn't exist before")
+                _log("WARN", f"*** Warning: Overlay wants to remove {name=} but it didn't exist before")
         else:
             if name not in merged:
                 # In the merge we want to remove all +/- if they are used, but for debugging
@@ -93,21 +93,22 @@ def merge_nodes(node1: Any, node2: Any) -> Any:
                     merged_value = merge_object_lists(value1, value2)
                 else:
                     merged_value = merge_field_list(value1, value2)
-            else:  # value2 is empty list
+            else:  # value2 is empty list, so the merged result is simply value1
                 merged_value = value1
 
         elif is_dataclass(value1) and is_dataclass(value2):
             if is_removal(value2.name):
-                merged_value = None
+                merged_value = None  # Not storing anything, so it's remmoved
             else:
                 merged_value = merge_nodes(value1, name_only(value2))
-        else:
-            merged_value = (
-                name_only(value2) or value1
-            )  # Note value2 overwrites value1 in the simple case
+        else: # value is a simple field.  Therefore if value2 is defined, it
+              # overwrites the original value (there is no "merging" of two fundamental fields)
+              # If value2 is not defined, the result defaults back to original value1
+            merged_value = name_only(value2) or value1
 
         merged_values[var] = merged_value
 
+    # (Dataclass function which replaces all member variables with new values:)
     return replace(node1, **merged_values)
 
 
@@ -134,19 +135,31 @@ if __name__ == "__main__":
         print("=========================================")
     else:
         m1 = Method(name="m1", input=[Argument(name="foo", datatype="int32")])
-        ns1 = Namespace(name="namespace1", methods=[Method(name="m2"), m1])
+
+        m3 = Method(name="m3", input=[Argument(name="thisthat", datatype="int32")])
+        m3.output = [Argument(name="my_out", datatype="string")]
+
+        ns1 = Namespace(name="namespace1", methods=[Method(name="m2", returns=[Argument(name="retval")]), m1, m3])
+
         ast1 = AST(
             name="AST1",
             namespaces=[ns1, Namespace(name="namespace2")],
         )
 
-        m2 = Method(name="m1", input=[Argument(name="foo", datatype="int32")])
-        m2.output = [Argument(name="out", datatype="string")]
+        m1 = Method(name="m1", input=[Argument(name="foo", datatype="int32")])
+        m1.output = [Argument(name="out", datatype="string")]
+
+        # Test removal of retval
+        m2 = Method(name="m2", returns=[Argument(name="-retval")])
+
+        # Modify datatype of thisthat to string
+        m3 = Method(name="m3", input=[Argument(name="thisthat", datatype="string")])
+        m3.output = [Argument(name="my_out", datatype="string")]
 
         ast2 = AST(
             name="AST2",
             namespaces=[
-                Namespace(name="namespace1", methods=[m2]),
+                Namespace(name="namespace1", methods=[m1, m2, m3]),
                 Namespace(name="namespace3"),
             ],
         )
