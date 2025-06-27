@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IFEX Layer Timing, v0.1",
+  "description": "This Layer Type defines metadata that modifies the timing / rate of data exchange",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "major_version": {
+      "type": "integer"
+    },
+    "minor_version": {
+      "type": "integer"
+    },
+    "filetype": {
+      "type": "string"
+    },
+    "schema": {
+      "type": "string"
+    },
+    "namespaces": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Namespace"
+      }
+    }
+  },
+  "required": ["namespaces"],
+  "additionalProperties": false,
+  "definitions": {
+    "TimingFields": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "period": {
+          "type": ["number", "string"]
+        },
+        "frequency": {
+          "type": ["number", "string"]
+        },
+        "min_period": {
+          "type": ["number", "string"]
+        },
+        "min_frequency": {
+          "type": ["number", "string"]
+        },
+        "max_period": {
+          "type": ["number", "string"]
+        },
+        "max_frequency": {
+          "type": ["number", "string"]
+        },
+        "action": {
+          "type": "string"
+        },
+        "datatype": {
+          "type": "string"
+        }
+      },
+      "anyOf": [
+        {
+          "required": ["name"]
+        },
+        {
+          "required": ["datatype"]
+        }
+      ] ,
+      "additionalProperties": false
+    },
+    "Namespace": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TimingFields"
+          }
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TimingFields"
+          }
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TimingFields"
+          }
+        },
+        "namespaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Namespace"
+          }
+        },
+        "interface": {
+          "type": "object",
+          "$ref": "#/definitions/Interface"
+        }
+      },
+      "required": [
+        "name",
+        "interface"
+      ],
+      "additionalProperties": false
+    },
+    "Interface": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TimingFields"
+          }
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TimingFields"
+          }
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TimingFields"
+          }
+        },
+        "namespaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Namespace"
+          }
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
+

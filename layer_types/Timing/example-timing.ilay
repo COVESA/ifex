@@ -1,0 +1,16 @@
+# vim: et sw=2
+schema: Timing/schema.json
+namespaces:
+  - name: _
+    interface:
+      name: DataLayer
+      properties:
+        - name: this
+          min_period: 2ms
+          max_period: 10ms
+        - name: that
+          max_frequency: 1000Hz
+      events:
+        - name: myOp
+      methods:
+        - name: myOp
