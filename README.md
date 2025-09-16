@@ -35,6 +35,9 @@ unifying format.
 Please refer to the [documentation](https://covesa.github.io/ifex) for more information.  
 For updates and deep-dive articles, see [the Wiki](https://github.com/COVESA/ifex/wiki) for this repository.
 
+> [!TIP]
+> Quickly prototype and validate your IFEX API definitions by using the [Playground](https://covesa.github.io/ifex-viewer/playground/).
+
 ## IFEX software tools
 
 Some of the programs implement the tools for reading/writing/translating
