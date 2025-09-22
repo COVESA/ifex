@@ -1,5 +1,11 @@
---------------------
-# FEATURES
+<!-- SPDX-FileCopyrightText: Copyright (c) 2025 Mercedes-Benz Tech Innovation GmbH -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2022-2025 MBition GmbH -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2023 Novaspring AB -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2022 COVESA -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2021 Magnus Feuers -->
+<!-- SPDX-License-Identifier: MPL-2.0 -->
+
+## FEATURES
 The format supports the following features
 
 * **Namespaces**  
@@ -24,7 +30,7 @@ The format supports the following features
 * **Layered architecture and Deployment files**  
   IFEX Core IDL is designed to be a fundamental format for describing all sorts of software interfaces.  Interface descriptions should be as generic as possible, meaning the same interface description can be reused in a completely different environment.  The IFEX concept adds on a layered architecture that adds deployment-specific data to an interface definition so that it can avoid cluttering the core IDL.  Other composable features are likely to be created using the generic layering concept.  This separation of interface and deployment was pioneered by **Franca IDL** and IFEX continues and extends the principle.
 
-## Features that are not included _in the core IDL_, but worth describing:
+### Features that are not included _in the core IDL_, but worth describing:
 
 * **Service**
 
@@ -34,11 +40,9 @@ This current version of the IFEX Core IDL has removed the "service:" keyword but
 
 IFEX Core IDL does not include the name Signal but supports both **Events** and **Properties** that do cover two different interpretations of the word signal.  See next chapter for a more detailed analysis.
 
-----
+### Feature concept details
 
-## Feature concept details
-
-### Target Environment
+#### Target Environment
 
 - Target Environment is a catch-all term to indicate the context and environment of those artifacts that are generated from source IDL.
 - For each type of output result from a generator or conversion tool, there will be environment-specific details to consider, and in the documentation we often refer to all of those as simply the "target environment".
@@ -52,7 +56,7 @@ For example:
 Please note that in the text, "target-environment dependent", may sometimes be shortened to simply target-dependent and similar simplifications may occur.
 
 
-### Namespace
+#### Namespace
 
 - A Namespace is a way to separate definitions inside named groups.
 - Namespaces are used to ensure that local names will not clash with identically named items in other namespace.
@@ -61,7 +65,7 @@ Please note that in the text, "target-environment dependent", may sometimes be s
 - How visibility/reachability is handled _might_ be specific to the target language or environment, but IFEX expects the following behavior to be the normal one unless there are very good reasons for exceptions:
   - Items within different (non-parent) namespaces are isolated from each other unless otherwise specified, and these frequently used hierarchy rules apply:  Everything within a child namespace can see and reach items in any of its parent namespaces.  For non-parent relationship, it is required to either specify an item using a fully-qualified "path" through the namespace hierarchy, or to make a statement of reference or inclusion of another namespaces into the current namespace.
 
-## Interface
+### Interface
 
 - Generally, Interface is a broad term.  In IFEX core IDL we are concerned with functional software interfaces, nothing related to hardware, electrical or mechanical.
 - An IFEX Interface is like a specialization of the Namespace concept, but used specifically to group things that are intended to be the externally visible (a.k.a. public) interface of a software component that defines its interface using the IFEX file.
@@ -72,12 +76,12 @@ Please note that in the text, "target-environment dependent", may sometimes be s
 - The IFEX core IDL strives to be usable in all areas of a computing system.  The interface definition therefore does not define details around communication hardware, implementation language, data-communication protocols, bit-encoding and in-memory layouts etc.  Such information is however added through supplementary information in the mappings and tools that consume the interface description.
 - All Methods/Properties/Events defined or referred to by an Interface are required to be within the same Namespace, i.e. it is not possible to build an Interface by referring to Methods that have been defined in different Namespaces.
 
-### Method
+#### Method
 
 - A method is a function with a (mandatory) name, plus a set of (optional) **input parameters**, **output parameters**, **return parameters** and **error conditions**.
 - Like most other objects, a Method is always defined in the context of a Namespace, but that is often as a result of being within the context of an Interface within a Namespace.
 
-### Errors
+#### Errors
 
 - An IFEX Error definition is a condition that can appear while (attempting to) execute a given Method.
 - An error is defined by referencing a **datatype** that define the type of information that shall be communicated when an error occurs.  Enumeration types are common, but it could be any defined type.
@@ -86,7 +90,7 @@ Please note that in the text, "target-environment dependent", may sometimes be s
 
 - It is not specified by IFEX core IDL how errors are propagated to the caller of a function - that translation is target language/environment specific.  It may be done using a return or output parameter in one programming language and using Exception-handling in another.  Network communication protocols may implement their own error-condition side-channels or other methods.
 
-### Event
+#### Event
 
 - An Event is a time-sensitive communication with _fire-and-forget_ behavior, sent between parts in the distributed system.
 - An IFEX Event can carry multiple pieces of data with it, each of which can use an arbitrary data type.
@@ -111,7 +115,7 @@ Please note that in the text, "target-environment dependent", may sometimes be s
 
 - If some events are to be transferred as a "broadcast" (from server to all clients) while other events would be addressed uniquely to particular client(s), then define this difference as extra information in a deployment model / target mapping.  It is not specified in the IFEX core IDL interface description.
 
-### Property
+#### Property
 
 - A **Property** is an observable data item.  It belongs in an **Interface**, has a canonical name in addition to possible **aliases** (alternative names), and a data type.
 - A Property is defined as a single item but the data type could be an arbitrary data type, including large and composite data types.
@@ -120,7 +124,7 @@ Please note that in the text, "target-environment dependent", may sometimes be s
 - N.B. In some other language definitions this type of item is called an **Attribute** or **Field**.
 - A property can be seen as analogous (and conceptually equal) to a Signal in the Vehicle Signal Specification (VSS).
 
-### Return values
+#### Return values
 
 - A Return Value specifies what is returned from a Method execution.  Although "out parameters" could serve a similar purpose, the Return Value has been given special status.  This is for convenience in some cases, but the following chapters on asynchronous methods and data streaming interfaces, the need for special meaning is clarified.
 - In target mappings it is of course possible that return values might be implemented as out-parameters in some programming language, or vice versa that out-parameters are embedded into a composite return value.   On the receiving side, the items might be converted back to their original separated meaning.  Such decision depend on the capability of the target environment.
@@ -128,7 +132,7 @@ Please note that in the text, "target-environment dependent", may sometimes be s
 - Only one single return value is supported, but it can of course use any data type including composite types.
 - The term Status may be used in other technologies and the meaning of return value can be seen as equivalent of status.
 
-### Return/status communication in asynchronous vs. synchronous method calls
+#### Return/status communication in asynchronous vs. synchronous method calls
 
 - In computing systems there are two main paradigms regarding invocation of a procedure/function: Blocking/synchronous vs. Non-blocking/asynchronous.
 
@@ -153,7 +157,7 @@ Please note that in the text, "target-environment dependent", may sometimes be s
 
 - After an operation has been completed and its equivalent of "DONE" has been communicated, the function is expected to seize any further communication of the return/status type.
 
-## Data Streams
+### Data Streams
 
 It might be noticed that the IFEX core IDL does not seem to have an explicit type for "streaming data" type interfaces.  However, when reading the previous chapter about asynchronous methods it should be clear that there is a natural way to do it:
 
@@ -175,7 +179,7 @@ methods:
     streaming: true    # example, the layer design (i.e. not part of this IDL core specification) decides what makes sense
 ```
  
-### Service (not a core IDL feature)
+#### Service (not a core IDL feature)
 
 The current version of the IFEX Core IDL removed the "service:" keyword that was
 in the earliest specification.  In the future a new concept may be appropriate to
@@ -189,7 +193,7 @@ It is still worthwhile to prepare our understanding of what a service is:
 - In IFEX philosophy, a **Service** provides one or more **Interface**s and it is anticipated that interfaces are described using the IFEX Core IDL.
 - Most likely, a service definition will only make sense together with deployment information such as the chosen target environment and technology (a specific RPC protocol, a REST-style web-service, etc.).  Therefore, it will require additional files ("layers") independent of the Interface descriptions anyhow, so leaving it out of the core IDL makes sense.. 
 
-### Signals (not a core IDL feature)
+#### Signals (not a core IDL feature)
 
 The word Signal is interpreted by some as the _transfer_ of a _value_ associated 
 with a name/id for what that value represents.  This suggests that a signal
@@ -205,11 +209,9 @@ that have a name, a datatype, a unit and meaning but the transfer of data is
 defined by separate protocols built on top of VSS.  In other words, VSS
 typically uses the the second interpretation, and VSS Signals can then be
 represented by Properties in IFEX.  (Refer to the [separate
-analysis](static-vss_integration_proposal) of the IFEX/VSS relationship).
+analysis](../faq/static-vss_integration_proposal.md) of the IFEX/VSS relationship).
 
---------------------
-
-# NAMESPACE VERSIONING
+## NAMESPACE VERSIONING
 
 IFEX namespaces can have a major and minor version, specified by
 `major_version` and `minor_version` keys, complemented by an additional
@@ -235,7 +237,7 @@ Namespace versioning can be used build-time to ensure that the correct
 version of all needed namespace implementations are deployed.
 
 
-# INTERFACE VERSIONING
+## INTERFACE VERSIONING
 
 An Interface is essentially a specialization of the Namespace concept.
 Interfaces shall be versioned in the same manner, and are even more
