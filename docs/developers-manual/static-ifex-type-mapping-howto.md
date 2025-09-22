@@ -1,3 +1,9 @@
+<!-- SPDX-FileCopyrightText: Copyright (c) 2025 Mercedes-Benz Tech Innovation GmbH -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2022-2023 MBition GmbH -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2023 Novaspring AB -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2022 COVESA -->
+<!-- SPDX-License-Identifier: MPL-2.0 -->
+
 # Datatype mapping
 
 This is a general overview of how to approach mapping of fundamental datatypes between IFEX and another technical environment.
@@ -35,7 +41,7 @@ Let's consider a few of the slightly more complex types instead:
 Here we will see how we may represent things on a data protocol that does not fundamentally know about more complex type behaviors like Set and Map, and can fundamentally only transfer things like arrays and structs.
 
 | IFEX built-in type | Explanation |  Explanation/mapping if other environment does *not* support it |
-| --------------------- | -- | ---------------------------------- | ------------------------------------------------------------------|
+| --------------------- | ---------------------------------- | ------------------------------------------------------------------|
 | `set` |  A collection of unique elements, where each element occurs only once, and usually, the order does not matter | A set can simply be represented by a collection (array). That values shall be unique is either known and enforced on both sides of a server/client interface, and/or after data-transfer an actual Set type might be used in the rest of the program if the programming language supports it |
 | `map` |  A collection of key-value pairs, where each key is associated with a value. | A map can be represented as a linear array of Variant (alternating keys and values), or better structured as an array of 2-tuples (pairs).  A tuple in turn is also either a 2-array, or a struct with two members (key and value).  One natural choice is to represent it as an array of such structs. Either key or value could be a Variant types if that type is variable or unknown. |
 | `opaque` | An IFEX representation of a data type that is either not possible or not desired to describe in further detail | Can be equivalent to a void-pointer (low-level C), Variant<> type (where supported), or array-of-bytes.  When transferring Opaque across a data protocol, it might be `Variant` if supported, or simply be an array-of-bytes, where the server and client knows how to re-interpret the value on the other side |

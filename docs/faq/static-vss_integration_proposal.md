@@ -1,3 +1,9 @@
+<!-- SPDX-FileCopyrightText: Copyright (c) 2025 Mercedes-Benz Tech Innovation GmbH -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2022-2023 MBition GmbH -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2023 Novaspring AB -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2022 COVESA -->
+<!-- SPDX-License-Identifier: MPL-2.0 -->
+
 # IFEX and VSS interoperability
 
 ## Background

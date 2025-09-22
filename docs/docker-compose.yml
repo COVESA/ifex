@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 Mercedes-Benz Tech Innovation GmbH
+# SPDX-License-Identifier: MPL-2.0
+services:
+  generate-docs:
+    build:
+      context: ..  # Build from parent directory to access Python modules
+      dockerfile: docs/Dockerfile.generator    
+    volumes:
+      - .:/app/docs  # Mount docs folder for output
+    working_dir: /app/docs
+
+  vitepress:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run docs:dev -- --host 0.0.0.0 --port 5173
+    depends_on:
+      generate-docs:
+        condition: service_completed_successfully
+
+  preview:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4173:4173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run docs:preview -- --host 0.0.0.0 --port 4173

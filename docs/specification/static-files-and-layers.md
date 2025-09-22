@@ -1,6 +1,11 @@
------------------------
+<!-- SPDX-FileCopyrightText: Copyright (c) 2025 Mercedes-Benz Tech Innovation GmbH -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2022-2025 MBition GmbH -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2023 Novaspring AB -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2022 COVESA -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2021 Magnus Feuers -->
+<!-- SPDX-License-Identifier: MPL-2.0 -->
 
-# LAYERS CONCEPT
+## LAYERS CONCEPT
 
 The IFEX approach implements a layered approach to the definition of interfaces,
 and potentially other aspects of a system.  The core interface file (Interface
@@ -65,7 +70,7 @@ name: comfort
       description: The movement of a seat component
 ```
 
-## Extending the interface model by mimicking the structure
+### Extending the interface model by mimicking the structure
 
 Most layers\*\*\* will follow the same hierarchical structure as the original
 interface definiton written in the IFEX Core IDL.  If a layer object list
@@ -132,7 +137,7 @@ of API and system design might be unique to one company's way of working, and
 therefore defined and used only there.
 
 
-# DEPLOYMENT LAYER
+## DEPLOYMENT LAYER
 
 Deployment layer, a.k.a. Deployment Model files, is a specialization of the
 general layers concept.  This terminology is used to indicate a type of layer
@@ -193,13 +198,11 @@ are not allowed in the plain IDL layer.  In the example above, the
 `dbus_interface` is not a part of the regular IFEX IDL file syntax.
 
 
-# More Layer Information
+## More Layer Information
 
 For more information about Layer Types and Layer design, refer to the corresponding chapter in the [developers-manual.md](https://covesa.github.io/ifex/developers-manual)
 
-----------
-
-# IFEX FILE SYNTAX, SEMANTICS AND STRUCTURE
+## IFEX FILE SYNTAX, SEMANTICS AND STRUCTURE
 
 A Vehicle Service Catalog is stored in one or more YAML files.  The
 root of each YAML file is assumed to be a `namespace` object and needs

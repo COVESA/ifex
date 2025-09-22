@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 Mercedes-Benz Tech Innovation GmbH
+# SPDX-License-Identifier: MPL-2.0
+
+# Python-based container for generating documentation from IFEX models
+FROM python:3.11-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Copy Python requirements and install dependencies
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the entire IFEX project (needed for models imports)
+COPY . .
+
+# Set working directory to docs for output
+WORKDIR /app/docs
+
+# Default command runs the generation script with bash (no chmod needed)
+CMD ["bash", "generate-docs.sh"]

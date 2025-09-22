@@ -1,0 +1,52 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 Mercedes-Benz Tech Innovation GmbH
+# SPDX-License-Identifier: MPL-2.0
+
+name: Build Documentation
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+concurrency:
+  group: ${{ github.event.repository.name }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Pages
+      id: pages
+      uses: actions/configure-pages@v5
+
+    - name: Build documentation
+      run: |
+        cd docs
+        make build
+
+    - name: Upload documentation artifacts
+      uses: actions/upload-pages-artifact@v4
+      with:
+        path: docs/.vitepress/dist/
+
+  deploy:
+    runs-on: [ubuntu-latest]
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build-docs
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

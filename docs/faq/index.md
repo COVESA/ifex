@@ -1,6 +1,11 @@
+<!-- SPDX-FileCopyrightText: Copyright (c) 2025 Mercedes-Benz Tech Innovation GmbH -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2022-2023 MBition GmbH -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2023 Novaspring AB -->
+<!-- SPDX-FileCopyrightText: Copyright (c) 2022 COVESA -->
+<!-- SPDX-License-Identifier: MPL-2.0 -->
+
 # Definitions and Frequently Asked Questions
 
-----
 ## What is an overlay?
 
 An overlay is a special term in the layering approach.  Just be aware that we are sometimes are less careful and simply call these "layers" as well.
@@ -15,15 +20,11 @@ An interface describes methods with an error return type that encodes "business 
 Example 2)  
 An interface is adopted from an agreed-upon standard catalog, such as "Vehicle Service Catalog (VSC)".  An overlay makes a small modification by adding a few extra events.  By keeping the standard file and the proprietary addition in separate files, the addition. is more clearly separated and maintained, while it might be awaiting inclusion into the original standard.
 
-----
-
 ## What is a Layer, a.k.a. Layer Instance?
 
 Most of the time when we say layer we mean a layer instance, but when speaking less carefully it might refer to the layer type, depending on the context.
 
 More generally, a layer (instance) is an instance of a Layer Type.  It is a file that follows the format of the layer type, as required by the associated Layer Specification, and it defines the actual values that are used in a specific situation.
-
-----
 
 ## What is a Layer Type?
 
@@ -36,16 +37,12 @@ A code generator implementation may define a specific Layer Type for target/depl
 
 The purpose and usage of each layer type should be described, and that is typically accompanied by a formal Layer Specification for its allowed format/syntax.
 
-----
-
 ## What is a Layer Specification?
 
 A Layer Specification is the definition of the allowed syntax for a certain Layer Type.  The Layer Specification is defined in a formal language (usually JSON-schema, YAML or python class file) and it acts as a specification or 'schema' to check the validity of layer instances.
 
 
 For further explanation of the layer concept in general, please refer to the IFEX Core Specification.
-
-----
 
 ## When files are combined, is there any kind of ranking property for different IFEX files so that there will be a absolute order?
 

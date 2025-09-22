@@ -22,7 +22,7 @@ import itertools
 #
 
 def markdown_heading(n: int, s: str):
-    for _ in range(n):
+    for _ in range(n+1): # +1 because vitepress uses first level for page title only
         print("#", end='')
     print(f" {s}")
     print()
