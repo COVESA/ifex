@@ -3,39 +3,21 @@ import { defineConfig } from "vitepress";
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Documentation",
-  base: '/ifex/',
   description:
     "IFEX is a general interface description and transformation technology to integrate/unify/translate different IDLs, and provide tools and methods to facilitate system integration using popular IPC/RPC protocols, and a variety of deployment technologies.",
-  srcExclude: ["README.md"],
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
-    logo: "/ifex-logo.svg",
+    logo: "./ifex-logo.svg",
+    nav: [
+      { text: "Home", link: "/" },
+      { text: "Specification", link: "/specification" },
+      { text: "Developers manual", link: "/developers-manual/index.md" },
+      { text: "FAQ", link: "/faq" },
+    ],
     search: {
       provider: "local",
     },
-    nav: [
-      { text: "Specification", link: "/specification" },
-      { text: "Developers manual", link: "/developers-manual" },
-      { text: "FAQ", link: "/faq/" },
-    ],
     sidebar: {
-      "/faq/": {
-        base: "/faq/",
-        items: [
-          {
-            text: "FAQ",
-            link: "index.md",
-          },
-          {
-            text: "History and renaming",
-            link: "/static-history-and-rename.md",
-          },
-          {
-            text: "VSS integration proposal",
-            link: "/static-vss_integration_proposal.md",
-          },
-        ],
-      },
       "/developers-manual/": {
         base: "/developers-manual/",
         items: [

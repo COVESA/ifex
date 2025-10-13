@@ -1,9 +1,3 @@
-<!-- SPDX-FileCopyrightText: Copyright (c) 2025 Mercedes-Benz Tech Innovation GmbH -->
-<!-- SPDX-FileCopyrightText: Copyright (c) 2022-2023 MBition GmbH -->
-<!-- SPDX-FileCopyrightText: Copyright (c) 2023 Novaspring AB -->
-<!-- SPDX-FileCopyrightText: Copyright (c) 2022 COVESA -->
-<!-- SPDX-License-Identifier: MPL-2.0 -->
-
 # IFEX / D-Bus mapping
 
 ## General
@@ -13,14 +7,14 @@
 - IFEX Properties map to D-Bus properties.
   - The use of properties is described in part in D-Bus specification, and there are standard conventions for how to describe a getter/setter interface as well as a "change signal" and these ought to be followed. An IFEX Layer Type is likely appropriate to control exactly how an IFEX interface gets translated, including which of the D-Bus property features shall be enabled.
 - D-Bus methods have in and out parameters like IFEX, but neither return values or errors.
-  - IFEX Return values would be translated to out-parameters as described in Mapping method parameters
+  - IFEX Return values would be translated to out-parameters as described in [Mapping method parameters]('TBDLINK')
   - Error mapping is described below.
 - D-Bus uses a dot-separated path to put features into an appropriate namespace. Walking down the namespace hierarchy on an IFEX definition can create such a dot-separated path which can be used to define the services in the D-Bus description. It may be appropriate for the generator implementation to have some configuration capabilities controlling this translation.
 - D-Bus introspection format allows the naming of nodes, (where a `<node>` represents essentially the runtime object that provides the interface). That rather has to do with system design and deployment of functionality (i.e. which Software Components exist in a system and which interfaces does each of them expose). That part of system design is out of scope for the IFEX Core IDL (but might well be developed in some form in other IFEX related project). A particular usage of IFEX will of course create their own necessary conventions around this. Initially, translations of IFEX interfaces will not name the node, and that is not required for the basic proxy/stub code generation.
 
 ## Primitive types
 
-Most IFEX data types translate well to D-Bus. We can follow the generic principles of Mapping primitive types.
+Most IFEX data types translate well to D-Bus. We can follow the generic principles of [Mapping primitive types](TBDLINK).
 In a few cases we need to follow a widening or minor-difference coercion approach (see linked chapter for details).
 
 ### D-Bus basic types

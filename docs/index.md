@@ -1,20 +1,18 @@
 ---
+# https://vitepress.dev/reference/default-theme-home-page
 layout: home
 
 hero:
   name: "Interface Exchange Framework (IFEX)"
-  text: "Swiss army knife for interfaces"
+  text: "The versatile IDL"
   tagline: "For unifying interfaces and streamlining integration with other IDL and transformation technology."
-  image: /hero.png
-  alt: IFEX Hero Image
   actions:
     - theme: brand
       text: Getting started
-      link: /specification
+      link: /markdown-examples
     - theme: alt
       text: FAQ
       link: /faq
-    
 
 features:
   - title: Versatile IDL
