@@ -6,6 +6,8 @@ hero:
   name: "Interface Exchange Framework (IFEX)"
   text: "The versatile IDL"
   tagline: "For unifying interfaces and streamlining integration with other IDL and transformation technology."
+  image: /hero.png
+  alt: IFEX Hero Image
   actions:
     - theme: brand
       text: Getting started
