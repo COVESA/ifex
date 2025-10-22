@@ -53,45 +53,47 @@ technologies, such as the [Jinja2 template language](https://jinja.palletsprojec
 ```
 ├── docs
 │   ├── MD-formatted documents, templates for generation, and static content.
-│   ├── README.md => when viewing docs directory in GitHub, the README is rendered
+│   ├── README.md => when viewing docs directory in GitHub, the README is render
+ed
 ├── helpers
 │   ├── Integrations to associated ecosystems and tools
 │   ├── How-tos or scripts to run code-generation on output results
 │   ├── Example:  sd-bus-c++ generator tools
-├── input_filters
-│   ├── Separate dirs for each supported input IDL
-│   ├── Implementation of common code for parsing/reading each format
-│   ├──    ... but not including the AST definitions (see models/)
-│   ├──    ... therefore, dirs are not guaranteed to include any code
-           ... if it is self contained under the respective transformation implementation
-│   ├──    ... however, some common code for a language may find its place here
-├── output_filters
-│   ├── Separate dirs for each supported interface description model
-│   ├── Implementation of converters from ANY (AST) to text IDL
-│   ├──    ... in other words "print out this AST" type of function
-│   ├── JSON-schema generation
-│   ├── Jinja templates exist here
-├── layer_types
-│   ├── Framework for Layers, and separate dirs for each Layer Type definition
-├── models
-│   ├── Separate dirs for each supported interface description model
-│   ├── The internal models (a.k.a. AST definition) for IFEX and other languages
-├── packaging
+├── ifex
+│   ├── input_filters
+│   │   ├── Separate dirs for each supported input IDL
+│   │   ├── Implementation of common code for parsing/reading each format
+│   │   ├──    ... but not including the AST definitions (see models/)
+│   │   ├──    ... therefore, dirs are not guaranteed to include any code
+│   │   │      ... if it is self contained under the respective transformation implementation
+│   │   ├──    ... however, some common code for a language may find its place h
+ere
+│   ├── output_filters
+│   │   ├── Separate dirs for each supported interface description model
+│   │   ├── Implementation of converters from ANY (AST) to text IDL
+│   │   ├──    ... in other words "print out this AST" type of function
+│   │   ├── JSON-schema generation
+│   │   ├── Jinja templates exist here
+│   ├── layer_types
+│   │   ├── Framework for Layers, and separate dirs for each Layer Type definition
+│   ├── models
+│   │   ├── Separate dirs for each supported interface description model
+│   │   ├── The internal models (a.k.a. AST definition) for IFEX and other languages
+│   └── transformers
+│       ├── Separate dirs for each supported interface description model
+│       ├── Generic rule-based "transformation engine" implementation, that maybe used by multiple tools
+│       ├── Implementation of specific transformers, if not covered by input/output filters
+├── ifex_packaging
 │   ├── Helper files for packaging the project in various ways
 │   ├── docker - Docker deployment, for testing and/or end-user use
-│   └── entrypoints - 
+│   └── entrypoints -
 │       ├── Short script wrappers defining entry-points for python tools
 │       ├──    ... defines the executable commands created when installing the package
-├── requirements.txt, pyproject.toml, tox.ini. - Python dependencies expressed in different ways
+├── requirements.txt, tox.ini. - Python dependencies expressed in different ways
 ├── scripts
 │   ├── Helper scripts primarily used for development, not end-user scripts
-├── tests
-│   ├── Unit test definitions, and input data
-└── transformers
-│   ├── Separate dirs for each supported interface description model
-│   ├── Generic rule-based "transformation engine" implementation, that may be used by multiple tools
-│   ├── Implementation of specific transformers, if not covered by input/output filters
-
+└── tests
+    ├── Unit test definitions, and input data
 ```
 
 ## Getting started

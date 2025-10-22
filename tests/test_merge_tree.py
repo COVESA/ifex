@@ -5,10 +5,10 @@
 # ----------------------------------------------------------------------------
 # vim: sw=4 et
 
-from models.ifex.ifex_ast import *
-from models.common.ast_utils import ast_as_yaml
-from models.ifex.ifex_parser import get_ast_from_yaml_file
-from transformers.merge_overlay import *
+from ifex.models.ifex.ifex_ast import *
+from ifex.models.common.ast_utils import ast_as_yaml
+from ifex.models.ifex.ifex_parser import get_ast_from_yaml_file
+from ifex.transformers.merge_overlay import *
 import difflib
 import os
 import sys

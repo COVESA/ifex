@@ -1,6 +1,6 @@
 # Simple round-trip to test both proto parser and output generator
-from models.protobuf import protobuf_lark as protobuf_parser
-from output_filters.protobuf import grpc_generator
+from ifex.models.protobuf import protobuf_lark as protobuf_parser
+from ifex.output_filters.protobuf import grpc_generator
 import os
 
 def proto_roundtrip(file):
