@@ -1,0 +1,7 @@
+enum {{ item.name }} {
+{% if item.elements %}
+{% for element in item.elements %}
+    {{ gen(element) }}{{ "" if loop.last else "" }}
+{% endfor %}
+{% endif %}
+}

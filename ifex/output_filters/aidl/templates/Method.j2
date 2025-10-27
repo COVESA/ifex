@@ -1,0 +1,1 @@
+{% if item.oneway %}oneway {% endif %}{{ item.return_type }} {{ item.name }}({% if item.parameters %}{% for param in item.parameters %}{{ gen(param) }}{{ "" if loop.last else ", " }}{% endfor %}{% endif %});

@@ -1,0 +1,7 @@
+parcelable {{ item.name }} {
+{% if item.fields %}
+{% for field in item.fields %}
+    {{ gen(field) }}
+{% endfor %}
+{% endif %}
+}

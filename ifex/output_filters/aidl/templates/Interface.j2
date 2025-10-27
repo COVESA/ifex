@@ -1,0 +1,13 @@
+{% if item.oneway %}oneway {% endif %}interface {{ item.name }} {
+{% if item.consts %}
+{% for const in item.consts %}
+    {{ gen(const) }}
+{% endfor %}
+
+{% endif %}
+{% if item.methods %}
+{% for method in item.methods %}
+    {{ gen(method) }}
+{% endfor %}
+{% endif %}
+}

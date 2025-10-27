@@ -3,9 +3,11 @@
 
 """
 Tests for the AIDL output filter.
-  1. Parse IFEX to AST
-  2. IFEX → AIDL transformation
-  3. AIDL → text rendering
+
+Covers:
+  1. AIDL AST model construction
+  2. IFEX → AIDL transformation (unit test on AST structure)
+  3. AIDL → text rendering (checks generated .aidl syntax)
   4. Entrypoint smoke test
 """
 

@@ -1,0 +1,9 @@
+package {{ item.package }};
+{% if item.imports %}
+
+{% for imp in item.imports %}
+{{ gen(imp) }}
+{% endfor %}
+{% endif %}
+
+{{ gen(item.declaration) }}
