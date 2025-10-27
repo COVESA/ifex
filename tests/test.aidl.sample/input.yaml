@@ -1,0 +1,64 @@
+# Minimal IFEX file used as fixture for AIDL output filter tests.
+
+name: aidl_sample
+major_version: 1
+minor_version: 0
+
+namespaces:
+  - name: com.example.vehicle
+
+    interface:
+      name: ClimateControl
+      description: Controls vehicle climate settings
+
+      methods:
+        - name: setTemperature
+          description: Set the cabin temperature
+          input:
+            - name: zone
+              datatype: int32
+            - name: temperature
+              datatype: float
+          output:
+            - name: success
+              datatype: boolean
+
+        - name: getTemperature
+          description: Get the current temperature
+          input:
+            - name: zone
+              datatype: int32
+          returns:
+            - name: temperature
+              datatype: float
+
+      events:
+        - name: onTemperatureChanged
+          description: Fired when temperature changes
+          input:
+            - name: zone
+              datatype: int32
+            - name: newTemperature
+              datatype: float
+
+    structs:
+      - name: ClimateZone
+        description: Represents a climate zone configuration
+        members:
+          - name: zoneId
+            datatype: int32
+          - name: targetTemp
+            datatype: float
+          - name: active
+            datatype: boolean
+
+    enumerations:
+      - name: AirflowMode
+        datatype: int32
+        options:
+          - name: AUTO
+            value: 0
+          - name: MANUAL
+            value: 1
+          - name: MAX_COOL
+            value: 2

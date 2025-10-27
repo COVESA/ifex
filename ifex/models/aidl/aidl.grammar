@@ -1,0 +1,170 @@
+# ============================================================
+# AIDL (Android Interface Definition Language) LARK GRAMMAR
+# ============================================================
+#
+# SPDX-FileCopyrightText: Copyright (c) 2024 MBition GmbH.
+# SPDX-License-Identifier: MPL-2.0
+#
+# This file is part of the IFEX project
+#
+# Grammar for Lark parser, covering the subset of AIDL represented
+# in aidl_ast.py.  Follows the same conventions as protobuf.grammar.
+#
+# Grammar conventions (same as protobuf.grammar):
+# -----------------------------------------------
+#  - Composite rules use lowercase names
+#  - Terminal/token names use UPPERCASE
+#  - Names prefixed X_ or x_ are additions beyond the AIDL spec that
+#    preserve semantic keywords Lark would otherwise discard silently
+#  - ? prefix on rules = Lark "inline/transparent" rule
+#  - Comments (// and /* */) are stripped by filter_comments() before
+#    the grammar ever sees them
+#
+# AIDL file structure:
+#   - Each .aidl file contains exactly ONE top-level declaration
+#     (interface, parcelable, or enum) plus a package statement and
+#     optional imports.
+#
+# ============================================================
+
+
+# ============================================================
+# Start rule
+# ============================================================
+
+?start: aidl_file
+
+
+# ============================================================
+# Top-level file structure
+# ============================================================
+
+aidl_file: package_decl import_decl* declaration
+
+
+# ============================================================
+# Package
+# ============================================================
+
+# e.g.  package com.example.vehicle;
+package_decl: "package" QUALNAME ";"
+
+
+# ============================================================
+# Import
+# ============================================================
+
+# e.g.  import com.example.vehicle.IFoo;
+import_decl: "import" QUALNAME ";"
+
+
+# ============================================================
+# Top-level declaration (exactly one per file)
+# ============================================================
+
+?declaration: interface_decl
+            | parcelable_decl
+            | enum_decl
+
+
+# ============================================================
+# Interface
+# ============================================================
+
+# e.g.
+#   interface IFoo { ... }
+#   oneway interface IFoo { ... }
+interface_decl: X_ONEWAY? "interface" IDENT "{" interface_member* "}"
+
+?interface_member: method_decl
+                 | const_decl
+
+
+# ============================================================
+# Method
+# ============================================================
+
+# e.g.
+#   void foo(in int x, out boolean y);
+#   oneway void bar(in String s);
+#   float getTemp(in int zone);
+method_decl: X_ONEWAY? aidl_type IDENT "(" param_list? ")" ";"
+
+param_list: param ("," param)*
+
+param: X_DIRECTION aidl_type IDENT
+
+
+# ============================================================
+# Const
+# ============================================================
+
+# e.g.  const int MAX = 42;
+const_decl: "const" aidl_type IDENT "=" CONST_VALUE ";"
+
+
+# ============================================================
+# Parcelable
+# ============================================================
+
+# e.g.
+#   parcelable ClimateZone { int zoneId; float temp; }
+parcelable_decl: "parcelable" IDENT "{" field_decl* "}"
+
+field_decl: aidl_type IDENT ";"
+
+
+# ============================================================
+# Enum
+# ============================================================
+
+# e.g.
+#   enum AirflowMode { AUTO = 0, MANUAL = 1, MAX_COOL = 2, }
+enum_decl: "enum" IDENT "{" enum_element* "}"
+
+# Trailing comma is optional; value assignment is optional
+enum_element: IDENT ("=" INT)? ","?
+
+
+# ============================================================
+# Types
+# ============================================================
+
+# A type is an identifier (primitive or user-defined) with an
+# optional array suffix: e.g.  int, String, MyType, int[], String[]
+aidl_type: IDENT ARRAY_SUFFIX?
+
+
+# ============================================================
+# Terminals (tokens)
+# ============================================================
+
+# Direction keywords — must be a named token so the value is preserved
+X_DIRECTION: "in" | "out" | "inout"
+
+# oneway keyword — named token so the value is preserved
+X_ONEWAY: "oneway"
+
+# Array suffix
+ARRAY_SUFFIX: "[]"
+
+# Fully qualified name: com.example.vehicle.Foo
+QUALNAME: /[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*/
+
+# Simple identifier (lower priority than QUALNAME for disambiguation)
+IDENT: /[A-Za-z_][A-Za-z0-9_]*/
+
+# Integer literal (signed)
+INT: /-?[0-9]+/
+
+# Const value: everything up to the semicolon (loose match)
+# Handles integer literals, hex (0x...), string literals, etc.
+CONST_VALUE: /[^\s;][^;]*/
+
+
+# ============================================================
+# Whitespace
+# ============================================================
+
+%import common (WS)
+%ignore WS

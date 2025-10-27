@@ -42,6 +42,7 @@ setup(
             "ifexgen=distribution.entrypoints.generator:ifex_generator_run",
             "ifexgen_dbus=distribution.entrypoints.generator_dbus:ifex_dbus_generator_run",
             "ifexconv_protobuf=distribution.entrypoints.protobuf_ifex:protobuf_to_ifex_run",
+            "aidl_to_ifex=distribution.entrypoints.aidl_to_ifex:aidl_to_ifex_run",
         ],
     },
     include_package_data=True,
