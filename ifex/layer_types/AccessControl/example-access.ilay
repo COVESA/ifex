@@ -1,0 +1,21 @@
+namespaces:
+  - name: _
+    interface:
+      name: DataLayer
+      access:
+        - MediaApp
+        - PrivilegedApplication
+      properties:
+        - name: this
+          access:
+            read: foo
+            write:
+              - bar
+              - baz
+      methods:
+        - name: m1
+          access: someval
+        - name: m2
+          access:
+            - bar
+            - baz

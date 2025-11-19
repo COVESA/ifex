@@ -1,0 +1,252 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IFEX Layer AccessControl, v0.9",
+  "description": "This Layer Type defines access control rules for Interfaces and their parts.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "major_version": {
+      "type": "integer"
+    },
+    "minor_version": {
+      "type": "integer"
+    },
+    "filetype": {
+      "type": "string"
+    },
+    "schema": {
+      "type": "string"
+    },
+    "namespaces": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Namespace"
+      }
+    }
+  },
+  "required": ["namespaces"],
+  "additionalProperties": false,
+  "definitions": {
+    "Namespace": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Event"
+          }
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Method"
+          }
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Property"
+          }
+        },
+        "namespaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Namespace"
+          }
+        },
+        "interface": {
+          "type": "object",
+          "$ref": "#/definitions/Interface"
+        },
+        "access": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "object",
+              "$ref": "#/definitions/PropertyAccess"
+            }
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "interface"
+      ],
+      "additionalProperties": false
+    },
+    "Interface": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Event"
+          }
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Method"
+          }
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Property"
+          }
+        },
+        "namespaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Namespace"
+          }
+        },
+        "access": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "object",
+              "$ref": "#/definitions/PropertyAccess"
+            }
+          ]
+        }
+      },
+      "required": [ "name" ],
+      "additionalProperties": false
+    },
+    "Event": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "access": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        }
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    },
+    "Method": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "access": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        }
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    },
+    "Property": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "access": {
+          "oneOf": [
+            {
+              "type": "object",
+              "$ref": "#/definitions/PropertyAccess"
+            },
+            {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    },
+    "PropertyAccess": {
+      "properties": {
+        "read": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "write": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

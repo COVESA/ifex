@@ -1,0 +1,16 @@
+namespaces:
+  - name: _
+    interface:
+      - name: DataLayer
+        methods:
+          - name: m1
+            input:
+              - name: value
+                type: StructuredValue
+          - name: m2
+          - name: m3
+        properties:
+          - name: this
+            type: string
+          - name: that
+            type: int32
