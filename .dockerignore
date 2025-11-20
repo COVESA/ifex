@@ -5,7 +5,7 @@
 !input_filters/
 !models/
 !output_filters/
-!packaging/
+!packaging_ifex/
 !scripts/
 !tests/
 !transformers/
