@@ -66,8 +66,7 @@ ed
 │   │   ├──    ... but not including the AST definitions (see models/)
 │   │   ├──    ... therefore, dirs are not guaranteed to include any code
 │   │   │      ... if it is self contained under the respective transformation implementation
-│   │   ├──    ... however, some common code for a language may find its place h
-ere
+│   │   ├──    ... however, some common code for a language may find its place here
 │   ├── output_filters
 │   │   ├── Separate dirs for each supported interface description model
 │   │   ├── Implementation of converters from ANY (AST) to text IDL
