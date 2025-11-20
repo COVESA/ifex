@@ -25,7 +25,7 @@ WORKDIR /ifex
 RUN python -m venv venv
 RUN chown -R ifex:ifex /ifex /home/ifex
 USER ifex
-RUN . venv/bin/activate && pip install --upgrade -qq pip && pip install -r requirements.txt
+RUN . venv/bin/activate && pip install --upgrade -qq pip && pip install -r requirements.txt && pip install -r requirements-dev.txt
 RUN . venv/bin/activate && pip install -e .
 
 # Test that binaries can be found
@@ -36,4 +36,4 @@ RUN . venv/bin/activate && ifexgen_dbus -h >/dev/null && echo "Quick test: ifexg
 COPY scripts/bashrc.venv /home/ifex/.bashrc
 
 # /work should be bind-mounted when container is started
-WORKDIR /work 
+WORKDIR /work

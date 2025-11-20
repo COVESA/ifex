@@ -22,7 +22,7 @@ RUN scripts/install_pyenv.sh
 RUN scripts/install_python_version_in_pyenv.sh 3.12
 RUN pyenv global 3.12
 RUN eval "$(pyenv init -)" && pip install --upgrade pip
-RUN eval "$(pyenv init -)" && pip install -r requirements.txt
+RUN eval "$(pyenv init -)" && pip install -r requirements.txt && pip install -r requirements-dev.txt
 RUN eval "$(pyenv init -)" && pip install -e .
 
 # Test that binaries can be found
@@ -30,4 +30,4 @@ RUN eval "$(pyenv init -)" && ifexgen -h >/dev/null && echo "Quick test: ifexgen
 RUN eval "$(pyenv init -)" && ifexgen_dbus -h >/dev/null && echo "Quick test: ifexgen_dbus launches OK!"
 
 # /work should be bind-mounted when container is started
-WORKDIR /work 
+WORKDIR /work
