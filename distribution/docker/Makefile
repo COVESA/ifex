@@ -43,25 +43,20 @@ run_alpine:
 run_ubuntu:
 	@IMAGE_NAME=${IMAGE_NAME_U} BINARY=/bin/bash make run_interactive
 
+# use the "--active" flag to use the active venv path instead of attempting to create a venv within the project directory, which will not match the environment outside of the container
+
 run_alpine_test:
 	${CTR_TOOL} rm -f ${CONTAINER_NAME}
-	${CTR_TOOL} run -t -h "${CONTAINER_HOSTNAME}" -v ${PWD}/../..:/work${ZFLAG} --name=${CONTAINER_NAME} ${IMAGE_NAME_A}:latest /ifex/venv/bin/pytest /work/tests
+	${CTR_TOOL} run -t -h "${CONTAINER_HOSTNAME}" -v ${PWD}/../..:/work${ZFLAG} --name=${CONTAINER_NAME} ${IMAGE_NAME_A}:latest uv run --active pytest /work/tests
 
 run_ubuntu_test:
 	${CTR_TOOL} rm -f ${CONTAINER_NAME}
-	${CTR_TOOL} run -t -h "${CONTAINER_HOSTNAME}" -v ${PWD}/../..:/work${ZFLAG} --name=${CONTAINER_NAME} ${IMAGE_NAME_U}:latest /home/ubuntu/.pyenv/shims/pytest /ifex/tests
+	${CTR_TOOL} run -t -h "${CONTAINER_HOSTNAME}" -v ${PWD}/../..:/work${ZFLAG} --name=${CONTAINER_NAME} ${IMAGE_NAME_U}:latest uv run --active pytest /ifex/tests
 
-# For container variants that set up using bashrc
 # Must be run by setting $variant!
 # example:  variant=alpine make run_interactivity_test
 run_interactivity_test:
-	@BASHCMD='. ~/.bashrc && ifexgen -h' make run_bash_cmd
-
-# For container variants that have installed with pyenv
-# Must be run by setting $variant!
-# example:  variant=ubuntu make run_interactivity_test
-run_interactivity_test_pyenv:
-	@BASHCMD='eval "$$$$(pyenv init -)" && ifexgen -h' make run_bash_cmd
+	@BASHCMD='ifexgen -h' make run_bash_cmd
 
 # Helpers (code factored out of other targets)
 run_interactive:

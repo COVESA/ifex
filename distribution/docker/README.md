@@ -12,11 +12,9 @@ reused, as usual of course.
 
 **VARIANTS**
 
--  Ubuntu: (latest) This one compiles python from source, using pyenv.  
--  Alpine Linux: This one uses a preinstalled python container image - see DETAILSk.
+-  Ubuntu: (latest) This one manages python using uv.
+-  Alpine Linux: This one uses a preinstalled python container image - see DETAILS.
 
-**DETAILS**:
-On the Alpine version, the python compilation via pyenv kept failing (perhaps still some dependency missing?).  For now this one is based on a Docker image for python itself, but the Alpine version of it -> e.g. `python3.11-alpine`.  The important thing at the moment is that the containers are not broken, at least.
 
 ### Usage:
 ```

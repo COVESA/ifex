@@ -6,8 +6,6 @@
 !distribution/
 !scripts/
 !tests/
-!setup.py
 !README.md
-!requirements.txt
-!requirements-dev.txt
-!tox.ini
+!pyproject.toml
+!uv.lock
