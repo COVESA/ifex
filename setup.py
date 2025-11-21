@@ -39,9 +39,9 @@ setup(
     install_requires=requirements,
     entry_points={
         "console_scripts": [
-            "ifexgen=packaging_ifex.entrypoints.generator:ifex_generator_run",
-            "ifexgen_dbus=packaging_ifex.entrypoints.generator_dbus:ifex_dbus_generator_run",
-            "ifexconv_protobuf=packaging_ifex.entrypoints.protobuf_ifex:protobuf_to_ifex_run",
+            "ifexgen=distribution.entrypoints.generator:ifex_generator_run",
+            "ifexgen_dbus=distribution.entrypoints.generator_dbus:ifex_dbus_generator_run",
+            "ifexconv_protobuf=distribution.entrypoints.protobuf_ifex:protobuf_to_ifex_run",
         ],
     },
     include_package_data=True,

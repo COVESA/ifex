@@ -82,8 +82,8 @@ ed
 │       ├── Separate dirs for each supported interface description model
 │       ├── Generic rule-based "transformation engine" implementation, that maybe used by multiple tools
 │       ├── Implementation of specific transformers, if not covered by input/output filters
-├── packaging_ifex
-│   ├── Helper files for packaging the project in various ways
+├── distribution
+│   ├── Helper files for packaging or deploying the project in various ways
 │   ├── docker - Docker deployment, for testing and/or end-user use
 │   └── entrypoints -
 │       ├── Short script wrappers defining entry-points for python tools
