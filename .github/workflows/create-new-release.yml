@@ -38,6 +38,7 @@ jobs:
         run: |
           python -V
           pip install -r requirements.txt
+          pip install -r requirements-dev.txt
 
       - name: Install IFEX module
         run: pip install -e .
