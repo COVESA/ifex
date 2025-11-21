@@ -8,8 +8,8 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Copy Python requirements and install dependencies
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements*.txt ./
+RUN pip install --no-cache-dir -r requirements.txt && pip install --no-cache-dir -r requirements-dev.txt
 
 # Copy the entire IFEX project (needed for models imports)
 COPY . .

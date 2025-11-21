@@ -2,7 +2,7 @@ import os
 import sys
 import io
 
-from models.protobuf.protobuf_lark import get_ast_from_proto_file
+from ifex.models.protobuf.protobuf_lark import get_ast_from_proto_file
 
 def find_files(dir_, suffix='.proto'):
     matching_files = []

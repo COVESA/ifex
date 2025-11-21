@@ -1,0 +1,10 @@
+include README.md
+include LICENSE
+include requirements.txt
+include DCO.txt
+recursive-include ifex *.py *.yaml *.yml *.json *.jinja2 *.j2
+recursive-include distribution *.py
+recursive-exclude tests *
+recursive-exclude docs *
+recursive-exclude .git *
+recursive-exclude .github *

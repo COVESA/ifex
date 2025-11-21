@@ -34,7 +34,7 @@ cd docs
 
 echo "  🏗️ Generating AST structure documentation..."
 echo -e "$HEADER" > specification/ast-structure.generated.md
-cd .. && PYTHONPATH=/app python3 -m models.ifex.ifex_ast_doc >> docs/specification/ast-structure.generated.md
+cd .. && PYTHONPATH=/app python3 -m ifex.models.ifex.ifex_ast_doc >> docs/specification/ast-structure.generated.md
 cd docs
 
 echo "✅ Documentation generated successfully!"

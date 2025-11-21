@@ -38,6 +38,7 @@ jobs:
         run: |
           python -V
           pip install -r requirements.txt
+          pip install -r requirements-dev.txt
 
       - name: Install IFEX module
         run: pip install -e .
@@ -51,8 +52,8 @@ jobs:
 
       - name: Run JSON-Schema generator
         run: |
-          python output_filters/schema/ifex_to_json_schema.py >temp-schema
-          python output_filters/schema/pretty_print_json.py temp-schema >ifex-core-idl-schema.json
+          python ifex/output_filters/schema/ifex_to_json_schema.py >temp-schema
+          python ifex/output_filters/schema/pretty_print_json.py temp-schema >ifex-core-idl-schema.json
           sed -i 's/TAG-PLACEHOLDER/${{ steps.vars.outputs.TAG }}/' ifex-core-idl-schema.json
 
       - name: Create a new release

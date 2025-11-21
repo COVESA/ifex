@@ -24,6 +24,7 @@ jobs:
         run: |
           python -V
           pip install -r requirements.txt
+          pip install -r requirements-dev.txt
 
       - name: Install ifex module
         run: |
@@ -63,8 +64,8 @@ jobs:
 
       - name: Run JSON-Schema generator
         run: |
-          python output_filters/schema/ifex_to_json_schema.py >temp-schema
-          python output_filters/schema/pretty_print_json.py temp-schema >ifex-core-idl-schema.json
+          python ifex/output_filters/schema/ifex_to_json_schema.py >temp-schema
+          python ifex/output_filters/schema/pretty_print_json.py temp-schema >ifex-core-idl-schema.json
 
       - name: Clone uservices repository
         run: |

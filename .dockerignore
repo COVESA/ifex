@@ -2,13 +2,12 @@
 *
 
 # Except this...
-!input_filters/
-!models/
-!output_filters/
-!packaging/
+!ifex/
+!distribution/
 !scripts/
 !tests/
-!transformers/
 !setup.py
+!README.md
 !requirements.txt
+!requirements-dev.txt
 !tox.ini
