@@ -1,0 +1,56 @@
+[project]
+name = "ifex"
+version = "1.5"
+description = "Interface Exchange Framework (IFEX) tools"
+readme = "README.md"
+license = "MPL-2.0"
+authors = [
+    { name = "COVESA" },
+]
+classifiers = [
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "Jinja2>=3.1.3",
+    "MarkupSafe>=2.1.1",
+    "PyYAML>=6.0",
+    "attrs>=23.2.0",
+    "dacite>=1.6.0",
+    "jsonschema<4.18; implementation_name=='pypy'",
+    "jsonschema>=4.20; implementation_name!='pypy'",
+    "lark>=1.1.9",
+    "lxml>=5.0.0",
+    "oyaml>=1.0",
+    "inflection>=0.5.1",
+]
+
+[build-system]
+requires = ["uv_build"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "ifex"
+module-root = ""
+
+[dependency-groups]
+dev = [
+    "iniconfig>=2.3.0",
+    "pytest>=9.0.1",
+]
+
+[project.urls]
+"Bug Tracker" = "https://github.com/COVESA/ifex/issues"
+"Documentation" = "https://covesa.github.io/ifex"
+"Source Code" = "https://github.com/COVESA/ifex"
+
+[project.scripts]
+ifexgen = "ifex.entrypoints.generator:ifex_generator_run"
+ifexgen_dbus = "ifex.entrypoints.generator_dbus:ifex_dbus_generator_run"
+ifexconv_protobuf = "ifex.entrypoints.protobuf_ifex:protobuf_to_ifex_run"

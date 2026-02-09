@@ -4,13 +4,12 @@
 # This file is part of IFEX project
 # ---------------------------------------------------------------------------
 
-# Official python image has an alpine-based version.  It's easiest to
-# use it directly instead of building from source with pyenv.
 FROM python:3.12-alpine
 
 # Install extras
 RUN apk add sudo bash
 
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 # Prepare user
 RUN addgroup ifex
 RUN adduser -D -G ifex ifex
@@ -22,18 +21,22 @@ RUN mkdir /ifex /work
 # Python packages are installed in virtual environment under /ifex
 COPY . /ifex
 WORKDIR /ifex
-RUN python -m venv venv
+
 RUN chown -R ifex:ifex /ifex /home/ifex
+
 USER ifex
-RUN . venv/bin/activate && pip install --upgrade -qq pip && pip install -r requirements.txt && pip install -r requirements-dev.txt
-RUN . venv/bin/activate && pip install -e .
+
+ENV PATH="$PATH:/home/ifex/.local/bin"
+
+# Make sure that virtualenvs created within the container are created in a directory owned by the in-container user
+ENV VIRTUAL_ENV=/ifex/.venv
+
+RUN uv tool install .
+
 
 # Test that binaries can be found
-RUN . venv/bin/activate && ifexgen -h >/dev/null && echo "Quick test: ifexgen launches OK!"
-RUN . venv/bin/activate && ifexgen_dbus -h >/dev/null && echo "Quick test: ifexgen_dbus launches OK!"
-
-# Make sure venv is enabled when starting interactive bash
-COPY scripts/bashrc.venv /home/ifex/.bashrc
+RUN ifexgen -h >/dev/null && echo "Quick test: ifexgen launches OK!"
+RUN ifexgen_dbus -h >/dev/null && echo "Quick test: ifexgen_dbus launches OK!"
 
 # /work should be bind-mounted when container is started
 WORKDIR /work

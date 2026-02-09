@@ -78,17 +78,17 @@ ed
 │   ├── models
 │   │   ├── Separate dirs for each supported interface description model
 │   │   ├── The internal models (a.k.a. AST definition) for IFEX and other languages
-│   └── transformers
-│       ├── Separate dirs for each supported interface description model
-│       ├── Generic rule-based "transformation engine" implementation, that maybe used by multiple tools
-│       ├── Implementation of specific transformers, if not covered by input/output filters
+│   ├── transformers
+│   │   ├── Separate dirs for each supported interface description model
+│   │   ├── Generic rule-based "transformation engine" implementation, that maybe used by multiple tools
+│   │   ├── Implementation of specific transformers, if not covered by input/output filters
+│   └── entrypoints -
+│       ├── Short script wrappers defining entry-points for python tools
+│       └──    ... defines the executable commands created when installing the package
 ├── distribution
 │   ├── Helper files for packaging or deploying the project in various ways
 │   ├── docker - Docker deployment, for testing and/or end-user use
-│   └── entrypoints -
-│       ├── Short script wrappers defining entry-points for python tools
-│       ├──    ... defines the executable commands created when installing the package
-├── requirements.txt, tox.ini. - Python dependencies expressed in different ways
+├── pyproject.toml. - Python dependencies and project setup
 ├── scripts
 │   ├── Helper scripts primarily used for development, not end-user scripts
 └── tests
@@ -99,108 +99,55 @@ ed
 
 ### Prerequisites
 
-- Python >=3.10 installed (exact version might vary - the best
-  definition of what works is likely the [automated workflow
-files](https://github.com/COVESA/ifex/tree/master/.github/workflows)
-or [tox.ini](./tox.ini))
-- Dependencies installed according to instructions below
+- [uv](https://docs.astral.sh/uv/) installed
+- Python >=3.10 (uv will manage this automatically)
+
+### Installation with uv
+
+Install uv if you haven't already, using [one of the proposed installation methods](https://docs.astral.sh/uv/getting-started/installation/), e.g.:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+### Setup and install
+
+Go to the project directory and install the project with dependencies:
+
+```bash
+# Install the project in development mode
+uv sync
+
+# Activate the virtual environment
+source .venv/bin/activate
+```
+
+Alternatively, run commands directly with uv:
+
+```bash
+# Run commands without activating the environment
+uv run ifexgen --help
+```
+
+If you want to use the entrypoints as convenient commands in your environment, install them as `uv tool`.
+
+> Note: This requires `~/.local/bin` to be in your `$PATH`!
+
+```bash
+uv tool install .
+ifexgen --help
+```
 
 ### Container use
 
 As an alternative to installation instructions below, all the installations can also be hidden in a container.  Refer to the [README in the distribution/docker/ directory](./distribution/docker/README.md) for running the tools using containers instead.
 
-## Installing and use python version(s) with `pyenv`
-
-NOTE: Pyenv can set up virtual environments but is often considered not the best
-choice for that, and we don't use it that way.  Pyenv's most important function
-is to download, compile, and install a particular python version from source
-code.  If your system python version is one that is not supported by this
-project and you are not able to install the right python version using another
-method, then Pyenv can be used.  It can be used in combination with
-virtual-environment handlers, to get access to different python versions.
-
-If [`pyenv` shell command](https://github.com/pyenv/pyenv) is not installed, use its [installer](https://github.com/pyenv/pyenv-installer) to get it:
-
-```bash
-   curl https://pyenv.run | bash  # download and install (YOU are responsible to check the script content)
-   exec $SHELL                    # restart your shell using the new $PATH
-```
-
-Activate a version in the current environment
-
-```sh
-pyenv local 3.10.6
-```
-
-### Setup a python virtual environment (recommended)
-
-Once you have an appropriate version of python, a virtual environment is
-recommended to avoid any particulars in the main system installation.
-
-Go to project directory and then:
-
-```sh
-python -m venv venv
-source venv/bin/activate
-```
-
-NEXT: Go to **Installing packages**
-
-### Setup without virtual environment (not recommended)
-
-Go directly to Installing packages
-
-### Setup and run tests using tox
-
-Tox is another way to set up the working environment.  It is primarily used to test the program using multiple python versions.
-
-1. Install tox
-2. Install pyenv (most likely needed, use it if additional python versions are required)
-3. (optional) edit the provided tox.ini file
-4. Run tox  -- this will execute pytest for all stated python versions
-
-Here we provide a script that will check which versions are requested by `tox.ini`, and install all of those versions first, using pyenv:
-
-```bash
-   pip install "tox>=4"
-   scripts/pyenv_install_for_tox.sh
-   tox
-```
-
-Note:  In this case, tox takes care of calling `pip` and `setup.py` to install the required packages.
-
-## Installing packages
-
-(for any or none, virtual-environment -- but not needed if using tox)
-
-Regardless of which type of virtual environment (if any) you use, it is required to install the IFEX package into your python environment, and to install needed dependencies with pip.
-
-1. **If you use a virtual environment, remember to first activate it!**
-For example:
-
-```
-source venv/bin/activate
-```
-
-1. Install dependencies:
-
-```
-pip install -r requirements.txt
-```
-
-1. Install the IFEX provided modules into your virtual environment
-The following installs the package in develop mode (using setup.py)
-
-```
-pip install -e .
-```
-
 ## Trying it out
 
-Installing the IFEX tools using `setup.py` creates some convenient
+Installing the IFEX tools using `uv tool install .` creates some convenient
 executable shims, e.g. `ifexgen`, `ifexgen_dbus`, `ifexconv_protobuf`, ...
 
-If those commands are not in your environment, try setting up python virtual environment and make sure pip install -e (setup.py) runs correctly.  After that, they should be in the `$PATH` variable and possible to run.
+If those commands are not in your environment, try setting up python virtual environment and make sure `uv tool install .` runs correctly.  After that, they should be in the `$PATH` variable and possible to run.
 
 To run a generic code generator and specify an output template:
 
@@ -237,16 +184,8 @@ usage: ifexgen_dbus input_ifex.yaml
 
 To build the IFEX package for distribution:
 
-## Prerequisites
-
 ```bash
-pip install --upgrade pip setuptools wheel build
-```
-
-## Build Package
-
-```bash
-python setup.py sdist bdist_wheel
+uv build
 ```
 
 This creates both source distribution (`.tar.gz`) and wheel (`.whl`) files in the `dist/` directory.
@@ -256,10 +195,10 @@ This creates both source distribution (`.tar.gz`) and wheel (`.whl`) files in th
 The project uses pytest to define unit tests. A starting point is in the tests
 directory and more can be added.
 
-To run tests, just run pytest in the root directory, (optionally specify the tests directory).
+To run tests:
 
 ```bash
-   pytest -v tests
+uv run pytest -v tests
 ```
 
 # Contribution
@@ -285,6 +224,4 @@ with the label "bug"
 
 Various tips to consider:
 
-- If the installation (pip install) is executed behind a (corporate) proxy, the following environments variables must be set: `http_proxy` and `https_proxy` (including authentication e.g., `http://${proxy_username):$(proxy_password)@yourproxy.yourdomain`)
-- If you use a custom pip installation directory, set the `PYTHONPATH` environment variable to the directory that you set in the `pip.ini` file.
-- If you do not run with administration rights, you may need to configure pip target path to write to your user home directory or consider using one of the `virtual environment` methods.
+- If the installation (uv sync) is executed behind a (corporate) proxy, the following environments variables must be set: `http_proxy` and `https_proxy` (including authentication e.g., `http://${proxy_username):$(proxy_password)@yourproxy.yourdomain`)

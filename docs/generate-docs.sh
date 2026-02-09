@@ -5,7 +5,7 @@
 
 # Simple documentation generation script
 
-set -e  # Exit on any error
+set -e # Exit on any error
 
 echo "🔍 Generating IFEX documentation..."
 
@@ -14,9 +14,9 @@ mkdir -p specification
 
 # Clean up any existing files on error
 cleanup() {
-    echo "❌ Generation failed. Cleaning up partial files..."
-    rm -f specification/generated-types.generated.md specification/ast-structure.generated.md
-    exit 1
+  echo "❌ Generation failed. Cleaning up partial files..."
+  rm -f specification/generated-types.generated.md specification/ast-structure.generated.md
+  exit 1
 }
 trap cleanup ERR
 
@@ -28,13 +28,13 @@ HEADER="<!-- This file is auto-generated. Do not edit manually. -->
 "
 
 echo "  🔧 Generating types documentation..."
-echo -e "$HEADER" > specification/generated-types.generated.md
-cd .. && PYTHONPATH=/app python3 docs/generate-types-doc.py >> docs/specification/generated-types.generated.md
+echo -e "$HEADER" >specification/generated-types.generated.md
+cd .. && uv run python docs/generate-types-doc.py >>docs/specification/generated-types.generated.md
 cd docs
 
 echo "  🏗️ Generating AST structure documentation..."
-echo -e "$HEADER" > specification/ast-structure.generated.md
-cd .. && PYTHONPATH=/app python3 -m ifex.models.ifex.ifex_ast_doc >> docs/specification/ast-structure.generated.md
+echo -e "$HEADER" >specification/ast-structure.generated.md
+cd .. && uv run python -m ifex.models.ifex.ifex_ast_doc >>docs/specification/ast-structure.generated.md
 cd docs
 
 echo "✅ Documentation generated successfully!"
