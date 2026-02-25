@@ -1,0 +1,275 @@
+# ============================================================
+# OMG IDL (Object Management Group Interface Definition Language)
+# LARK GRAMMAR
+# ============================================================
+#
+# SPDX-FileCopyrightText: Copyright (c) 2024 MBition GmbH.
+# SPDX-License-Identifier: MPL-2.0
+#
+# This file is part of the IFEX project
+#
+# Grammar for Lark parser, covering the subset of OMG IDL 4.2
+# represented in omgidl_ast.py.
+#
+# Reference: OMG IDL 4.2 (formal/2021-06-01)
+# https://www.omg.org/spec/IDL/4.2
+#
+# Grammar conventions (identical to aidl.grammar / protobuf.grammar):
+# --------------------------------------------------------------------
+#  - Composite rules use lowercase names
+#  - Terminal/token names use UPPERCASE
+#  - Names prefixed X_ are additions to preserve semantic keywords that
+#    Lark would otherwise silently discard (e.g. X_ONEWAY, X_READONLY)
+#  - ? prefix on rules = Lark "inline/transparent" rule (not stored)
+#  - Parser mode: LALR
+#  - Preprocessor lines (#include, #pragma, #define, etc.) and comments
+#    (// and /* */) are stripped by filter_comments() before Lark sees
+#    the text — they are NOT in this grammar.
+#
+# Subset scope:
+#   - module (nestable)
+#   - interface (with inheritance)
+#   - operation (with in/out/inout params, raises, oneway)
+#   - attribute / readonly attribute
+#   - const
+#   - struct
+#   - exception
+#   - enum (identifier-only enumerators, no explicit integer assignment)
+#   - typedef (scalar and sequence aliases)
+#   - sequence<T> / sequence<T,N>
+#   - Fixed-size array types T[N]
+#   - Scoped names (A::B::C)
+#
+# Intentionally NOT covered (see implementation_evidence.md):
+#   - union / switch
+#   - valuetype / abstract interface / local interface
+#   - context clause on operations
+#   - #pragma version
+#   - Multiple-word primitive types as a single terminal (handled
+#     by multi-token normalisation in omgidl_lark.py instead)
+#
+# ============================================================
+
+
+# ============================================================
+# Start rule
+# ============================================================
+
+?start: idl_file
+
+
+# ============================================================
+# Top-level file
+# ============================================================
+
+# An IDL file is zero or more top-level definitions.
+# (Unlike AIDL, multiple declarations per file are allowed.)
+idl_file: definition*
+
+
+# ============================================================
+# Definitions (top-level and inside modules)
+# ============================================================
+
+# from spec §7.2.2:
+#   definition ::= type_dcl ";" | const_dcl ";" | except_dcl ";"
+#                | interface ";" | module ";" | ...
+?definition: module_decl
+           | interface_decl
+           | struct_decl
+           | enum_decl
+           | exception_decl
+           | typedef_decl
+           | const_dcl
+
+
+# ============================================================
+# Module
+# ============================================================
+
+# from spec §7.2.3:
+#   module_dcl ::= "module" identifier "{" definition+ "}"
+module_decl: "module" IDENT "{" definition* "}" ";"
+
+
+# ============================================================
+# Interface
+# ============================================================
+
+# from spec §7.4.11:
+#   interface_dcl ::= interface_header "{" interface_body "}"
+#   interface_header ::= "interface" identifier [inheritance_spec]
+#   inheritance_spec ::= ":" scoped_name {"," scoped_name}
+interface_decl: "interface" IDENT inheritance_spec? "{" interface_member* "}" ";"
+
+inheritance_spec: ":" scoped_name ("," scoped_name)*
+
+?interface_member: operation_decl
+                 | attribute_decl
+                 | const_dcl
+
+
+# ============================================================
+# Operation (method)
+# ============================================================
+
+# from spec §7.4.12:
+#   op_dcl ::= [op_attribute] op_type_spec identifier
+#              parameter_dcls [raises_expr]
+#   op_attribute ::= "oneway"
+#   op_type_spec ::= param_type_spec | "void"
+operation_decl: X_ONEWAY? op_return_type IDENT "(" param_list? ")" raises_clause? ";"
+
+op_return_type: "void"    -> void_return
+              | type_spec -> typed_return
+
+param_list: param ("," param)*
+
+# from spec §7.4.12 (param_dcl):
+#   param_dcl ::= param_attribute simple_type_spec declarator
+#   param_attribute ::= "in" | "out" | "inout"
+param: X_DIRECTION type_spec IDENT
+
+# from spec §7.4.12 (raises_expr):
+#   raises_expr ::= "raises" "(" scoped_name {"," scoped_name} ")"
+raises_clause: "raises" "(" scoped_name ("," scoped_name)* ")"
+
+
+# ============================================================
+# Attribute
+# ============================================================
+
+# from spec §7.4.13:
+#   attr_dcl ::= ["readonly"] "attribute" param_type_spec
+#                simple_declarator {"," simple_declarator}
+attribute_decl: X_READONLY? "attribute" type_spec IDENT ";"
+
+
+# ============================================================
+# Const
+# ============================================================
+
+# from spec §7.4.4:
+#   const_dcl ::= "const" const_type identifier "=" const_exp
+const_dcl: "const" type_spec IDENT "=" CONST_VALUE ";"
+
+
+# ============================================================
+# Struct
+# ============================================================
+
+# from spec §7.4.9:
+#   struct_type ::= "struct" identifier "{" member+ "}"
+struct_decl: "struct" IDENT "{" member_decl+ "}" ";"
+
+member_decl: type_spec IDENT ";"
+
+
+# ============================================================
+# Exception
+# ============================================================
+
+# from spec §7.4.15:
+#   except_dcl ::= "exception" identifier "{" member* "}"
+exception_decl: "exception" IDENT "{" member_decl* "}" ";"
+
+
+# ============================================================
+# Enum
+# ============================================================
+
+# from spec §7.4.14:
+#   enum_type ::= "enum" identifier "{" enumerator {"," enumerator} "}"
+#   enumerator ::= identifier
+# Note: OMG IDL enumerators do NOT have explicit numeric values —
+# values are implicitly 0, 1, 2, ... in declaration order.
+enum_decl: "enum" IDENT "{" IDENT ("," IDENT)* "}" ";"
+
+
+# ============================================================
+# Typedef
+# ============================================================
+
+# from spec §7.4.8:
+#   type_dcl ::= "typedef" type_declarator
+#   type_declarator ::= type_spec declarators
+typedef_decl: "typedef" type_spec IDENT ";"
+
+
+# ============================================================
+# Type specifications
+# ============================================================
+
+# from spec §7.4.1 (type_spec):
+# We cover: scoped names (named types), sequence<T>, and array suffix.
+# Multi-word primitives (unsigned long, long long, etc.) are handled
+# as a single IDENT-like token via BUILTIN_TYPE to avoid LALR ambiguity.
+type_spec: sequence_type
+         | BUILTIN_TYPE ARRAY_SUFFIX?   -> builtin_array_type
+         | IDENT ARRAY_SUFFIX?          -> named_array_type
+
+# from spec §7.4.2 (sequence_type):
+#   sequence_type ::= "sequence" "<" simple_type_spec ["," positive_int_const] ">"
+sequence_type: "sequence" "<" (BUILTIN_TYPE | IDENT) ("," INT)? ">"
+
+# from spec §7.4.11 (scoped_name):
+#   scoped_name ::= identifier | "::" identifier | scoped_name "::" identifier
+scoped_name: "::"? IDENT ("::" IDENT)*
+
+
+# ============================================================
+# Terminals (tokens)
+# ============================================================
+
+# Direction keywords for operation parameters
+X_DIRECTION: "in" | "out" | "inout"
+
+# Operation modifier
+X_ONEWAY: "oneway"
+
+# Attribute modifier
+X_READONLY: "readonly"
+
+# Fixed-size array suffix:  [N]  (e.g. float coords[3])
+ARRAY_SUFFIX: "[" INT "]"
+
+# OMG IDL built-in multi-word and single-word primitive types.
+# Defined as a prioritised terminal so it wins over IDENT for these words.
+# Multi-word forms (unsigned long, long long, etc.) are flattened here
+# because LALR grammars handle keyword sequences awkwardly.
+BUILTIN_TYPE.2: "unsigned long long"
+              | "unsigned long"
+              | "unsigned short"
+              | "long long"
+              | "long double"
+              | "long"
+              | "short"
+              | "float"
+              | "double"
+              | "boolean"
+              | "char"
+              | "wchar"
+              | "octet"
+              | "string"
+              | "wstring"
+              | "any"
+              | "Object"
+              | "void"
+
+# Simple identifier (lower priority than BUILTIN_TYPE)
+IDENT: /[A-Za-z_][A-Za-z0-9_]*/
+
+# Integer literal (unsigned, used in array sizes and sequence bounds)
+INT: /[0-9]+/
+
+# Const value: everything up to the semicolon (loose match, covers
+# integers, hex literals, float literals, string literals, etc.)
+CONST_VALUE: /[^\s;][^;]*/
+
+
+# ============================================================
+# Whitespace
+# ============================================================
+
+%import common (WS)
+%ignore WS
