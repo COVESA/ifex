@@ -100,7 +100,7 @@ def gen_template_text(node: Any, template_text: str):
 
 # Entry point for passing a dictionary of variables instead:
 def gen_dict_with_template_file(variables : dict, templatefile):
-    return get_template(templatefile).render(variables)
+    return jinja_env.get_template(templatefile).render(variables)
 
 # Export the gen() function and classes into jinja template land
 # so that they can be referred to inside templates.
