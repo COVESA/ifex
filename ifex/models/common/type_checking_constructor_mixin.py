@@ -100,7 +100,7 @@ def add_constructor(cls):
             if not is_correct_type(value, arg_types[name]):
                 try:
                     nameinfo = f"Additional Info:  The object was named: {self.name}"
-                except:
+                except AttributeError:
                     nameinfo = ""
                 raise TypeError(f'Object construction error for class {type(self)}: According to specification, value named \'{name}\' must be of type: {arg_types[name]}, but was instead: {type(value)!r}. {nameinfo}')
 
