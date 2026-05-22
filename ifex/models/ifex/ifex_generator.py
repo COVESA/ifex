@@ -26,7 +26,7 @@ from ifex.output_filters.templates import JinjaTemplateEnv
 jinja_env = JinjaTemplateEnv.JinjaTemplateEnv("simple")
 
 # Exception:
-class GeneratorError(BaseException):
+class GeneratorError(Exception):
     def __init__(self, m):
         self.msg = m
 
@@ -69,7 +69,6 @@ def _gen_with_default_template(node : Any):
     nodetype=type(node).__name__
     if nodetype == 'StrictUndefined':
         raise GeneratorError(f'The template seems to call gen() with an unknown field name: node {node} is of type StrictUndefined. Please check!')
-        return ""
 
     # Plain types -> print as-is
     if isinstance(node, (str, int, float)):
