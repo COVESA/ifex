@@ -140,7 +140,6 @@ type_translation = {
     franca.Float : "float",
     franca.Int8 : "int8",
     franca.Int16 : "int16",
-    franca.Int16 : "int16",
     franca.Int32 : "int32",
     franca.Int64 : "int64",
     franca.String : "string",
