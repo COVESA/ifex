@@ -157,32 +157,29 @@ type_translation = {
 # ----------------------------------------------------------------------------
 
 def translate_type(t):
-
-    # Special case: For references to complex types we want to refer to the original type name, since IFEX supports
-    # named type definitions as well.  The type ought to be translated into a named typedef (or enum or struct, etc.) in
-    # the IFEX representation also.  We don't need to de-reference it once more and end up with the inner definition of
-    # the typedef, since IFEX supports named type definitions as well -> so don't recurse to figure out the inner type.
-    if type(t) is franca.Reference and type(t.reference) in [franca.Array, franca.Struct, franca.Enumeration,
-                                                             franca.Typedef, franca.Map]:
-        return t.reference.name
-
-    # Other references in a Franca AST are just some level of indirection -> Recurse on the actual type.
-    # TODO: Check if this case still happens, considering previous lines?
-    if type(t) is franca.Reference:
-        return translate_type(t.reference)
-
-    # This case can happen for arrays for plain-types that are defined directly, without a named typedef.
-    # -> Translate the array's inner simple type, and add array to it.
-    if type(t) is franca.Array:
-        return translate_type(t.type) + '[]'
-
-    # TODO This case is now probably redundant but let's come back to the comment about how to use qualified names
-    if type(t) is franca.Enumeration:
-        return t.name # FIXME use qualified name <InterfaceName>_<EnumerationName>, or change in the other place
-
-    # Plain type -> use lookup table and if that fails return the original for now
-    t2 = type_translation.get(type(t))
-    return t2 if t2 is not None else t
+    match t:
+        # Special case: For references to complex types we want to refer to the original type name, since IFEX supports
+        # named type definitions as well.  The type ought to be translated into a named typedef (or enum or struct, etc.)
+        # in the IFEX representation also.  We don't need to de-reference it once more and end up with the inner
+        # definition of the typedef, since IFEX supports named type definitions as well -> so don't recurse.
+        case franca.Reference() if type(t.reference) in [franca.Array, franca.Struct, franca.Enumeration,
+                                                          franca.Typedef, franca.Map]:
+            return t.reference.name
+        # Other references in a Franca AST are just some level of indirection -> Recurse on the actual type.
+        # TODO: Check if this case still happens, considering previous lines?
+        case franca.Reference():
+            return translate_type(t.reference)
+        # This case can happen for arrays for plain-types that are defined directly, without a named typedef.
+        # -> Translate the array's inner simple type, and add array to it.
+        case franca.Array():
+            return translate_type(t.type) + '[]'
+        # TODO This case is now probably redundant but let's come back to the comment about qualified names
+        case franca.Enumeration():
+            return t.name  # FIXME use qualified name <InterfaceName>_<EnumerationName>, or change in the other place
+        # Plain type -> use lookup table and if that fails return the original for now
+        case _:
+            t2 = type_translation.get(type(t))
+            return t2 if t2 is not None else t
 
 
 # Rename fidl to ifex, for imports

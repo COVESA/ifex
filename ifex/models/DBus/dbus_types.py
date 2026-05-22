@@ -85,38 +85,25 @@ def get_array_member(typename):
 # Main IFEX to D-Bus type translator:  This function will recurse until a D-Bus
 # supported primitive type has been created.
 def gen_dbus_type(ifextype):
-    dbus_type = ""
-    # Iterate over lists
-    if isinstance(ifextype, list):
-        for t in ifextype:
-            dbus_type += f"{t} => {gen_dbus_type(t)}\n"
-    # Array of items
-    elif is_array(ifextype):
-        dbus_type += "a" + gen_dbus_type(get_array_member(ifextype))
-    # Typedef/Enumeration -> just translate to the underlying type
-    elif isinstance(ifextype, Typedef) or isinstance(ifextype, Enumeration):
-        dbus_type += gen_dbus_type(ifextype.datatype)
-    # Struct of items -> parentheses, and recurse on struct members
-    elif isinstance(ifextype, Struct):
-        dbus_type += "("
-        for m in ifextype.members:
-            dbus_type += gen_dbus_type(m)
-        dbus_type += ")"
-    # Member (of Struct) -> translate its datatype
-    elif isinstance(ifextype, Member):
-        dbus_type += gen_dbus_type(ifextype.datatype)
-    # Direct type name, (non-array)
-    else:
-        dbt = ifex_to_dbus_types.get(ifextype)
-        known_type = known_ifex_type_definitions.get(ifextype)
-        if dbt is not None:
-            dbus_type += dbt
-        elif known_type is not None:
-            dbus_type += gen_dbus_type(known_type)
-        else:
-            dbus_type += f"UNKNOWN_TYPE({ifextype})"
-
-    return dbus_type
+    match ifextype:
+        case list():
+            return "".join(f"{t} => {gen_dbus_type(t)}\n" for t in ifextype)
+        case str() if is_array(ifextype):
+            return "a" + gen_dbus_type(get_array_member(ifextype))
+        case Typedef() | Enumeration():
+            return gen_dbus_type(ifextype.datatype)
+        case Struct():
+            return "(" + "".join(gen_dbus_type(m) for m in ifextype.members) + ")"
+        case Member():
+            return gen_dbus_type(ifextype.datatype)
+        case str():
+            dbt = ifex_to_dbus_types.get(ifextype)
+            known_type = known_ifex_type_definitions.get(ifextype)
+            if dbt is not None:
+                return dbt
+            if known_type is not None:
+                return gen_dbus_type(known_type)
+            return f"UNKNOWN_TYPE({ifextype})"
 
 
 # Registry for type definitions taken from the IFEX file
@@ -137,31 +124,31 @@ known_ifex_type_definitions = {}
 # => no multithreading/parallel use.
 # (if later needed the module shall be converted into an instantiable class instead)
 # The node parameter is a dataclass instance, as returned from the dacite conversion
+def _collect_type_definitions(node):
+    """Register struct/typedef/enum definitions from a Namespace or Interface."""
+    for x in node.structs:
+        known_ifex_type_definitions[x.name] = x
+    for x in node.typedefs:
+        known_ifex_type_definitions[x.name] = x.datatype
+    for x in node.enumerations:
+        known_ifex_type_definitions[x.name] = x.datatype
+
+
 def collect_types(node):
     # FIXME: Shall this also handle partial type-defining files that lack namespace structure?
-
-    # Recurse over each instance in a list
-    if type(node) is list:
-        for listitem in node:
-            collect_types(listitem)
-        return
-
-    # Recurse on each (sub)-namespace
-    if type(node) in [Namespace, AST]:
-        collect_types(node.namespaces)
-
-    # Types can be collected from either a Namespace or an Interface
-    if type(node) in [Interface, Namespace]:
-        for x in node.structs:
-            known_ifex_type_definitions[x.name] = x
-        for x in node.typedefs:
-            known_ifex_type_definitions[x.name] = x.datatype
-        for x in node.enumerations:
-            known_ifex_type_definitions[x.name] = x.datatype
-
-    # Finally, a single Interface can be underneath any Namespace
-    if type(node) is Namespace and node.interface is not None:
-        collect_types(node.interface)
+    match node:
+        case list():
+            for listitem in node:
+                collect_types(listitem)
+        case AST():
+            collect_types(node.namespaces)
+        case Namespace():
+            collect_types(node.namespaces)
+            _collect_type_definitions(node)
+            if node.interface is not None:
+                collect_types(node.interface)
+        case Interface():
+            _collect_type_definitions(node)
 
 
 # main() = FOR MODULE TEST ONLY - NOT USED BY MAIN CODE GENERATOR
