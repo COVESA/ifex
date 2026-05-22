@@ -15,7 +15,53 @@ VSC parser/reader to be used by generators and other tools
 
 import yaml, dacite
 from typing import Dict, Any
-from ifex.models.ifex.ifex_ast import AST
+from ifex.models.ifex.ifex_ast import AST, Namespace
+
+
+def _expand_dot_namespace(ns: Namespace) -> Namespace:
+    """Expand a dot-separated namespace name into nested Namespace objects.
+
+    ``name: A.B.C`` is equivalent to nesting::
+
+        name: A
+          namespaces:
+            - name: B
+              namespaces:
+                - name: C
+                  ...content...
+
+    Children are expanded recursively before wrapping.
+    """
+    expanded_children = [_expand_dot_namespace(child) for child in (ns.namespaces or [])]
+
+    parts = ns.name.split(".")
+    if len(parts) == 1:
+        ns.namespaces = expanded_children
+        return ns
+
+    # Innermost namespace carries all content from the dot-path namespace
+    inner = Namespace(
+        name=parts[-1],
+        description=ns.description,
+        major_version=ns.major_version,
+        minor_version=ns.minor_version,
+        version_label=ns.version_label,
+        events=ns.events,
+        methods=ns.methods,
+        typedefs=ns.typedefs,
+        includes=ns.includes,
+        structs=ns.structs,
+        enumerations=ns.enumerations,
+        properties=ns.properties,
+        namespaces=expanded_children,
+        interface=ns.interface,
+    )
+
+    # Wrap in empty intermediate layers
+    for part in reversed(parts[:-1]):
+        inner = Namespace(name=part, namespaces=[inner])
+
+    return inner
 
 
 def read_yaml_file(filename) -> str:
@@ -53,6 +99,7 @@ def get_ast_from_yaml_file(filename: str) -> AST:
         #cfg = dacite.Config(strict=True) # Fail if unknown keys in dict
         cfg = dacite.Config(strict=False) # Fail if unknown keys in dict
         ast = dacite.from_dict(data_class=AST, data=yaml_dict, config=cfg)
+        ast.namespaces = [_expand_dot_namespace(ns) for ns in (ast.namespaces or [])]
         return ast
     except dacite.UnexpectedDataError as e:
         print(f"ERROR: Read error resulting from {filename}: {e}")
