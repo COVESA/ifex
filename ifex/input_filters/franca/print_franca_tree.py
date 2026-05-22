@@ -51,14 +51,14 @@ def franca_ast_to_dict(node, debug_context="") -> OrderedDict:
 
     try:
         _fields = fields(node)
-    except:
+    except Exception:
         print(f"Error occurred processing fields for {node=}")
         _fields = []
 
     for f in _fields:
         item = getattr(node, f.name)
         if not is_empty(item):
-            ret[f.name] = ifex_ast_to_dict(item, debug_context=str(f))
+            ret[f.name] = franca_ast_to_dict(item, debug_context=str(f))
 
     return ret
 
