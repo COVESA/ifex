@@ -7,7 +7,7 @@ from ifex.models.ifex import ifex_ast_doc
 from typing import Dict, Any
 
 # Exception:
-class GeneratorError(BaseException):
+class GeneratorError(Exception):
     def __init__(self, m):
         self.msg = m
 
@@ -144,8 +144,6 @@ class JinjaTemplateEnv:
             raise GeneratorError(f'Failure to get actual template object from Jinja framework for {template_file=}')
         else:
             return template.render({"item" : node})
-
-        return None
 
 
     # wrapper over jinja2 to export environment.
