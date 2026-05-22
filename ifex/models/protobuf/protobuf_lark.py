@@ -112,7 +112,7 @@ def matcher(node, pattern):
                 match_str(node.value, pattern.value) )
     # => ?
     else:
-        raise TypeException("Unknown type passed to matcher() - please check!")
+        raise TypeError("Unknown type passed to matcher() - please check!")
 
 
 # Helper to extract a subtree of a certain type (as identified by the grammar rule name)
