@@ -100,11 +100,11 @@ def merge_nodes(node1: Any, node2: Any) -> Any:
             if is_removal(value2.name):
                 merged_value = None  # Not storing anything, so it's remmoved
             else:
-                merged_value = merge_nodes(value1, name_only(value2))
+                merged_value = merge_nodes(value1, value2)
         else: # value is a simple field.  Therefore if value2 is defined, it
               # overwrites the original value (there is no "merging" of two fundamental fields)
               # If value2 is not defined, the result defaults back to original value1
-            merged_value = name_only(value2) or value1
+            merged_value = (name_only(value2) if isinstance(value2, str) else value2) or value1
 
         merged_values[var] = merged_value
 
