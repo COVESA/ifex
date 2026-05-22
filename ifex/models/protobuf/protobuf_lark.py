@@ -623,7 +623,8 @@ def process_enums(e):
     for o in options:
         # Node of option type -> process the embedded optiondef
         # Should be one child of type optiondef here
-        assert(len(o.children) == 1)
+        if len(o.children) != 1:
+            raise ValueError(f"Expected exactly one child in option node, got {len(o.children)}")
         optiondef_node = o.children.pop(0)
         assert_rule_match(optiondef_node, 'optiondef')
         ast_options.append(process_option(optiondef_node))
@@ -683,7 +684,8 @@ def process_lark_tree(root):
     for o in options:
         # Node of option type -> process the embedded optiondef
         # Should be one child of type optiondef here
-        assert(len(o.children) == 1)
+        if len(o.children) != 1:
+            raise ValueError(f"Expected exactly one child in option node, got {len(o.children)}")
         optiondef_node = o.children.pop(0)
         assert_rule_match(optiondef_node, 'optiondef')
         ast_options.append(process_option(optiondef_node))
