@@ -17,7 +17,7 @@ def ifex_dbus_generator_run():
         dbus_generator.main_generate(args.input)
 
     except dacite.UnexpectedDataError as e:
-        print(f"ERROR: Read error resulting from {filename}: {e}")
+        print(f"ERROR: Read error: {e}")
 
 if __name__ == "__main__":
     ifex_dbus_generator_run()

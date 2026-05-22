@@ -17,7 +17,7 @@ def ifex_generator_run():
     try:
         args = parser.parse_args()
     except dacite.UnexpectedDataError as e:
-        print(f"ERROR: Read error resulting from {filename}: {e}")
+        print(f"ERROR: Read error: {e}")
 
     ast = get_ast_from_yaml_file(args.input)
 
