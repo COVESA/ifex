@@ -648,7 +648,7 @@ def process_lark_tree(root):
     packages = get_items_of_type(root, 'package')
 
     if len(packages) > 1:
-        Exception("Multiple package statements found!  The protobuf spec is ambiguous on multiple package statements (EBNF grammar allows multiple but the explanation suggests a singular use).  This implementation chose to support only one per file.  (If multiple are needed, please contact the IFEX project)")
+        raise Exception("Multiple package statements found!  The protobuf spec is ambiguous on multiple package statements (EBNF grammar allows multiple but the explanation suggests a singular use).  This implementation chose to support only one per file.  (If multiple are needed, please contact the IFEX project)")
     ast_package = None
     if len(packages) > 0:
         ast_package = process_package(packages[0])
