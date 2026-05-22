@@ -62,7 +62,7 @@ def get_variant_types(obj):
     """Return a list of the types handled by the given variant type.  The function accepts either a Typedef object or a string with the type name. The string must then be the variant<a,b,c> fundamental type - it cannot be the name of a typedef."""
     if isinstance(obj, ifex_ast.Typedef):
         if is_ifex_invalid_typedef(obj):
-            raise TypeException('Provided variant object is misconfigured')
+            raise TypeError('Provided variant object is misconfigured')
         # Process datatypes list
         if obj.datatypes:
             return obj.datatypes
