@@ -43,12 +43,11 @@ def stable_order_file(file1):
     """Writes a new file containing the YAML content with keys in order, and
     returns the file name"""
     with open(file1, "r") as f1:
-        with tempfile.NamedTemporaryFile("w", delete=False) as f2:
+        with tempfile.NamedTemporaryFile("w", delete=False, suffix=".yaml") as f2:
+            tmpname = f2.name
             yaml.add_representer(OrderedDict, represent_ordereddict)
             f2.write(yaml.dump(ifex_stable_order(yaml.safe_load(f1)), sort_keys=False))
-            return f2.name
-
-    return None  # Will fail on exception before this
+    return tmpname
 
 
 def compare_yaml_files(file1, file2):
@@ -56,11 +55,18 @@ def compare_yaml_files(file1, file2):
     files, then diff the results"""
     f1 = stable_order_file(file1)
     f2 = stable_order_file(file2)
-
-    print("Stable sorting...")
-    print(f"temporary files are {file1} -> {f1}, {file2} -> {f2}")
-    print("Comparing files:")
-    return diff_files_with_external_program(f1, f2)
+    try:
+        print("Stable sorting...")
+        print(f"temporary files are {file1} -> {f1}, {file2} -> {f2}")
+        print("Comparing files:")
+        return diff_files_with_external_program(f1, f2)
+    finally:
+        import os as _os
+        for tmp in [f1, f2]:
+            try:
+                _os.unlink(tmp)
+            except OSError:
+                pass
 
 
 # ---------------------------------------------------------------------
