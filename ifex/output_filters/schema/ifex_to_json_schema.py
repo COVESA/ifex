@@ -113,9 +113,13 @@ def print_type(t, fields):
 # Model traversal
 # =======================================================================
 
-def collect_type_info(t, collection={}, seen={}):
+def collect_type_info(t, collection=None, seen=None):
     """This is the main recursive function that loops through tree and collects
        information about its structure which is later used to output the schema:"""
+    if collection is None:
+        collection = {}
+    if seen is None:
+        seen = {}
 
     # We don't need to gather information about primitive types because they
     # will not have any member fields below them.
