@@ -349,8 +349,8 @@ def prune(node: Any, field_values: Dict[str, Any], recursive=True, force=False):
 
             # Prune single item if matching
             elif all_fields_match(node, field_values):
-                if is_optional(field) or force:
-                    setattr(node, field, None)
+                if is_optional(field.type) or force:
+                    setattr(node, field.name, None)
                 else:
                     raise Exception("Prune tried to delete node which is mandatory. Use force=true to override")
 
