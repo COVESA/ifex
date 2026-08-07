@@ -240,7 +240,7 @@ def transform_value_common(mapping_table, value, field_transform):
             name = ""
             try:
                 name = value.name
-            except:
+            except AttributeError:
                 pass
             _log("DEBUG", f"Empty OrderedDict for {value=} {name=} {field_transform=}")
             value = []
