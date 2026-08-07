@@ -223,7 +223,6 @@ if __name__ == '__main__':
         print(ast_as_yaml(final_ast))
 
     except FileNotFoundError:
-        log("ERROR: File not found")
+        print("ERROR: File not found")
     except Exception as e:
-        raise(e)
-        log("ERROR: An unexpected error occurred: {}".format(e))
+        raise
