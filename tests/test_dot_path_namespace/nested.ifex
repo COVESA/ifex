@@ -1,0 +1,10 @@
+namespaces:
+  - name: com
+    namespaces:
+      - name: example
+        namespaces:
+          - name: vehicle
+            description: Vehicle namespace
+            methods:
+              - name: start
+                description: Start the vehicle

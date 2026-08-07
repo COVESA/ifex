@@ -1,0 +1,6 @@
+namespaces:
+  - name: com.example.vehicle
+    description: Vehicle namespace
+    methods:
+      - name: start
+        description: Start the vehicle
