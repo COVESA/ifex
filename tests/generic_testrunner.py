@@ -157,11 +157,6 @@ def run_tests(test_root_dir):
 
         return exit_code, output, input_file
 
-
-        # Fail if we are unable?
-        #return -1, "NOTRUN", "NOFILE"
-        raise Exception()
-
     # Symlink -> points to the program to run
     if is_link('program'):
         program = get_program_link()
