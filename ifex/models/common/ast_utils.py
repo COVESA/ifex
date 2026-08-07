@@ -192,7 +192,7 @@ def all_fields_match(node, field_values: Dict[str, Any]) -> bool:
 VERBOSE = False
 
 # Tree processing function:
-def walk_type_tree(node, process, seen={}):
+def walk_type_tree(node, process, seen=None):
     """Walk the AST class hierarchy as defined by @dataclasses with type
     hints from typing module.
 
@@ -203,6 +203,8 @@ def walk_type_tree(node, process, seen={}):
 
     Arguments: node = a @dataclass class
                process = a "callback" function to call for each node"""
+    if seen is None:
+        seen = {}
 
     # (No need to document, or recurse on the following types):
     # FIXME: this is correct for our documentation generation but maybe not for all cases
