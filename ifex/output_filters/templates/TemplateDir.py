@@ -18,7 +18,7 @@ def find_matching_template_files(directory : str, recurse = False, absolute = Fa
 
     templates = {}  # Dict maps node name to the template file name
     if recurse:
-        for _, _, filenames in os.walk(directory):
+        for root, _, filenames in os.walk(directory):
             for fn in filenames:
                 for n in classes:
                     if fn.startswith(n):

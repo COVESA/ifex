@@ -45,7 +45,7 @@ class TemplateFinder:
 
         templates = {}  # Dict maps node name to the template file name
         if recurse:
-            for _,_,filenames in os.walk(directory):
+            for root, _, filenames in os.walk(directory):
                 for ff in filenames:
                     for n in classes:
                         if ff.startswith(n + '.'):
