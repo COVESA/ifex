@@ -13,13 +13,16 @@
 Generate JSON Schema equivalent to the python-internal model definition.
 """
 
+import io
+import json
+import sys
+from contextlib import redirect_stdout
 from dataclasses import fields
 from datetime import datetime, date
 from ifex.models.common.ast_utils import actual_type, field_actual_type, field_inner_type, inner_type, is_forwardref, is_list, type_name, field_is_list, field_is_optional, field_referenced_type
 from ifex.models.common.ast_utils import is_simple_type
 from ifex.models.ifex.ifex_ast import AST
 from typing import Any
-import json
 
 # =======================================================================
 # Helpers
@@ -163,8 +166,10 @@ if __name__ == "__main__":
     types={}
     collect_type_info(AST, types)
 
-    # Then print JSON-schema
-    print('''{
+    # Capture raw JSON output, then pretty-print it
+    buf = io.StringIO()
+    with redirect_stdout(buf):
+        print('''{
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "IFEX Core IDL (YAML format), version: TAG-PLACEHOLDER",
     "description": "This file can be used to validate IFEX Core IDL files, which are normally written in YAML, not JSON.  The schema is not the source-of-truth but an artifact generated from the source-of-truth, so it should be consistent",
@@ -173,13 +178,20 @@ if __name__ == "__main__":
     "definitions": {
     ''')
 
-    items=types.items()
-    for n, (typ,fields) in enumerate(items):
-        print_type(typ, fields)
-        # print comma, but not on last item
-        if n != len(items)-1:
-            print('},')
-        else:
-            print('}')
-    print('}\n}')
+        items=types.items()
+        for n, (typ,fields) in enumerate(items):
+            print_type(typ, fields)
+            # print comma, but not on last item
+            if n != len(items)-1:
+                print('},')
+            else:
+                print('}')
+        print('}\n}')
+
+    try:
+        data = json.loads(buf.getvalue())
+        print(json.dumps(data, indent=2))
+    except json.JSONDecodeError as e:
+        print(f"Internal error: generated invalid JSON: {e}", file=sys.stderr)
+        sys.exit(1)
 

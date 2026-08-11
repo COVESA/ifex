@@ -67,16 +67,13 @@ def schema_check(input_file, schema_file, quiet = True):
         return False
 
 if __name__ == '__main__':
+    import argparse
 
-    input_file = sys.argv[1]
-    schema_file = sys.argv[2]
+    parser = argparse.ArgumentParser(description="Validate a JSON or YAML file against a JSON schema")
+    parser.add_argument("input_file", help="Input JSON or YAML file to validate")
+    parser.add_argument("schema_file", help="JSON schema file to validate against")
+    parser.add_argument("--quiet", action="store_true", help="Suppress validation output")
+    args = parser.parse_args()
 
-    if len(sys.argv) > 3 and sys.argv[3] == '--quiet':
-        ok = schema_check(input_file, schema_file, quiet=True)
-    else:
-        ok = schema_check(input_file, schema_file, quiet=False)
-
-    if ok:
-        sys.exit(0)
-    else:
-        sys.exit(1)
+    ok = schema_check(args.input_file, args.schema_file, quiet=args.quiet)
+    sys.exit(0 if ok else 1)
